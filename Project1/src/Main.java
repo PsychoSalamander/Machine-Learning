@@ -21,7 +21,7 @@ public class Main {
 		BufferedReader reader = Files.newBufferedReader(path);
 		String line = reader.readLine();
 		StringBuilder builder = new StringBuilder();
-		
+		//frankie sucks
 		while(line != null)
 		{
 			System.out.println(line);
