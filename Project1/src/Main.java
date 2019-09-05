@@ -1,5 +1,3 @@
-package project1;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,7 +14,7 @@ public class Main {
 
 	public static void reader() throws IOException
 	{
-		Path path = Paths.get("src/glass.data");
+		Path path = Paths.get("glass.data");
 
 		BufferedReader reader = Files.newBufferedReader(path);
 		String line = reader.readLine();
