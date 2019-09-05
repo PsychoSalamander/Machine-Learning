@@ -1,2 +1,2 @@
 # Machine Learning
- title
+ Blake Mitchell, Spencer Raymond, Franki Taylor, Axel Ward
