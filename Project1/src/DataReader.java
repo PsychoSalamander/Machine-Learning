@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 
 public class DataReader {
 
-	// ONLY USE THIS CLASS ONE PREPROCESSED DATA
+	// ONLY USE THIS CLASS ON PREPROCESSED DATA
 	
 	DataReader()
 	{
@@ -46,9 +46,6 @@ public class DataReader {
 			{
 				line = reader.readLine();
 				String[] parts = line.split(",");
-				
-				System.out.println(parts.length);
-				System.out.println(columns);
 				
 				for(int j = 0; j < columns; j++)
 				{
