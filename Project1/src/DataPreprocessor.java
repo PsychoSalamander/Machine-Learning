@@ -8,6 +8,8 @@ import java.util.Random;
 
 public class DataPreprocessor {
 
+	// USE THIS CLASS TO GENERATE PROCESSED DATA INTO CSVs
+	
 	DataPreprocessor()
 	{
 
@@ -48,7 +50,6 @@ public class DataPreprocessor {
 				inData = readVote(pIn);
 				System.out.println("Read Vote!");
 			}
-
 		}
 		catch (IOException e)
 		{
@@ -57,10 +58,13 @@ public class DataPreprocessor {
 		}
 		
 		// Try to write the data to the CSV file
-		try {
+		try
+		{
 			writeFile(pOut, inData);
 			return true;
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 			e.printStackTrace();
 			return false;
 		}
@@ -132,8 +136,6 @@ public class DataPreprocessor {
 		// Reset reader's position
 		reader.close();
 		reader = Files.newBufferedReader(path);
-		
-		System.out.println(lines);
 		
 		// Take in strings of the line and then split it into the different parts of the
 		// array so we can process it later
@@ -305,6 +307,7 @@ public class DataPreprocessor {
 			String[] partsTemp = line.split(",");
 			String[] parts = line.split(",");
 			
+			// Swap result column into the last column in order to format to match all other data
 			parts[columns-1] = parts[0];
 			for(int j = 0; j < columns - 1; j++) {
 				parts[j] = partsTemp[j+1];
@@ -352,18 +355,17 @@ public class DataPreprocessor {
 		BufferedWriter writer = Files.newBufferedWriter(path);
 		
 		// Get the number of lines and columns in the data
-		int lines = data.length;
-		int columns = data[0].length;
-		
 		// Write the data to console and a file
-		for(int i = 0; i < lines; i++)
+		for(int i = 0; i < data.length; i++)
 		{
-			for(int j = 0; j < columns; j++)
+			for(int j = 0; j < data[0].length; j++)
 			{
-				System.out.print("[" + data[i][j] + "]");
-				writer.write(data[i][j] + ",");
+				writer.write(data[i][j] + "");
+				if(j < data[0].length - 1)
+				{
+					writer.write(",");
+				}
 			}
-			System.out.print("\n");
 			writer.newLine();
 		}
 		

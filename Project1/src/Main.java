@@ -8,6 +8,25 @@ public class Main {
 		dp.createProcessedCSV("DataSets/Iris/iris.data", "iris.csv", "iris");
 		dp.createProcessedCSV("DataSets/Soybean/soybean-small.data", "soybeans.csv", "soybean");
 		dp.createProcessedCSV("DataSets/Vote/house-votes-84.data", "votes.csv", "vote");
+		
+		DataReader dr = new DataReader();
+		float cancerData[][] = dr.readArrayFromCSV("cancer.csv");
+		
+		System.out.println(cancerData.length);
+		System.out.println(cancerData[0].length);
+		
+		if(cancerData != null)
+		{
+			for(int i = 0; i < cancerData.length; i++)
+			{
+				for(int j = 0; j < cancerData[0].length; j++)
+				{
+					System.out.print("[" + cancerData[i][j] + "]");
+				}
+			System.out.print("\n");
+			}
+		}
+		
 		System.out.println("Ran!");
 	}
 }
