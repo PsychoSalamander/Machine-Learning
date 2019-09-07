@@ -1,34 +1,31 @@
-package project1;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 public class Main {
 
-	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
-		reader();
-		
-	}
-
-	public static void reader() throws IOException
+	public static void main(String[] args)
 	{
-		Path path = Paths.get("src/glass.data");
-
-		BufferedReader reader = Files.newBufferedReader(path);
-		String line = reader.readLine();
-		StringBuilder builder = new StringBuilder();
+		/*
+		DataPreprocessor dp = new DataPreprocessor();
+		dp.createProcessedCSV("DataSets/Glass/glass.data", "glass.csv", "glass");
+		dp.createProcessedCSV("DataSets/BreastCancer/breast-cancer-wisconsin.data", "cancer.csv", "cancer");
+		dp.createProcessedCSV("DataSets/Iris/iris.data", "iris.csv", "iris");
+		dp.createProcessedCSV("DataSets/Soybean/soybean-small.data", "soybeans.csv", "soybean");
+		dp.createProcessedCSV("DataSets/Vote/house-votes-84.data", "votes.csv", "vote");
+		*/
 		
-		while(line != null)
+		DataReader dr = new DataReader();
+		float cancerData[][] = dr.readArrayFromCSV("cancer.csv");
+		
+		if(cancerData != null)
 		{
-			System.out.println(line);
-			builder.append(line);
-			line = reader.readLine();
+			for(int i = 0; i < cancerData.length; i++)
+			{
+				for(int j = 0; j < cancerData[0].length; j++)
+				{
+					System.out.print("[" + cancerData[i][j] + "]");
+				}
+			System.out.print("\n");
+			}
 		}
 		
-		
+		System.out.println("Ran!");
 	}
 }
