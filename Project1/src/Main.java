@@ -11,6 +11,14 @@ public class Main {
 		dp.createProcessedCSV("DataSets/Vote/house-votes-84.data", "votes.csv", "vote");
 		*/
 		
+		/* cancer_lines = 683 | attributes = 10
+		 * glass_lines = 214  | attributes = 10
+		 * iris_lines = 150   | attributes = 5
+		 * soybeans_lines = 47| attributes = 36
+		 * votes_lines = 435  | attributes = 17
+		 * total = 1529			total = 78
+		 */
+		
 		DataReader dr = new DataReader();
 		float cancerData[][] = dr.readArrayFromCSV("cancer.csv");
 		
@@ -27,5 +35,7 @@ public class Main {
 		}
 		
 		System.out.println("Ran!");
+		
+		
 	}
 }
