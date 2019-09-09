@@ -57,6 +57,35 @@ public class DataPreprocessor {
 			return false;
 		}
 		
+		// Shuffle 10% of the values in each data column
+		Random r = new Random();
+		
+		System.out.println(inData[0].length - 1);
+		System.out.println(inData.length / 20);
+		
+		for(int i = 0; i < inData[0].length - 1; i++)
+		{
+			System.out.println("Shuffling column " + i);
+			for(int j = 0; j < inData.length / 20; j++)
+			{
+				
+				int spot1 = 0;
+				int spot2 = 0;
+				
+				// Get target spots to swap
+				while(spot1 == spot2)
+				{
+					spot1 = r.nextInt(inData[0].length);
+					spot2 = r.nextInt(inData[0].length);
+				}
+				
+				// Swap data values
+				float temp = inData[i][spot1];
+				inData[i][spot1] = inData[i][spot2];
+				inData[i][spot2] = temp;
+			}
+		}
+		
 		// Try to write the data to the CSV file
 		try
 		{
@@ -366,7 +395,11 @@ public class DataPreprocessor {
 					writer.write(",");
 				}
 			}
-			writer.newLine();
+			
+			if(i != data.length -1)
+			{
+				writer.newLine();
+			}
 		}
 		
 		writer.close();
