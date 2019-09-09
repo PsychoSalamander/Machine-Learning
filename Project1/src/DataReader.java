@@ -14,10 +14,10 @@ public class DataReader {
 	}
 	
 	// Function to read in data from the formatted CSV
-	float[][] readArrayFromCSV(String inURL)
+	int[][] readArrayFromCSV(String inURL)
 	{
 		Path pIn = Paths.get(inURL);
-		float inData[][];
+		int inData[][];
 		
 		try
 		{
@@ -34,7 +34,7 @@ public class DataReader {
 				line = reader.readLine();
 			}
 			
-			inData = new float[lines][columns];
+			inData = new int[lines][columns];
 
 			// Reset reader's position
 			reader.close();
@@ -49,7 +49,7 @@ public class DataReader {
 				
 				for(int j = 0; j < columns; j++)
 				{
-					inData[i][j] = Float.parseFloat(parts[j]);
+					inData[i][j] = Math.round(Float.parseFloat(parts[j]));
 				}
 			}
 			

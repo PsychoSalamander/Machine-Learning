@@ -12,7 +12,7 @@ public class Main {
 		*/
 		
 		DataReader dr = new DataReader();
-		float cancerData[][] = dr.readArrayFromCSV("cancer.csv");
+		int cancerData[][] = dr.readArrayFromCSV("glass.csv");
 		
 		if(cancerData != null)
 		{
