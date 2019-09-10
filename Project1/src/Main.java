@@ -1,5 +1,6 @@
 public class Main {
 
+	
 	public static void main(String[] args)
 	{
 		/*
@@ -18,6 +19,15 @@ public class Main {
 		 * votes_lines = 435  | attributes = 17
 		 * total = 1529			total = 78
 		 */
+		DataTrainer dt = new DataTrainer();
+		for(int g =0; g < 10; g++)
+		{
+			float bb = dt.chooseAtt(g);
+			float att[];
+			att[g] = bb;
+			System.out.println(att[g]);
+		}
+		
 		
 		DataReader dr = new DataReader();
 		float cancerData[][] = dr.readArrayFromCSV("cancer.csv");
@@ -35,7 +45,6 @@ public class Main {
 		}
 		
 		System.out.println("Ran!");
-		
 		
 	}
 }
