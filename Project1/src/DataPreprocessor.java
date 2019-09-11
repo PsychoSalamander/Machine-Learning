@@ -71,12 +71,8 @@ public class DataPreprocessor {
 		// Shuffle 10% of the values in each data column
 		Random r = new Random();
 		
-		System.out.println(inData[0].length - 1);
-		System.out.println(inData.length / 20);
-		
 		for(int i = 0; i < inData[0].length - 1; i++)
 		{
-			System.out.println("Shuffling column " + i);
 			for(int j = 0; j < inData.length / 20; j++)
 			{
 				
