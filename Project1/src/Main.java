@@ -41,12 +41,12 @@ public class Main {
 	
 	public static void train(int arr[][]) {
 		// finding priors and setting up the arrays to
-		// calculate part of Bayes Theorem
-		int NOR = arr.length;
-		int NOC = arr[0].length-1;
+		// calculate part of Bayes Theorem ( Step 1 of 3 )
+		int NOR = arr.length; // Number of Rows
+		int NOC = arr[0].length-1; // Number of columns
 		ArrayList<Integer> classList = new ArrayList<Integer>();
 		
-		int contains;
+		int contains;   // some local variables
 		int count = 0;
 		boolean found = false;
 		for(int i = 0; i < NOR; i++) {
@@ -78,10 +78,10 @@ public class Main {
 			priors[0][k] = (double)identifier[0][k];
 			priors[1][k] = (double)identifier[1][k]/NOR;
 		}
-		System.out.print("found priors!");
+		System.out.println("found priors!");
 		
 		// Now we do the same for the attributes to find evidence
-		// for the continuation of bayes theorem
+		// for the continuation of bayes theorem ( Step 2 of 3 )
 		
 		ArrayList<Integer> attList = new ArrayList<Integer>();
 		
@@ -121,11 +121,11 @@ public class Main {
 			evidence[0][k] = (double)att[0][k];
 			evidence[1][k] = (double)att[1][k]/NOR;
 		}
-		System.out.print("found Evidence, but some values are over 1,"
+		System.out.println("found Evidence, but some values are over 1,"
 				+ " only answer i can see is diving those probabilities"
 				+ " by the number of attributes!");
 		
-		// likelihood of evidence
+		// likelihood of evidence ( Step 3 of 3 )
 		ArrayList<Integer> identifierList = new ArrayList<Integer>();
 		ArrayList<Integer> evidenceList = new ArrayList<Integer>();
 		ArrayList<Integer> evidenceFreqList = new ArrayList<Integer>();
@@ -134,18 +134,25 @@ public class Main {
 			
 			for(int y = NOC-1; y >= 0; y-- ) {
 				if(evidenceList.contains(arr[x][y])) {
-					//this will miss some values
-					int index = evidenceList.indexOf(arr[x][y]);
-					if(identifierList.get(index) == arr[x][NOC]) {
-						int temp = evidenceFreqList.get(index);
-						evidenceFreqList.set(index, ++temp);
+					// This section does not check for the class to add to the attributes frequency
+					// After this is solved, we can find the likelihood of an attribute happening
+					// given a certain class. This will be the final values to find to calculate\
+					// bayes theorem
+					for(int d = 0; d < evidenceList.size(); d++) {
+						if(evidenceList.get(d) == arr[x][y]) {
+								if(identifierList.get(d) == arr[x][NOC]) {
+									int temp = evidenceFreqList.get(d);
+									evidenceFreqList.set(d, ++temp);
+								}else {
+									
+								}
+						}
 					}
 				}else {
 					identifierList.add(arr[x][NOC]);
 					evidenceList.add(arr[x][y]);
 					evidenceFreqList.add(1);
 				}
-				
 			}
 		}
 		int tempsize = identifierList.size();
