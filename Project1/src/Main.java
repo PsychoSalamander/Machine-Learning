@@ -120,7 +120,34 @@ public class Main {
 				+ " by the number of attributes!");
 		
 		// likelihood of evidence
-		
-		
+		ArrayList<Integer> identifierList = new ArrayList<Integer>();
+		ArrayList<Integer> evidenceList = new ArrayList<Integer>();
+		ArrayList<Integer> evidenceFreqList = new ArrayList<Integer>();
+		double[][] evidenceL = new double[4][attList.size()];
+		for(int x = 0; x < NOR; x++) {
+			
+			for(int y = NOC-1; y >= 0; y-- ) {
+				if(evidenceList.contains(arr[x][y])) {
+					//this will miss some values
+					int index = evidenceList.indexOf(arr[x][y]);
+					if(identifierList.get(index) == arr[x][NOC]) {
+						int temp = evidenceFreqList.get(index);
+						evidenceFreqList.set(index, ++temp);
+					}
+				}else {
+					identifierList.add(arr[x][NOC]);
+					evidenceList.add(arr[x][y]);
+					evidenceFreqList.add(1);
+				}
+				
+			}
+		}
+		int tempsize = identifierList.size();
+		for(int b = 0 ; b < tempsize; b++) {
+			evidenceL[0][b] = identifierList.get(b);
+			evidenceL[1][b] = evidenceList.get(b);
+			evidenceL[2][b] = evidenceFreqList.get(b);
+		}
+		System.out.println("Hi!");
 	}
 }
