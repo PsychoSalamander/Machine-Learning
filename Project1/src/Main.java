@@ -7,11 +7,11 @@ public class Main {
 	{
 		
 		DataPreprocessor dp = new DataPreprocessor();
-		dp.createProcessedCSV("DataSets/Glass/glass.data", "glass.csv", "glass");
-		dp.createProcessedCSV("DataSets/BreastCancer/breast-cancer-wisconsin.data", "cancer.csv", "cancer");
-		dp.createProcessedCSV("DataSets/Iris/iris.data", "iris.csv", "iris");
-		dp.createProcessedCSV("DataSets/Soybean/soybean-small.data", "soybeans.csv", "soybean");
-		dp.createProcessedCSV("DataSets/Vote/house-votes-84.data", "votes.csv", "vote");
+		dp.createProcessedCSV("DataSets/Glass/glass.data", "glass.csv", "glass-shuffled.csv", "glass");
+		dp.createProcessedCSV("DataSets/BreastCancer/breast-cancer-wisconsin.data", "cancer.csv", "cancer-shuffled.csv", "cancer");
+		dp.createProcessedCSV("DataSets/Iris/iris.data", "iris.csv", "iris-shuffled.csv", "iris");
+		dp.createProcessedCSV("DataSets/Soybean/soybean-small.data", "soybeans.csv", "soybeans-shuffled.csv", "soybean");
+		dp.createProcessedCSV("DataSets/Vote/house-votes-84.data", "votes.csv", "votes-shuffled.csv", "vote");
 		
 		DataReader dr = new DataReader();
 		int cancerData[][] = dr.readArrayFromCSV("glass.csv");
