@@ -5,13 +5,14 @@ public class Main {
 
 	public static void main(String[] args)
 	{
-		
+		/*
 		DataPreprocessor dp = new DataPreprocessor();
-		dp.createProcessedCSV("DataSets/Glass/glass.data", "glass.csv", "glass");
-		dp.createProcessedCSV("DataSets/BreastCancer/breast-cancer-wisconsin.data", "cancer.csv", "cancer");
-		dp.createProcessedCSV("DataSets/Iris/iris.data", "iris.csv", "iris");
-		dp.createProcessedCSV("DataSets/Soybean/soybean-small.data", "soybeans.csv", "soybean");
-		dp.createProcessedCSV("DataSets/Vote/house-votes-84.data", "votes.csv", "vote");
+		dp.createProcessedCSV("DataSets/Glass/glass.data", "glass.csv", "glass-shuffled.csv", "glass");
+		dp.createProcessedCSV("DataSets/BreastCancer/breast-cancer-wisconsin.data", "cancer.csv", "cancer-shuffled.csv", "cancer");
+		dp.createProcessedCSV("DataSets/Iris/iris.data", "iris.csv", "iris-shuffled.csv", "iris");
+		dp.createProcessedCSV("DataSets/Soybean/soybean-small.data", "soybeans.csv", "soybeans-shuffled.csv", "soybean");
+		dp.createProcessedCSV("DataSets/Vote/house-votes-84.data", "votes.csv", "votes-shuffled.csv", "vote");
+		*/
 		
 		DataReader dr = new DataReader();
 		int cancerData[][] = dr.readArrayFromCSV("glass.csv");
@@ -27,12 +28,17 @@ public class Main {
 			System.out.print("\n");
 			}
 		}
+		else
+		{
+			System.exit(0);
+		}
 		
 		System.out.println("Ran!");
 		// Let's Start with the boolean files and work into
 		// the int/floats
 		train(cancerData);
 	}
+	
 	public static void train(int arr[][]) {
 		// finding priors and setting up the arrays to
 		// calculate part of Bayes Theorem
