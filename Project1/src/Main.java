@@ -94,7 +94,7 @@ public class Main {
 		
 		double[][] priors = new double[2][classList.size()];
 		for(int k = 0; k < identifier[0].length; k++) {
-			priors[0][k] = (double)identifier[0][k];   		//overall probability (Y=c)
+			priors[0][k] = (double)identifier[0][k];   		//overall probability (Y=c) (type of glass)
 			priors[1][k] = (double)identifier[1][k]/NOR; 	//prior ( count(Y=c) / n_records) (size of 6)
 			System.out.println(priors[0][k]);
 			//horizontal columns
@@ -197,8 +197,8 @@ public class Main {
 
 		double[][] evidenceL = new double[4][identifierList.size()];
 		for(int b = 0 ; b < tempsize; b++) {					
-			evidenceL[0][b] = identifierList.get(b);			//class
-			evidenceL[1][b] = evidenceList.get(b);				//attributes
+			evidenceL[0][b] = identifierList.get(b);			//class type1 = 16, type2 = 20, type3 = 14, type5 = 17, type6 = 14, type7 = 20 
+			evidenceL[1][b] = evidenceList.get(b);				//attributes 
 			evidenceL[2][b] = evidenceFreqList.get(b);			//frequency the attributes occur
 			System.out.println(evidenceL[0][b]);
 
@@ -215,7 +215,7 @@ public class Main {
 				
 			}
 		}
-			System.out.println(priors[0].length);
+			System.out.println(identifierList.size());
 				
 	}
 }
