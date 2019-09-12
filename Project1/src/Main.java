@@ -201,12 +201,13 @@ public class Main {
 		}
 		int tempsize = identifierList.size();
 
-		double[][] evidenceL = new double[4][identifierList.size()];
+		double[][] evidenceL = new double[5][identifierList.size()];
 		for(int b = 0 ; b < tempsize; b++) {					
 			evidenceL[0][b] = identifierList.get(b);			//class type1 = 16, type2 = 20, type3 = 14, type5 = 17, type6 = 14, type7 = 20 
 			evidenceL[1][b] = evidenceList.get(b);				//attributes 
 			evidenceL[2][b] = evidenceFreqList.get(b);			//frequency the attributes occur
-			evidenceL[3][b] = identifierFreq.get(b);
+			evidenceL[3][b] = identifierFreq.get(b);			//frequency class occurs
+			evidenceL[4][b] = identifierFreq.get(b);			//probability of given class
 			System.out.println(evidenceL[2][b]);
 		}
 		// counts the frequency the class appears and puts in the array
@@ -216,17 +217,19 @@ public class Main {
 				int spot = identifierList.get(n);
 				double tempFreq = evidenceL[3][spot];
 				double freq = ++tempFreq;
-				//System.out.println(spot + "spot");
-				evidenceL[3][spot] = freq;
+				System.out.println(spot + "spot");
+				evidenceL[3][spot] = freq;								//sets the frequency of class
+				evidenceL[4][spot] = freq / identifierList.size();		//sets probability of class (occurrence/total lines in data)
 				//System.out.println(freq + "l");
-				//System.out.println(evidenceL[3][spot] + "d");
+				System.out.println(evidenceL[4][spot] + "d");
 				
 			}
 		}
 		double past = 0.0;
 		//find the highest probability
-		for(int m = 0; m < att[0].length; m ++) {
+		for(int m = 0; m < tempsize; m ++) {
 			for(int p = 0; p < identifier[0].length;p++) {
+				double clss = evidenceL[0][m];
 				
 				//double val =  ;
 				//System.out.println(val + " val");
@@ -238,7 +241,7 @@ public class Main {
 			}
 			
 		//}
-		//double type1Prob = evidenceL[3][1]/101.0;
+		double type1Prob = evidenceL[3][1]/101.0;
 		double type2Prob = 20.0/101.0;
 		double type3Prob = 14.0/101.0;
 		double type5Prob = 17.0/101.0;
@@ -247,7 +250,7 @@ public class Main {
 		
 		
 		
-		//System.out.println((type1Prob));
+		System.out.println((type1Prob));
 		System.out.println((type2Prob));
 		System.out.println((type3Prob));
 		System.out.println((type5Prob));
