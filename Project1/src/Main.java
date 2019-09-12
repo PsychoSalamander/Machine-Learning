@@ -22,14 +22,14 @@ public class Main {
 		 * votes_lines = 435  | attributes = 17
 		 * total = 1529			total = 78
 		 */
-		DataTrainer dt = new DataTrainer();
-		for(int g =0; g < 10; g++)
+		//DataTrainer dt = new DataTrainer();
+		/*for(int g =0; g < 10; g++)
 		{
 			float bb = dt.chooseAtt(g);
 			float att[];
 			//att[g] = bb;
 			//System.out.println(att[g]);
-		}
+		}*/
 		
 		
 		DataReader dr = new DataReader();
@@ -97,7 +97,7 @@ public class Main {
 			priors[0][k] = (double)identifier[0][k];
 			priors[1][k] = (double)identifier[1][k]/NOR;
 		}
-		System.out.print("found priors!");
+		System.out.print("found priors! \n");
 		
 		// Now we do the same for the attributes to find evidence
 		// for the continuation of bayes theorem
@@ -145,9 +145,9 @@ public class Main {
 				+ " by the number of attributes!");
 		
 		// likelihood of evidence
-		ArrayList<Integer> identifierList = new ArrayList<Integer>();
-		ArrayList<Integer> evidenceList = new ArrayList<Integer>();
-		ArrayList<Integer> evidenceFreqList = new ArrayList<Integer>();
+		ArrayList<Integer> identifierList = new ArrayList<Integer>(); 	//the class
+		ArrayList<Integer> evidenceList = new ArrayList<Integer>();		//attributes
+		ArrayList<Integer> evidenceFreqList = new ArrayList<Integer>();	//frequency of occurrence
 		double[][] evidenceL = new double[4][attList.size()];
 		for(int x = 0; x < NOR; x++) {
 			
@@ -168,11 +168,16 @@ public class Main {
 			}
 		}
 		int tempsize = identifierList.size();
-		for(int b = 0 ; b < tempsize; b++) {
-			evidenceL[0][b] = identifierList.get(b);
-			evidenceL[1][b] = evidenceList.get(b);
-			evidenceL[2][b] = evidenceFreqList.get(b);
+		System.out.println("\n" + identifierList.size());
+		for(int b = 0 ; b < tempsize; b++) {					//collects all arrays into one
+			evidenceL[0][b] = identifierList.get(b);			//class
+			evidenceL[1][b] = evidenceList.get(b);				//attributes
+			evidenceL[2][b] = evidenceFreqList.get(b);			//frequency the attributes occur
 		}
-		System.out.println("Hi!");
+		for(int n =0; n < identifierList.size(); n++) {
+			
+			System.out.println(evidenceL[2][n]);
+		}
+		
 	}
 }
