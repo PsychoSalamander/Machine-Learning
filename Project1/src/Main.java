@@ -3,6 +3,7 @@ import java.util.*;
 
 public class Main {
 
+	
 	public static void main(String[] args)
 	{
 		/*
@@ -13,6 +14,23 @@ public class Main {
 		dp.createProcessedCSV("DataSets/Soybean/soybean-small.data", "soybeans.csv", "soybeans-shuffled.csv", "soybean");
 		dp.createProcessedCSV("DataSets/Vote/house-votes-84.data", "votes.csv", "votes-shuffled.csv", "vote");
 		*/
+		
+		/* cancer_lines = 683 | attributes = 10
+		 * glass_lines = 214  | attributes = 10
+		 * iris_lines = 150   | attributes = 5
+		 * soybeans_lines = 47| attributes = 36
+		 * votes_lines = 435  | attributes = 17
+		 * total = 1529			total = 78
+		 */
+		//DataTrainer dt = new DataTrainer();
+		/*for(int g =0; g < 10; g++)
+		{
+			float bb = dt.chooseAtt(g);
+			float att[];
+			//att[g] = bb;
+			//System.out.println(att[g]);
+		}*/
+		
 		
 		DataReader dr = new DataReader();
 		int cancerData[][] = dr.readArrayFromCSV("glass.csv");
@@ -34,6 +52,7 @@ public class Main {
 		}
 		
 		System.out.println("Ran!");
+
 		// Let's Start with the boolean files and work into
 		// the int/floats
 		train(cancerData);
@@ -75,10 +94,16 @@ public class Main {
 		
 		double[][] priors = new double[2][classList.size()];
 		for(int k = 0; k < identifier[0].length; k++) {
-			priors[0][k] = (double)identifier[0][k];
-			priors[1][k] = (double)identifier[1][k]/NOR;
+			priors[0][k] = (double)identifier[0][k];   		//overall probability (Y=c)
+			priors[1][k] = (double)identifier[1][k]/NOR; 	//prior ( count(Y=c) / n_records) (size of 6)
+			System.out.println(priors[0][k]);
+			//horizontal columns
 		}
+
+		System.out.print("found priors! \n");
+
 		System.out.println("found priors!");
+
 		
 		// Now we do the same for the attributes to find evidence
 		// for the continuation of bayes theorem ( Step 2 of 3 )
@@ -119,18 +144,25 @@ public class Main {
 		double[][] evidence = new double[2][attList.size()];
 		for(int k = 0; k < att[0].length; k++) {
 			evidence[0][k] = (double)att[0][k];
-			evidence[1][k] = (double)att[1][k]/NOR;
+			evidence[1][k] = (double)att[1][k]/NOR; // probability (likelihood) of the evidence (size of 24) 
+			System.out.println(evidence[1][k]);
+			//vertical columns
+			
 		}
 		System.out.println("found Evidence, but some values are over 1,"
 				+ " only answer i can see is diving those probabilities"
 				+ " by the number of attributes!");
 		
+
+
+
 		// likelihood of evidence ( Step 3 of 3 )
-		ArrayList<Integer> identifierList = new ArrayList<Integer>();
-		ArrayList<Integer> evidenceList = new ArrayList<Integer>();
-		ArrayList<Integer> evidenceFreqList = new ArrayList<Integer>();
+		ArrayList<Integer> identifierList = new ArrayList<Integer>(); 		// class
+		ArrayList<Integer> evidenceList = new ArrayList<Integer>();			// attributes
+		ArrayList<Integer> evidenceFreqList = new ArrayList<Integer>();		// frequency of occurrence
 		boolean matched = false;
 		
+
 		for(int x = 0; x < NOR; x++) {
 			for(int y = NOC-1; y >= 0; y-- ) {
 				if(evidenceList.contains(arr[x][y])) {
@@ -162,12 +194,28 @@ public class Main {
 			}
 		}
 		int tempsize = identifierList.size();
+
 		double[][] evidenceL = new double[4][identifierList.size()];
-		for(int b = 0 ; b < tempsize; b++) {
-			evidenceL[0][b] = identifierList.get(b);
-			evidenceL[1][b] = evidenceList.get(b);
-			evidenceL[2][b] = evidenceFreqList.get(b);
+		for(int b = 0 ; b < tempsize; b++) {					
+			evidenceL[0][b] = identifierList.get(b);			//class
+			evidenceL[1][b] = evidenceList.get(b);				//attributes
+			evidenceL[2][b] = evidenceFreqList.get(b);			//frequency the attributes occur
+			System.out.println(evidenceL[0][b]);
+
 		}
-		System.out.println("Hi!");
+		
+		/*for(int n =0; n < identifierList.size(); n++) {
+			
+			System.out.println(evidenceL[2][n]);
+		}*/
+		
+		
+		for(int u = 0; u < 6 /*priors.length*/; u++) {  
+			for(int i = 0; i < 24 /*evidence.length*/; i ++) {
+				
+			}
+		}
+			System.out.println(priors[0].length);
+				
 	}
 }
