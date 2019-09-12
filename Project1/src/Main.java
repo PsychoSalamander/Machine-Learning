@@ -149,11 +149,7 @@ public class Main {
 				+ " by the number of attributes!");
 		
 
-		// likelihood of evidence
-		ArrayList<Integer> identifierList = new ArrayList<Integer>(); 	//the class
-		ArrayList<Integer> evidenceList = new ArrayList<Integer>();		//attributes
-		ArrayList<Integer> evidenceFreqList = new ArrayList<Integer>();	//frequency of occurrence
-		double[][] evidenceL = new double[4][attList.size()];
+
 
 		// likelihood of evidence ( Step 3 of 3 )
 		ArrayList<Integer> identifierList = new ArrayList<Integer>();
@@ -194,23 +190,18 @@ public class Main {
 		}
 		int tempsize = identifierList.size();
 
-		System.out.println("\n" + identifierList.size());
+		double[][] evidenceL = new double[4][identifierList.size()];
 		for(int b = 0 ; b < tempsize; b++) {					//collects all arrays into one
 			evidenceL[0][b] = identifierList.get(b);			//class
 			evidenceL[1][b] = evidenceList.get(b);				//attributes
 			evidenceL[2][b] = evidenceFreqList.get(b);			//frequency the attributes occur
 
-		double[][] evidenceL = new double[4][identifierList.size()];
-		for(int b = 0 ; b < tempsize; b++) {
-			evidenceL[0][b] = identifierList.get(b);
-			evidenceL[1][b] = evidenceList.get(b);
-			evidenceL[2][b] = evidenceFreqList.get(b);
 
 		}
-		for(int n =0; n < identifierList.size(); n++) {
+		/*for(int n =0; n < identifierList.size(); n++) {
 			
 			System.out.println(evidenceL[2][n]);
-		}
+		}*/
 		
 	}
 }
