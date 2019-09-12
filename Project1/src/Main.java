@@ -94,9 +94,9 @@ public class Main {
 		
 		double[][] priors = new double[2][classList.size()];
 		for(int k = 0; k < identifier[0].length; k++) {
-			priors[0][k] = (double)identifier[0][k];   		//overall probability (Y=c)
+			priors[0][k] = (double)identifier[0][k];   		// type of glass
 			priors[1][k] = (double)identifier[1][k]/NOR; 	//prior ( count(Y=c) / n_records) (size of 6)
-			System.out.println(priors[0][k]);
+			System.out.println(priors[1][k] + " priors");
 			//horizontal columns
 		}
 
@@ -158,10 +158,10 @@ public class Main {
 
 		// likelihood of evidence ( Step 3 of 3 )
 		ArrayList<Integer> identifierList = new ArrayList<Integer>(); 		// class
+		ArrayList<Integer> identifierFreq = new ArrayList<Integer>();		// class frequency
 		ArrayList<Integer> evidenceList = new ArrayList<Integer>();			// attributes
 		ArrayList<Integer> evidenceFreqList = new ArrayList<Integer>();		// frequency of occurrence
 		boolean matched = false;
-		
 
 		for(int x = 0; x < NOR; x++) {
 			for(int y = NOC-1; y >= 0; y-- ) {
@@ -176,38 +176,83 @@ public class Main {
 								if(identifierList.get(d) == arr[x][NOC]) {
 									int temp = evidenceFreqList.get(d);
 									evidenceFreqList.set(d, ++temp);
+									
 									matched = true;
+									
 								}
 						}
 					}if(!matched) {
 						identifierList.add(arr[x][NOC]);
 						evidenceList.add(arr[x][y]);
 						evidenceFreqList.add(1);
+						identifierFreq.add(0);
+
 						
 					}
 				}else {
 					identifierList.add(arr[x][NOC]);
 					evidenceList.add(arr[x][y]);
 					evidenceFreqList.add(1);
+					identifierFreq.add(0);
 				}
 				matched = false;
 			}
+			
 		}
 		int tempsize = identifierList.size();
 
 		double[][] evidenceL = new double[4][identifierList.size()];
 		for(int b = 0 ; b < tempsize; b++) {					
-			evidenceL[0][b] = identifierList.get(b);			//class
-			evidenceL[1][b] = evidenceList.get(b);				//attributes
+			evidenceL[0][b] = identifierList.get(b);			//class type1 = 16, type2 = 20, type3 = 14, type5 = 17, type6 = 14, type7 = 20 
+			evidenceL[1][b] = evidenceList.get(b);				//attributes 
 			evidenceL[2][b] = evidenceFreqList.get(b);			//frequency the attributes occur
-			System.out.println(evidenceL[0][b]);
-
+			evidenceL[3][b] = identifierFreq.get(b);
+			System.out.println(evidenceL[2][b]);
 		}
-		
-		/*for(int n =0; n < identifierList.size(); n++) {
+		// counts the frequency the class appears and puts in the array
+		for(int n =0; n < identifierList.size(); n++) {
 			
-			System.out.println(evidenceL[2][n]);
-		}*/
+			if(evidenceL[0][n] == identifierList.get(n)) {
+				int spot = identifierList.get(n);
+				double tempFreq = evidenceL[3][spot];
+				double freq = ++tempFreq;
+				//System.out.println(spot + "spot");
+				evidenceL[3][spot] = freq;
+				//System.out.println(freq + "l");
+				//System.out.println(evidenceL[3][spot] + "d");
+				
+			}
+		}
+		double past = 0.0;
+		//find the highest probability
+		for(int m = 0; m < att[0].length; m ++) {
+			for(int p = 0; p < identifier[0].length;p++) {
+				
+				//double val =  ;
+				//System.out.println(val + " val");
+				//if(past < val) {
+				//	past = val;
+					
+				}
+				//System.out.println( past + " high");
+			}
+			
+		//}
+		//double type1Prob = evidenceL[3][1]/101.0;
+		double type2Prob = 20.0/101.0;
+		double type3Prob = 14.0/101.0;
+		double type5Prob = 17.0/101.0;
+		double type6Prob = 14.0/101.0;
+		double type7Prob = 20.0/101.0;
+		
+		
+		
+		//System.out.println((type1Prob));
+		System.out.println((type2Prob));
+		System.out.println((type3Prob));
+		System.out.println((type5Prob));
+		System.out.println((type6Prob));
+		System.out.println((type7Prob));
 		
 		
 		for(int u = 0; u < 6 /*priors.length*/; u++) {  
@@ -215,7 +260,7 @@ public class Main {
 				
 			}
 		}
-			System.out.println(priors[0].length);
+			//System.out.println(priors.length);
 				
 	}
 }
