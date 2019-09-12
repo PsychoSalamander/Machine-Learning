@@ -94,8 +94,10 @@ public class Main {
 		
 		double[][] priors = new double[2][classList.size()];
 		for(int k = 0; k < identifier[0].length; k++) {
-			priors[0][k] = (double)identifier[0][k];
-			priors[1][k] = (double)identifier[1][k]/NOR;
+			priors[0][k] = (double)identifier[0][k];   		//overall probability (Y=c)
+			priors[1][k] = (double)identifier[1][k]/NOR; 	//prior ( count(Y=c) / n_records) (size of 6)
+			System.out.println(priors[0][k]);
+			//horizontal columns
 		}
 
 		System.out.print("found priors! \n");
@@ -142,7 +144,10 @@ public class Main {
 		double[][] evidence = new double[2][attList.size()];
 		for(int k = 0; k < att[0].length; k++) {
 			evidence[0][k] = (double)att[0][k];
-			evidence[1][k] = (double)att[1][k]/NOR;
+			evidence[1][k] = (double)att[1][k]/NOR; // probability (likelihood) of the evidence (size of 24) 
+			System.out.println(evidence[1][k]);
+			//vertical columns
+			
 		}
 		System.out.println("found Evidence, but some values are over 1,"
 				+ " only answer i can see is diving those probabilities"
@@ -152,9 +157,9 @@ public class Main {
 
 
 		// likelihood of evidence ( Step 3 of 3 )
-		ArrayList<Integer> identifierList = new ArrayList<Integer>();
-		ArrayList<Integer> evidenceList = new ArrayList<Integer>();
-		ArrayList<Integer> evidenceFreqList = new ArrayList<Integer>();
+		ArrayList<Integer> identifierList = new ArrayList<Integer>(); 		// class
+		ArrayList<Integer> evidenceList = new ArrayList<Integer>();			// attributes
+		ArrayList<Integer> evidenceFreqList = new ArrayList<Integer>();		// frequency of occurrence
 		boolean matched = false;
 		
 
@@ -191,17 +196,26 @@ public class Main {
 		int tempsize = identifierList.size();
 
 		double[][] evidenceL = new double[4][identifierList.size()];
-		for(int b = 0 ; b < tempsize; b++) {					//collects all arrays into one
+		for(int b = 0 ; b < tempsize; b++) {					
 			evidenceL[0][b] = identifierList.get(b);			//class
 			evidenceL[1][b] = evidenceList.get(b);				//attributes
 			evidenceL[2][b] = evidenceFreqList.get(b);			//frequency the attributes occur
-
+			System.out.println(evidenceL[0][b]);
 
 		}
+		
 		/*for(int n =0; n < identifierList.size(); n++) {
 			
 			System.out.println(evidenceL[2][n]);
 		}*/
 		
+		
+		for(int u = 0; u < 6 /*priors.length*/; u++) {  
+			for(int i = 0; i < 24 /*evidence.length*/; i ++) {
+				
+			}
+		}
+			System.out.println(priors[0].length);
+				
 	}
 }
