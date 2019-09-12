@@ -129,33 +129,40 @@ public class Main {
 		ArrayList<Integer> identifierList = new ArrayList<Integer>();
 		ArrayList<Integer> evidenceList = new ArrayList<Integer>();
 		ArrayList<Integer> evidenceFreqList = new ArrayList<Integer>();
-		double[][] evidenceL = new double[4][attList.size()];
+		boolean matched = false;
+		
 		for(int x = 0; x < NOR; x++) {
-			
 			for(int y = NOC-1; y >= 0; y-- ) {
 				if(evidenceList.contains(arr[x][y])) {
 					// This section does not check for the class to add to the attributes frequency
 					// After this is solved, we can find the likelihood of an attribute happening
 					// given a certain class. This will be the final values to find to calculate\
 					// bayes theorem
+					
 					for(int d = 0; d < evidenceList.size(); d++) {
 						if(evidenceList.get(d) == arr[x][y]) {
 								if(identifierList.get(d) == arr[x][NOC]) {
 									int temp = evidenceFreqList.get(d);
 									evidenceFreqList.set(d, ++temp);
-								}else {
-									
+									matched = true;
 								}
 						}
+					}if(!matched) {
+						identifierList.add(arr[x][NOC]);
+						evidenceList.add(arr[x][y]);
+						evidenceFreqList.add(1);
+						
 					}
 				}else {
 					identifierList.add(arr[x][NOC]);
 					evidenceList.add(arr[x][y]);
 					evidenceFreqList.add(1);
 				}
+				matched = false;
 			}
 		}
 		int tempsize = identifierList.size();
+		double[][] evidenceL = new double[4][identifierList.size()];
 		for(int b = 0 ; b < tempsize; b++) {
 			evidenceL[0][b] = identifierList.get(b);
 			evidenceL[1][b] = evidenceList.get(b);
