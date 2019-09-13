@@ -17,7 +17,7 @@ public class Main {
 		dp.createProcessedCSV("DataSets/Vote/house-votes-84.data", "votes.csv", "votes-shuffled.csv", "vote");
 		
 		DataReader dr = new DataReader();
-		int cancerData[][] = dr.readArrayFromCSV("iris.csv");
+		int cancerData[][] = dr.readArrayFromCSV("cancer-shuffled.csv");
 		
 		if(cancerData != null)
 		{
@@ -47,11 +47,24 @@ public class Main {
 		double[][] probabilityGivenLiklihood = t.evidenceL;
 		System.out.println("hell yeah");
 		ArrayList<Integer> atts = new ArrayList<Integer>();
-		atts.add(6);
-		atts.add(2);
-		atts.add(4);
-		atts.add(1);
-		int tempy = smallTest(probabilityOfClass,probabilityOfEvidence,probabilityGivenLiklihood,atts);
+		int win = 0;
+		int loss = 0;
+		int total = 0;
+		for(int i = 0; i < cancerData.length ; i+=5) {
+			for(int j = 0; j < cancerData[0].length-2 ; j++) {
+				atts.add(cancerData[i][j]);
+			}
+			int guessedClass = smallTest(probabilityOfClass,probabilityOfEvidence,probabilityGivenLiklihood,atts);
+			if(guessedClass == cancerData[i][cancerData[0].length-1]) {
+				win += 1;
+			}else {
+				loss += 1;
+			}
+			atts.clear();
+			total += 1;
+		}
+		System.out.println((float)win/total);
+		
 		
 	}
 	public static int smallTest(double probabilityOfClass[][], double probabilityOfEvidence[][], double probabilityGivenLiklihood[][], ArrayList<Integer> atts) {
