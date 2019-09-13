@@ -4,12 +4,12 @@
 
 import java.util.ArrayList;
 
-public class TestSet {
+public class DataTrainer {
 
 	int DataSet[][];
 	boolean debug = true;
 
-	TestSet(int data[][]) {
+	DataTrainer(int data[][]) {
 		DataSet = data.clone();
 	}
 
@@ -48,7 +48,7 @@ public class TestSet {
 		}
 
 		if (debug) {
-			System.out.println(classes);
+			// System.out.println(classes);
 		}
 
 		return classes;
@@ -109,10 +109,10 @@ public class TestSet {
 
 		if (debug) {
 			for (int i = 0; i < numOfExamples.length; i++) {
-				System.out.print(numOfExamples[i] + " ");
+				//System.out.print(numOfExamples[i] + " ");
 			}
 
-			System.out.println("\n" + attributes);
+			//System.out.println("\n" + attributes);
 		}
 
 		// define low maximum
@@ -182,22 +182,22 @@ public class TestSet {
 
 		
 		for (int classIndex = 0; classIndex < examplesInClassPerAttribute.length; classIndex++) {
-			System.out.println(classes.get(classIndex));
+			//System.out.println(classes.get(classIndex));
 			for (int attribIndex = 0; attribIndex < examplesInClassPerAttribute[0].length; attribIndex++) {
 				for (int exIndex = 0; exIndex < examplesInClassPerAttribute[0][0].length; exIndex++) {
-					System.out.print("[" + examplesInClassPerAttribute[classIndex][attribIndex][exIndex] + "] ");
+					//System.out.print("[" + examplesInClassPerAttribute[classIndex][attribIndex][exIndex] + "] ");
 				}
-				System.out.println();
+				//System.out.println();
 			}
 		}
 
 		for (int classIndex = 0; classIndex < examplesInClassPerAttribute.length; classIndex++) {
-			System.out.println(classes.get(classIndex));
+			//System.out.println(classes.get(classIndex));
 			for (int attribIndex = 0; attribIndex < examplesInClassPerAttribute[0].length; attribIndex++) {
 				for (int exIndex = 0; exIndex < examplesInClassPerAttribute[0][0].length; exIndex++) {
-					System.out.print("[" + percentages[classIndex][attribIndex][exIndex] + "] ");
+					//System.out.print("[" + percentages[classIndex][attribIndex][exIndex] + "] ");
 				}
-				System.out.println();
+				//System.out.println();
 			}
 		}
 

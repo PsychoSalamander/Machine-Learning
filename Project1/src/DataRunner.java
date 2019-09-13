@@ -22,6 +22,9 @@ public class DataRunner {
 		}
 		
 		// Run the training and test 10-fold times
+		
+		double totalAccuracy = 0.0d;
+		
 		for(int t = 0; t < 10; t++)
 		{			
 			// get start index of test data
@@ -54,9 +57,17 @@ public class DataRunner {
 			
 			//Run Training Here with trainingData[][]
 			
-			TestSet trainer = new TestSet(trainingData);
-			trainer.test();
+			DataTrainer trainer = new DataTrainer(trainingData);
+			TrainedModel tm = trainer.test();
+			
 			//Run Test Here with testData[][]
+			
+			DataTester dt = new DataTester(tm, testData);
+			totalAccuracy = totalAccuracy + dt.checkAccuracy();
 		}
+		
+		totalAccuracy = totalAccuracy / 10.0d;
+		
+		System.out.println("Average Accuracy Across Ten Tests: " + totalAccuracy*100 + "%");
 	}
 }
