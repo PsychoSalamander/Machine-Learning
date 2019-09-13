@@ -6,14 +6,14 @@ public class Main {
 	
 	public static void main(String[] args)
 	{
-		/*
+		
 		DataPreprocessor dp = new DataPreprocessor();
 		dp.createProcessedCSV("DataSets/Glass/glass.data", "glass.csv", "glass-shuffled.csv", "glass");
 		dp.createProcessedCSV("DataSets/BreastCancer/breast-cancer-wisconsin.data", "cancer.csv", "cancer-shuffled.csv", "cancer");
 		dp.createProcessedCSV("DataSets/Iris/iris.data", "iris.csv", "iris-shuffled.csv", "iris");
 		dp.createProcessedCSV("DataSets/Soybean/soybean-small.data", "soybeans.csv", "soybeans-shuffled.csv", "soybean");
 		dp.createProcessedCSV("DataSets/Vote/house-votes-84.data", "votes.csv", "votes-shuffled.csv", "vote");
-		*/
+		
 		
 		/* cancer_lines = 683 | attributes = 10
 		 * glass_lines = 214  | attributes = 10
@@ -51,7 +51,9 @@ public class Main {
 			System.exit(0);
 		}
 		
-		System.out.println("Ran!");
+		DataRunner drun = new DataRunner();
+		
+		drun.run10Tests(cancerData);
 
 		// Let's Start with the boolean files and work into
 		// the int/floats
@@ -59,6 +61,7 @@ public class Main {
 	}
 	
 	public static void train(int arr[][]) {
+		/*
 		// finding priors and setting up the arrays to
 		// calculate part of Bayes Theorem ( Step 1 of 3 )
 		int NOR = arr.length; // Number of Rows
@@ -273,7 +276,7 @@ public class Main {
 		//System.out.println(priors[0].length + " length");
 		//System.out.println(probabilityPerClass[0][605]+ "props per class");
 	
-		
+		*/
 		
 		/*double type1Prob = evidenceL[3][1]/101.0;
 		double type2Prob = 20.0/101.0;
