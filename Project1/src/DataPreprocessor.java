@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
 
+// Responsible Team Member: Axel Ward
+
 public class DataPreprocessor {
 
 	// USE THIS CLASS TO GENERATE PROCESSED DATA INTO CSVs
@@ -374,7 +376,7 @@ public class DataPreprocessor {
 				}
 				else if(parts[j].equals("?"))
 				{
-					parts[j] = Integer.toString(r.nextInt(2));
+					parts[j] = "2";
 				}
 				
 				temp[i][j] = Float.parseFloat(parts[j]);
