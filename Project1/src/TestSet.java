@@ -1,4 +1,3 @@
-
 //
 //	Responsible team member: Blake Mitchell
 //
@@ -14,18 +13,17 @@ public class TestSet {
 		DataSet = data.clone();
 	}
 
-	public void test() {
+	public TrainedModel test() {
 
 		ArrayList<Integer> classes = new ArrayList<Integer>();
-
+		
 		classes = getClasses(DataSet);
-		int numberOfUniqueClasses = classes.size();
 
 		double probOfClass[] = calcClassProbability(DataSet, classes);
 
-		ArrayList<Double> probAttribGivenClass = new ArrayList<Double>();
-
-		calcAttribGivenClassProbability(DataSet, classes);
+		TrainedModel trainedMod = calcAttribGivenClassProbability(DataSet, classes, probOfClass);
+		
+		return trainedMod;
 
 	}
 
@@ -76,7 +74,7 @@ public class TestSet {
 		return probability;
 	}
 
-	public void calcAttribGivenClassProbability(int data[][], ArrayList<Integer> classes) {
+	public TrainedModel calcAttribGivenClassProbability(int data[][], ArrayList<Integer> classes, double[] classPercentage) {
 
 		int numOfAttributes = data[0].length - 1; // Number of attributes
 		int classPosition = data[0].length - 1; // Index location of the class
@@ -174,12 +172,13 @@ public class TestSet {
 				// for every example
 				for (int exIndex = 0; exIndex < examplesInClassPerAttribute[0][0].length; exIndex++) {
 					
-					//calculate the percentage of the change that a given example fits the criteria
+					//calculate the percentage of the chance that a given example fits the criteria
 					percentages[classIndex][attribIndex][exIndex] = (double) examplesInClassPerAttribute[classIndex][attribIndex][exIndex]
 							/ (double) nonZeroCount;
 				}
 			}
 		}
+		
 
 		
 		for (int classIndex = 0; classIndex < examplesInClassPerAttribute.length; classIndex++) {
@@ -201,6 +200,10 @@ public class TestSet {
 				System.out.println();
 			}
 		}
+
+		TrainedModel trainedModel = new TrainedModel(percentages, classPercentage, classes, attributes);
+		
+		return trainedModel;
 	}
 
 	public int[] calcClassOccurances(int data[][], ArrayList<Integer> classes) {
