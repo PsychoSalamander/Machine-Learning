@@ -144,7 +144,7 @@ public class Main {
 		double[][] evidence = new double[2][attList.size()];
 		for(int k = 0; k < att[0].length; k++) {
 			evidence[0][k] = (double)att[0][k];
-			evidence[1][k] = (double)att[1][k]/NOR; // probability (likelihood) of the evidence (size of 24) 
+			evidence[1][k] = (double)att[1][k]/NOR; // probability (likelihood) of the evidence
 			System.out.println(evidence[1][k]);
 			//vertical columns
 			
@@ -174,6 +174,7 @@ public class Main {
 					for(int d = 0; d < evidenceList.size(); d++) {
 						if(evidenceList.get(d) == arr[x][y]) {
 								if(identifierList.get(d) == arr[x][NOC]) {
+									
 									int temp = evidenceFreqList.get(d);
 									evidenceFreqList.set(d, ++temp);
 									
@@ -200,78 +201,97 @@ public class Main {
 			
 		}
 		int tempsize = identifierList.size();
-
+		System.out.println(priors[0].length + "priors length");
 		double[][] evidenceL = new double[6][identifierList.size()];
-		for(int b = 0 ; b < tempsize; b++) {					
+		for(int b = 0 ; b < tempsize; b++) {
+			for(int i = 0; i < priors[0].length; i++ ) {
+				
+			}
 			evidenceL[0][b] = identifierList.get(b);			//class type1 = 16, type2 = 20, type3 = 14, type5 = 17, type6 = 14, type7 = 20 
 			evidenceL[1][b] = evidenceList.get(b);				//attributes 
 			evidenceL[2][b] = evidenceFreqList.get(b);			//frequency the attributes occur
 			evidenceL[3][b] = identifierFreq.get(b);			//frequency class occurs
 			evidenceL[4][b] = identifierFreq.get(b);			//probability of given class
 			evidenceL[5][b]	= identifierFreq.get(b);			//probability of features
-			System.out.println(evidenceL[2][b]);
+			//System.out.println(evidenceL[2][b]);
 		}
+		int spot = 0;
 		// counts the frequency the class appears and puts in the array
 		for(int n =0; n < identifierList.size(); n++) {
-			
-			
+			spot = identifierList.get(n);
 			if(evidenceL[0][n] == identifierList.get(n)) {
-				int spot = identifierList.get(n);
+				
 				double tempFreq = evidenceL[3][spot];
 				double freq = ++tempFreq;
-				System.out.println(spot + "spot");
+				//System.out.println(spot + "spot");
 				evidenceL[3][spot] = freq;								//sets the frequency of class
 				evidenceL[4][spot] = freq / identifierList.size();		//sets probability of class (occurrence/total lines in data)
-				double clssFreq = evidenceL[3][n];
-				double evidFreq = evidenceL[2][n];
-				evidenceL[5][n] = evidFreq/clssFreq;
+							
+				
+				
+				
 				//System.out.println(freq + "l");
-				System.out.println(evidenceL[4][spot] + "d");
-				System.out.println(evidenceL[5][n] + " n");
-			}
-		}
-		
-		//find the highest probability
-		for(int m = 0; m < tempsize; m ++) {
-			for(int p = 0; p < identifier[0].length;p++) {
-				int k = 0;
-				double clss = priors[0][k];
-				
-				
-				//double val =  ;
-				//System.out.println(val + " val");
-				//if(past < val) {
-				//	past = val;
-					
-				}
-				//System.out.println( past + " high");
+				//System.out.println(evidenceL[4][spot] + "d");
+				//System.out.println(evidenceL[5][n] + " n");
 			}
 			
-		//}
 		
-		double type1Prob = evidenceL[3][1]/101.0;
+			}
+		
+		int spots = 0;
+		int oneOne = 0;
+		//calculate probability per attribute given a class. every multiple of priors[0].length is that given class probability
+		double [][] probabilityPerClass = new double [1][priors[0].length*identifierList.size()];		//an array for the probability per attribute given a class
+		for(int b = 0; b <= priors[0].length*identifierList.size(); b ++) {								//for loop to get every attribute calculated
+			
+			//for(int oneOne = 0; oneOne < identifierList.size(); oneOne++) {
+				//for(int spots = 0; spots <= priors[0].length +1; spots++) {
+					if((evidenceL[3][spots] != 0) || (spots <= priors[0].length) ) {
+						if(oneOne == 101) {
+							spots++;
+							oneOne = 0;
+						}
+						if((evidenceL[0][oneOne ] == spots)) {
+							probabilityPerClass[0][b] = evidenceL[2][oneOne]  / evidenceL[3][spots];			//needed calculation (frequency of attribute / frequency of class)
+							System.out.println(evidenceL[2][oneOne] + "/" + evidenceL[3][spots]);
+							System.out.println(probabilityPerClass[0][b] + " sdf");
+							System.out.println(spots + " spots");
+							System.out.println(oneOne + " oneOne");
+							System.out.println(b + " B");
+							
+							
+						}
+						System.out.println(b + " B2");
+						oneOne++;
+					}
+
+				//}
+			//}
+			
+		}
+		//System.out.println(evidenceL[2][100] +"spot");
+		//System.out.println(priors[0].length + " length");
+		//System.out.println(probabilityPerClass[0][605]+ "props per class");
+	
+		
+		
+		/*double type1Prob = evidenceL[3][1]/101.0;
 		double type2Prob = 20.0/101.0;
 		double type3Prob = 14.0/101.0;
 		double type5Prob = 17.0/101.0;
 		double type6Prob = 14.0/101.0;
-		double type7Prob = 20.0/101.0;
+		double type7Prob = 20.0/101.0;*/
 		
 		
 		
-		System.out.println((type1Prob));
+		/*System.out.println((type1Prob));
 		System.out.println((type2Prob));
 		System.out.println((type3Prob));
 		System.out.println((type5Prob));
 		System.out.println((type6Prob));
-		System.out.println((type7Prob));
+		System.out.println((type7Prob));*/
+		//System.out.println(arr[50][NOC] + " NOC");
+		//System.out.println(probabilityPerClass[0][1] + " NOC");
 		
-		
-		for(int u = 0; u < 6 /*priors.length*/; u++) {  
-			for(int i = 0; i < 24 /*evidence.length*/; i ++) {
-				
-			}
-		}
-			//System.out.println(priors.length);
-				
 	}
 }
