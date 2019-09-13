@@ -4,6 +4,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+//Responsible Team Member: Axel Ward
+
 public class DataReader {
 
 	// ONLY USE THIS CLASS ON PREPROCESSED DATA
