@@ -17,7 +17,7 @@ public class Main {
 		dp.createProcessedCSV("DataSets/Vote/house-votes-84.data", "votes.csv", "votes-shuffled.csv", "vote");
 		
 		DataReader dr = new DataReader();
-		int cancerData[][] = dr.readArrayFromCSV("votes.csv");
+		int cancerData[][] = dr.readArrayFromCSV("iris.csv");
 		
 		if(cancerData != null)
 		{
