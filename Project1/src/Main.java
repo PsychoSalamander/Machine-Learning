@@ -59,7 +59,7 @@ public class Main {
 		
 
 		TestSet cancer = new TestSet(cancerData);
-		cancer.train();
+		cancer.test();
 	}
 	
 	public static void train(int arr[][]) {
