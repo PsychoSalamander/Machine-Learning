@@ -55,7 +55,11 @@ public class Main {
 
 		// Let's Start with the boolean files and work into
 		// the int/floats
-		train(cancerData);
+		//train(cancerData);
+		
+
+		TestSet cancer = new TestSet(cancerData);
+		cancer.train();
 	}
 	
 	public static void train(int arr[][]) {
@@ -63,6 +67,7 @@ public class Main {
 		// calculate part of Bayes Theorem ( Step 1 of 3 )
 		int NOR = arr.length; // Number of Rows
 		int NOC = arr[0].length-1; // Number of columns
+		
 		ArrayList<Integer> classList = new ArrayList<Integer>();
 		
 		int contains;   // some local variables
@@ -160,7 +165,7 @@ public class Main {
 		ArrayList<Integer> identifierList = new ArrayList<Integer>(); 		// class
 		ArrayList<Integer> identifierFreq = new ArrayList<Integer>();		// class frequency
 		ArrayList<Integer> evidenceList = new ArrayList<Integer>();			// attributes
-		ArrayList<Integer> evidenceFreqList = new ArrayList<Integer>();		// frequency of occurrence
+		ArrayList<Integer> evidenceFreqList = new ArrayList<Integer>();		// frequency of occurrence``
 		boolean matched = false;
 
 		for(int x = 0; x < NOR; x++) {
@@ -240,6 +245,7 @@ public class Main {
 		
 		int spots = 0;
 		int oneOne = 0;
+		
 		//calculate probability per attribute given a class. every multiple of priors[0].length is that given class probability
 		double [][] probabilityPerClass = new double [1][priors[0].length*identifierList.size()];		//an array for the probability per attribute given a class
 		for(int b = 0; b <= priors[0].length*identifierList.size(); b ++) {								//for loop to get every attribute calculated
