@@ -60,7 +60,7 @@ public class DataRunner {
 			}
 			
 			// fill in training data after test data
-			index = splitStart;
+			index = 0;
 			for(int k = splitStart + Math.round(splitLen); k < dataLength; k++)
 			{
 				trainingData[index] = data[k];

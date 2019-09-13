@@ -17,7 +17,7 @@ public class Main {
 		dp.createProcessedCSV("DataSets/Vote/house-votes-84.data", "votes.csv", "votes-shuffled.csv", "vote");
 		
 		DataReader dr = new DataReader();
-		int cancerData[][] = dr.readArrayFromCSV("cancer-shuffled.csv");
+		int cancerData[][] = dr.readArrayFromCSV("votes.csv");
 		
 		if(cancerData != null)
 		{
@@ -45,7 +45,6 @@ public class Main {
 		double[][] probabilityOfClass = t.priors;
 		double[][] probabilityOfEvidence = t.evidence;
 		double[][] probabilityGivenLiklihood = t.evidenceL;
-		System.out.println("hell yeah");
 		ArrayList<Integer> atts = new ArrayList<Integer>();
 		int win = 0;
 		int loss = 0;
@@ -63,9 +62,9 @@ public class Main {
 			atts.clear();
 			total += 1;
 		}
-		System.out.println((float)win/total);
-		
-		
+		System.out.println("Wrong Choices " + loss);
+		System.out.println("Right Choices " + win);
+		System.out.println("Percent Correct " + (float)win/total*100);
 	}
 	public static int smallTest(double probabilityOfClass[][], double probabilityOfEvidence[][], double probabilityGivenLiklihood[][], ArrayList<Integer> atts) {
 		int perferredclass = 0;
@@ -137,12 +136,7 @@ public class Main {
 			priors[0][k] = (double)identifier[0][k];
 			priors[1][k] = (double)identifier[1][k]/(double)NOR;
 		}
-
-		System.out.print("found priors! \n");
-
-		System.out.println("found priors!");
-
-		
+			
 		// Now we do the same for the attributes to find evidence
 		// for the continuation of bayes theorem ( Step 2 of 3 )
 		
@@ -184,12 +178,6 @@ public class Main {
 			evidence[0][k] = (double)att[0][k];
 			evidence[1][k] = (double)((double)att[1][k]/(double)NOR/(double)NOC);
 		}
-		System.out.println("found Evidence, but some values are over 1,"
-				+ " only answer i can see is diving those probabilities"
-				+ " by the number of attributes!");
-		
-
-
 
 		// likelihood of evidence ( Step 3 of 3 )
 		ArrayList<Integer> identifierList = new ArrayList<Integer>(); 		// class
@@ -236,7 +224,6 @@ public class Main {
 			
 		}
 		int tempsize = identifierList.size();
-		System.out.println(priors[0].length + "priors length");
 		double[][] evidenceL = new double[4][identifierList.size()];
 		for(int b = 0 ; b < tempsize; b++) {
 			evidenceL[0][b] = identifierList.get(b);
@@ -248,7 +235,6 @@ public class Main {
 				}
 			}
 		}
-		System.out.println("hge");
 		TrainedModel t  = new TrainedModel();
 		t.priors = priors;
 		t.evidence = evidence;
