@@ -17,10 +17,11 @@ public class Main {
 		dp.createProcessedCSV("DataSets/Vote/house-votes-84.data", "votes.csv", "votes-shuffled.csv", "vote");
 		
 		DataReader dr = new DataReader();
-		int cancerData[][] = dr.readArrayFromCSV("cancer-shuffled.csv");
+		int cancerData[][] = dr.readArrayFromCSV("votes.csv");
 		
 		if(cancerData != null)
 		{
+			/*
 			for(int i = 0; i < cancerData.length; i++)
 			{
 				for(int j = 0; j < cancerData[0].length; j++)
@@ -29,6 +30,7 @@ public class Main {
 				}
 			System.out.print("\n");
 			}
+			*/
 		}
 		else
 		{
@@ -41,6 +43,7 @@ public class Main {
 
 		// Let's Start with the boolean files and work into
 		// the int/floats
+		/*
 		TrainedModel t  = train(cancerData);
 		double[][] probabilityOfClass = t.priors;
 		double[][] probabilityOfEvidence = t.evidence;
@@ -64,9 +67,10 @@ public class Main {
 			total += 1;
 		}
 		System.out.println((float)win/total);
-		
-		
+		*/
 	}
+	
+	// unused training function
 	public static int smallTest(double probabilityOfClass[][], double probabilityOfEvidence[][], double probabilityGivenLiklihood[][], ArrayList<Integer> atts) {
 		int perferredclass = 0;
 		int totalValues = 0;
