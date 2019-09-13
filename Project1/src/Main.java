@@ -99,10 +99,8 @@ public class Main {
 		
 		double[][] priors = new double[2][classList.size()];
 		for(int k = 0; k < identifier[0].length; k++) {
-			priors[0][k] = (double)identifier[0][k];   		// type of glass
-			priors[1][k] = (double)identifier[1][k]/NOR; 	//prior ( count(Y=c) / n_records) (size of 6)
-			System.out.println(priors[1][k] + " priors");
-			//horizontal columns
+			priors[0][k] = (double)identifier[0][k];
+			priors[1][k] = (double)identifier[1][k]/(double)NOR;
 		}
 
 		System.out.print("found priors! \n");
@@ -149,10 +147,7 @@ public class Main {
 		double[][] evidence = new double[2][attList.size()];
 		for(int k = 0; k < att[0].length; k++) {
 			evidence[0][k] = (double)att[0][k];
-			evidence[1][k] = (double)att[1][k]/NOR; // probability (likelihood) of the evidence
-			System.out.println(evidence[1][k]);
-			//vertical columns
-			
+			evidence[1][k] = (double)((double)att[1][k]/(double)NOR/(double)NOC);
 		}
 		System.out.println("found Evidence, but some values are over 1,"
 				+ " only answer i can see is diving those probabilities"
@@ -209,16 +204,14 @@ public class Main {
 		System.out.println(priors[0].length + "priors length");
 		double[][] evidenceL = new double[6][identifierList.size()];
 		for(int b = 0 ; b < tempsize; b++) {
-			for(int i = 0; i < priors[0].length; i++ ) {
-				
+			evidenceL[0][b] = identifierList.get(b);
+			evidenceL[1][b] = evidenceList.get(b);
+			evidenceL[2][b] = evidenceFreqList.get(b);
+			for(int e = 0; e<identifier[0].length; e++) {
+				if(evidenceL[0][b] == identifier[0][e]) {
+					evidenceL[3][b] = (double)evidenceFreqList.get(b)/(double)identifier[1][e]/(double)NOC/(double)identifier[0].length;
+				}
 			}
-			evidenceL[0][b] = identifierList.get(b);			//class type1 = 16, type2 = 20, type3 = 14, type5 = 17, type6 = 14, type7 = 20 
-			evidenceL[1][b] = evidenceList.get(b);				//attributes 
-			evidenceL[2][b] = evidenceFreqList.get(b);			//frequency the attributes occur
-			evidenceL[3][b] = identifierFreq.get(b);			//frequency class occurs
-			evidenceL[4][b] = identifierFreq.get(b);			//probability of given class
-			evidenceL[5][b]	= identifierFreq.get(b);			//probability of features
-			//System.out.println(evidenceL[2][b]);
 		}
 		int spot = 0;
 		// counts the frequency the class appears and puts in the array
