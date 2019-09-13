@@ -14,7 +14,7 @@ public class TestSet {
 		DataSet = data.clone();
 	}
 
-	public void train() {
+	public void test() {
 
 		ArrayList<Integer> classes = new ArrayList<Integer>();
 
@@ -76,61 +76,131 @@ public class TestSet {
 		return probability;
 	}
 
-	public double[] calcAttribGivenClassProbability(int data[][], ArrayList<Integer> classes) {
+	public void calcAttribGivenClassProbability(int data[][], ArrayList<Integer> classes) {
 
-		
-		int numOfClasses = classes.size();					// Number of classes
-		int numOfAttributes = data[0].length - 1;			// Number of attributes
-		int[] numOfExamples = new int[numOfAttributes];		// Number of examples per each attribute
+		int numOfAttributes = data[0].length - 1; // Number of attributes
+		int classPosition = data[0].length - 1; // Index location of the class
+		int[] numOfExamples = new int[numOfAttributes]; // Number of examples per each attribute
 
+		// define list of attributes
 		ArrayList<ArrayList<Integer>> attributes = new ArrayList<ArrayList<Integer>>();
-		ArrayList<ArrayList<Integer>> emptyAttributes = new ArrayList<ArrayList<Integer>>();
-		
+
+		// for every attribute
 		for (int col = 0; col < numOfAttributes; col++) {
 
+			// create an empty list of unique examples
 			ArrayList<Integer> examples = new ArrayList<Integer>();
-			ArrayList<Integer> emptySlots = new ArrayList<Integer>();
 
+			// for every example in the attribute column
 			for (int row = 0; row < data.length; row++) {
+
+				// if the example is not added to the unique list of examples,
 				if (!examples.contains(data[row][col])) {
+
+					// add the example to the unique list
 					examples.add(data[row][col]);
+
+					// add to the total number of unique examples seen
 					numOfExamples[col] += 1;
-					
-					emptySlots.add(0);
 				}
 			}
-			
+
+			// add the examples to the defined list of attributes
 			attributes.add(examples);
-			emptyAttributes.add(emptySlots);
 		}
 
-		if(debug) {
+		if (debug) {
 			for (int i = 0; i < numOfExamples.length; i++) {
 				System.out.print(numOfExamples[i] + " ");
 			}
 
 			System.out.println("\n" + attributes);
-			System.out.println(emptyAttributes);
+		}
+
+		// define low maximum
+		int max = -9999;
+
+		// find the maximum number of examples within a row, so that we know the
+		// dimension of the last
+		// part of the 3D array.
+		for (int i = 0; i < numOfExamples.length; i++) {
+			if (numOfExamples[i] > max) {
+				max = numOfExamples[i];
+			}
+		}
+
+		// amount of times an example was seen within an attribute
+		int[][][] examplesInClassPerAttribute = new int[classes.size()][numOfAttributes][max];
+
+		// for every class
+		for (int i = 0; i < examplesInClassPerAttribute.length; i++) {
+
+			// for every attribute in that class
+			for (int col = 0; col < data[0].length - 1; col++) {
+
+				// for every example in that attribute
+				for (int row = 0; row < data.length; row++) {
+
+					// if the row is part of the class
+					if (data[row][classPosition] == classes.get(i)) {
+
+						// add one to the seen amount for that example, in that attribute, for that
+						// class
+						examplesInClassPerAttribute[i][col][attributes.get(col).indexOf(data[row][col])]++;
+					}
+				}
+			}
+		}
+
+		// probability that an example belongs within an attribute of a class
+		double[][][] percentages = new double[classes.size()][numOfAttributes][max];
+
+		// for every class
+		for (int classIndex = 0; classIndex < examplesInClassPerAttribute.length; classIndex++) {
 			
-		}
-		
-		ArrayList<ArrayList<ArrayList<Integer>>> examplesInClassPerAttribute = new ArrayList<ArrayList<ArrayList<Integer>>>(classes.size());
-		
-		System.out.println(examplesInClassPerAttribute.size());
-		
-		for(int i = 0; i < examplesInClassPerAttribute.size(); i++) {
-			examplesInClassPerAttribute.add(emptyAttributes);
+			// for every attribute in that class
+			for (int attribIndex = 0; attribIndex < examplesInClassPerAttribute[0].length; attribIndex++) {
+				
+				// instantiate a counter for the amount of non-zero numbers within the example list
+				int nonZeroCount = 0;
+
+				//for every example
+				for (int exIndex = 0; exIndex < examplesInClassPerAttribute[0][0].length; exIndex++) {
+					
+					//add the number of times something was seen for that example to the non-zero counter
+					nonZeroCount += examplesInClassPerAttribute[classIndex][attribIndex][exIndex];
+				}
+
+				// for every example
+				for (int exIndex = 0; exIndex < examplesInClassPerAttribute[0][0].length; exIndex++) {
+					
+					//calculate the percentage of the change that a given example fits the criteria
+					percentages[classIndex][attribIndex][exIndex] = (double) examplesInClassPerAttribute[classIndex][attribIndex][exIndex]
+							/ (double) nonZeroCount;
+				}
+			}
 		}
 
-		System.out.println(examplesInClassPerAttribute);
 		
-		
-		
-		
-		
+		for (int classIndex = 0; classIndex < examplesInClassPerAttribute.length; classIndex++) {
+			System.out.println(classes.get(classIndex));
+			for (int attribIndex = 0; attribIndex < examplesInClassPerAttribute[0].length; attribIndex++) {
+				for (int exIndex = 0; exIndex < examplesInClassPerAttribute[0][0].length; exIndex++) {
+					System.out.print("[" + examplesInClassPerAttribute[classIndex][attribIndex][exIndex] + "] ");
+				}
+				System.out.println();
+			}
+		}
 
-		double something[] = new double[1];
-		return something;
+		for (int classIndex = 0; classIndex < examplesInClassPerAttribute.length; classIndex++) {
+			System.out.println(classes.get(classIndex));
+			for (int attribIndex = 0; attribIndex < examplesInClassPerAttribute[0].length; attribIndex++) {
+				for (int exIndex = 0; exIndex < examplesInClassPerAttribute[0][0].length; exIndex++) {
+					System.out.print("[" + percentages[classIndex][attribIndex][exIndex] + "] ");
+				}
+				System.out.println();
+			}
+		}
 	}
 
 	public int[] calcClassOccurances(int data[][], ArrayList<Integer> classes) {
