@@ -201,17 +201,19 @@ public class Main {
 		}
 		int tempsize = identifierList.size();
 
-		double[][] evidenceL = new double[5][identifierList.size()];
+		double[][] evidenceL = new double[6][identifierList.size()];
 		for(int b = 0 ; b < tempsize; b++) {					
 			evidenceL[0][b] = identifierList.get(b);			//class type1 = 16, type2 = 20, type3 = 14, type5 = 17, type6 = 14, type7 = 20 
 			evidenceL[1][b] = evidenceList.get(b);				//attributes 
 			evidenceL[2][b] = evidenceFreqList.get(b);			//frequency the attributes occur
 			evidenceL[3][b] = identifierFreq.get(b);			//frequency class occurs
 			evidenceL[4][b] = identifierFreq.get(b);			//probability of given class
+			evidenceL[5][b]	= identifierFreq.get(b);			//probability of features
 			System.out.println(evidenceL[2][b]);
 		}
 		// counts the frequency the class appears and puts in the array
 		for(int n =0; n < identifierList.size(); n++) {
+			
 			
 			if(evidenceL[0][n] == identifierList.get(n)) {
 				int spot = identifierList.get(n);
@@ -220,16 +222,21 @@ public class Main {
 				System.out.println(spot + "spot");
 				evidenceL[3][spot] = freq;								//sets the frequency of class
 				evidenceL[4][spot] = freq / identifierList.size();		//sets probability of class (occurrence/total lines in data)
+				double clssFreq = evidenceL[3][n];
+				double evidFreq = evidenceL[2][n];
+				evidenceL[5][n] = evidFreq/clssFreq;
 				//System.out.println(freq + "l");
 				System.out.println(evidenceL[4][spot] + "d");
-				
+				System.out.println(evidenceL[5][n] + " n");
 			}
 		}
-		double past = 0.0;
+		
 		//find the highest probability
 		for(int m = 0; m < tempsize; m ++) {
 			for(int p = 0; p < identifier[0].length;p++) {
-				double clss = evidenceL[0][m];
+				int k = 0;
+				double clss = priors[0][k];
+				
 				
 				//double val =  ;
 				//System.out.println(val + " val");
@@ -241,6 +248,7 @@ public class Main {
 			}
 			
 		//}
+		
 		double type1Prob = evidenceL[3][1]/101.0;
 		double type2Prob = 20.0/101.0;
 		double type3Prob = 14.0/101.0;
