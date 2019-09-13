@@ -16,10 +16,10 @@ public class DataPreprocessor {
 	}
 	
 	// Main function that calls all processing functions
-	boolean createProcessedCSV(String inURL, String outURL, String identifier)
+	boolean createProcessedCSV(String inURL, String outURL1, String outURL2, String identifier)
 	{
 		Path pIn = Paths.get(inURL);
-		Path pOut = Paths.get(outURL);
+		Path pOut = Paths.get(outURL1);
 		float inData[][];
 		
 		// Try to read the data into a 2D array
@@ -56,6 +56,44 @@ public class DataPreprocessor {
 			e.printStackTrace();
 			return false;
 		}
+		
+		// Try to write the data to the CSV file
+		try
+		{
+			writeFile(pOut, inData);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		
+		// Shuffle 10% of the values in each data column
+		Random r = new Random();
+		
+		for(int i = 0; i < inData[0].length - 1; i++)
+		{
+			for(int j = 0; j < inData.length / 20; j++)
+			{
+				
+				int spot1 = 0;
+				int spot2 = 0;
+				
+				// Get target spots to swap
+				while(spot1 == spot2)
+				{
+					spot1 = r.nextInt(inData.length);
+					spot2 = r.nextInt(inData.length);
+				}
+				
+				// Swap data values
+				float temp = inData[spot1][i];
+				inData[spot1][i] = inData[spot2][i];
+				inData[spot2][i] = temp;
+			}
+		}
+		
+		pOut = Paths.get(outURL2);
 		
 		// Try to write the data to the CSV file
 		try
@@ -366,7 +404,11 @@ public class DataPreprocessor {
 					writer.write(",");
 				}
 			}
-			writer.newLine();
+			
+			if(i != data.length -1)
+			{
+				writer.newLine();
+			}
 		}
 		
 		writer.close();
