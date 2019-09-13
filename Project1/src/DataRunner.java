@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Random;
 
 //Responsible Team Member: Franki Taylor
@@ -15,6 +14,9 @@ public class DataRunner {
 		int dataLength = data.length;
 		float splitLen = ((float)dataLength)/10;
 		
+		System.out.println(dataLength);
+		System.out.println(splitLen);
+		
 		// Check to make sure there are at least 10 data points in the set
 		if(splitLen < 1)
 		{
@@ -22,12 +24,21 @@ public class DataRunner {
 			System.exit(-1);
 		}
 		
-		int correct = 0;
-		int total = 0;
+		// randomize order of data such that all of one class doesn't get lumped into one test
+		Random r = new Random();
+		for(int i = 0; i < dataLength/2; i++)
+		{
+			int spot1 = r.nextInt(dataLength);
+			int spot2 = r.nextInt(dataLength);
+			
+			int[] temp = data[spot1];
+			data[spot1] = data[spot2];
+			data[spot2] = temp;
+		}
 		
 		// Run the training and test 10-fold times
 		for(int t = 0; t < 10; t++)
-		{
+		{			
 			// get start index of test data
 			int splitStart = Math.round(splitLen * t);
 			
@@ -42,7 +53,7 @@ public class DataRunner {
 			
 			// fill in test data
 			int index = 0;
-			for(int j = splitStart; j < splitStart + Math.round(splitLen) - 1 ; j++)
+			for(int j = splitStart; j < splitStart + Math.round(splitLen); j++)
 			{
 				testData[index] = data[j];
 				index++;
@@ -58,32 +69,28 @@ public class DataRunner {
 			
 			//Run Training Here with trainingData[][]
 			
-			TrainedModel tm = new TrainedModel();
-			tm = new DataTrainer().train(trainingData);
+			System.out.println("Training Data: " + t);
+			for(int i = 0; i < trainingData.length; i++)
+			{
+				for(int j = 0; j < trainingData[0].length; j++)
+				{
+					System.out.print("[" + trainingData[i][j] + "]");
+				}
+				System.out.println("");
+			}
 			
 			//Run Test Here with testData[][]
 			
-			double[][] probabilityOfClass = tm.priors;
-			double[][] probabilityOfEvidence = tm.evidence;
-			double[][] probabilityGivenLiklihood = tm.evidenceL;
-			ArrayList<Integer> atts = new ArrayList<Integer>();
+			System.out.println("\nTest Data: " + t);
 			for(int i = 0; i < testData.length; i++)
 			{
-				for(int j = 0; j < testData[0].length - 1; j++) {
-					atts.add(testData[i][j]);
-				}
-				
-				int tempy = new DataTester().smallTest(probabilityOfClass,probabilityOfEvidence,probabilityGivenLiklihood,atts);
-				if(tempy == testData[0][testData[0].length - 1])
+				for(int j = 0; j < testData[0].length; j++)
 				{
-					correct++;
+					System.out.print("[" + testData[i][j] + "]");
 				}
-				total++;
-				
-				atts.clear();
+				System.out.println("");
 			}
+			System.out.println("\n==========================\n==========================\n");
 		}
-		
-		System.out.println("Correctness: " + correct + "/" + total + "=" + Math.round((((float)correct/(float)total)*100)) + "%");
 	}
 }
