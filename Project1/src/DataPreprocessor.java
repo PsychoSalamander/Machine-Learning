@@ -374,7 +374,7 @@ public class DataPreprocessor {
 				}
 				else if(parts[j].equals("?"))
 				{
-					parts[j] = Integer.toString(r.nextInt(2));
+					parts[j] = "2";
 				}
 				
 				temp[i][j] = Float.parseFloat(parts[j]);
