@@ -76,7 +76,7 @@ public class Main {
 		double[][] priors = new double[2][classList.size()];
 		for(int k = 0; k < identifier[0].length; k++) {
 			priors[0][k] = (double)identifier[0][k];
-			priors[1][k] = (double)identifier[1][k]/NOR;
+			priors[1][k] = (double)identifier[1][k]/(double)NOR;
 		}
 		System.out.println("found priors!");
 		
@@ -119,7 +119,7 @@ public class Main {
 		double[][] evidence = new double[2][attList.size()];
 		for(int k = 0; k < att[0].length; k++) {
 			evidence[0][k] = (double)att[0][k];
-			evidence[1][k] = (double)att[1][k]/NOR;
+			evidence[1][k] = (double)((double)att[1][k]/(double)NOR/(double)NOC);
 		}
 		System.out.println("found Evidence, but some values are over 1,"
 				+ " only answer i can see is diving those probabilities"
@@ -167,6 +167,11 @@ public class Main {
 			evidenceL[0][b] = identifierList.get(b);
 			evidenceL[1][b] = evidenceList.get(b);
 			evidenceL[2][b] = evidenceFreqList.get(b);
+			for(int e = 0; e<identifier[0].length; e++) {
+				if(evidenceL[0][b] == identifier[0][e]) {
+					evidenceL[3][b] = (double)evidenceFreqList.get(b)/(double)identifier[1][e]/(double)NOC/(double)identifier[0].length;
+				}
+			}
 		}
 		System.out.println("Hi!");
 	}
