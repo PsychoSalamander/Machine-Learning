@@ -1,4 +1,3 @@
-
 //
 //	Responsible team member: Blake Mitchell
 //
@@ -78,52 +77,83 @@ public class TestSet {
 
 	public double[] calcAttribGivenClassProbability(int data[][], ArrayList<Integer> classes) {
 
-		
-		int numOfClasses = classes.size();					// Number of classes
-		int numOfAttributes = data[0].length - 1;			// Number of attributes
-		int[] numOfExamples = new int[numOfAttributes];		// Number of examples per each attribute
+		// this is the position of the classes within the data set.
+		// it is assumed that they will always be in the last column, after being
+		// pre-processed.
+		int classPosition = data[0].length - 1;
 
-		ArrayList<ArrayList<Integer>> attributes = new ArrayList<ArrayList<Integer>>();
-		ArrayList<ArrayList<Integer>> emptyAttributes = new ArrayList<ArrayList<Integer>>();
-		
-		for (int col = 0; col < numOfAttributes; col++) {
+		// List of the amount of times that an example occurs given an attribute
+		ArrayList<ArrayList<Integer>> attributeExamples = new ArrayList<ArrayList<Integer>>(data[0].length);
 
+		// List of the probability that the example occurs given an attribute
+		ArrayList<ArrayList<Double>> attributeExampleOccourances = new ArrayList<ArrayList<Double>>(data[0].length);
+
+		// List of the probabilities of examples occurring given an attribute, given a class
+		ArrayList<ArrayList<ArrayList<Integer>>> classExamplesOccurances = new ArrayList<ArrayList<ArrayList<Integer>>>();
+		
+		//allocate the size of classExamples
+		for(int i = 0; i < classes.size(); i++) {
+			classExamplesOccurances.add(null);
+		}
+		
+		// for every attribute in the data set
+		for (int col = 0; col < data[0].length - 1; col++) {
+
+			// create a new list for expected examples
 			ArrayList<Integer> examples = new ArrayList<Integer>();
-			ArrayList<Integer> emptySlots = new ArrayList<Integer>();
 
+			// for every example of the attribute
 			for (int row = 0; row < data.length; row++) {
+
+				// if the example is not already in the examples list, add it
 				if (!examples.contains(data[row][col])) {
 					examples.add(data[row][col]);
-					numOfExamples[col] += 1;
-					
-					emptySlots.add(0);
+				} 
+			}
+			
+			//predefine the size of the ArrayList so that the numbers go into the expected positions
+			for(int i = 0; i < classExamplesOccurances.size(); i++) {
+				for(int j = 0; j < examples.size(); j++) {
+					ArrayList<ArrayList<Integer>> hold = new ArrayList<ArrayList<Integer>>(examples.size());
+					classExamplesOccurances.set(i,hold);
 				}
 			}
 			
-			attributes.add(examples);
-			emptyAttributes.add(emptySlots);
-		}
-
-		if(debug) {
-			for (int i = 0; i < numOfExamples.length; i++) {
-				System.out.print(numOfExamples[i] + " ");
+			System.out.println("HELLO " + classExamplesOccurances);
+			
+			//for every example of the attribute
+			for (int row = 0; row < data.length; row++) {
+				
+				//for the index of example within the examples list, increase the listed
+				//occurrence of the example by one
+				int theClass = data[row][classPosition];
+				
+				//indexes of each respective component in the 3D list
+				int classIndex = classExamplesOccurances.indexOf(classes.indexOf(theClass));
+				int attributeIndex = classes.indexOf(col);
+				int exampleIndex = examples.indexOf(data[row][col]);
+				
+				int oldNum;
+				
+				//if there is no old number, assume 0
+				//else grab the old number
+				if(classExamplesOccurances.get(classIndex).get(attributeIndex).get(exampleIndex) == null) {
+					oldNum = 0;
+				} else {
+					oldNum = classExamplesOccurances.get(classIndex).get(attributeIndex).get(exampleIndex);
+				}
+				
+				//set new num to oldNum + 1
+				int newNum = oldNum + 1;
+				
+				classExamplesOccurances.get(classIndex).get(attributeIndex).set(exampleIndex,newNum);
 			}
 
-			System.out.println("\n" + attributes);
-			System.out.println(emptyAttributes);
-			
-		}
-		
-		ArrayList<ArrayList<ArrayList<Integer>>> examplesInClassPerAttribute = new ArrayList<ArrayList<ArrayList<Integer>>>(classes.size());
-		
-		System.out.println(examplesInClassPerAttribute.size());
-		
-		for(int i = 0; i < examplesInClassPerAttribute.size(); i++) {
-			examplesInClassPerAttribute.add(emptyAttributes);
-		}
+			//attributeExamples.add(examples);
+			//attributeExampleOccourances.add(examplesOccurances);
 
-		System.out.println(examplesInClassPerAttribute);
-		
+			System.out.println(classExamplesOccurances);
+		}
 
 		double something[] = new double[1];
 		return something;
