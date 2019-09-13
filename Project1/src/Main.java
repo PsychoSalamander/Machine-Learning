@@ -16,26 +16,8 @@ public class Main {
 		dp.createProcessedCSV("DataSets/Soybean/soybean-small.data", "soybeans.csv", "soybeans-shuffled.csv", "soybean");
 		dp.createProcessedCSV("DataSets/Vote/house-votes-84.data", "votes.csv", "votes-shuffled.csv", "vote");
 		
-		
-		/* cancer_lines = 683 | attributes = 10
-		 * glass_lines = 214  | attributes = 10
-		 * iris_lines = 150   | attributes = 5
-		 * soybeans_lines = 47| attributes = 36
-		 * votes_lines = 435  | attributes = 17
-		 * total = 1529			total = 78
-		 */
-		//DataTrainer dt = new DataTrainer();
-		/*for(int g =0; g < 10; g++)
-		{
-			float bb = dt.chooseAtt(g);
-			float att[];
-			//att[g] = bb;
-			//System.out.println(att[g]);
-		}*/
-		
-		
 		DataReader dr = new DataReader();
-		int cancerData[][] = dr.readArrayFromCSV("glass.csv");
+		int cancerData[][] = dr.readArrayFromCSV("iris.csv");
 		
 		if(cancerData != null)
 		{
@@ -59,20 +41,55 @@ public class Main {
 
 		// Let's Start with the boolean files and work into
 		// the int/floats
-		//train(cancerData);
+		TrainedModel t  = train(cancerData);
+		double[][] probabilityOfClass = t.priors;
+		double[][] probabilityOfEvidence = t.evidence;
+		double[][] probabilityGivenLiklihood = t.evidenceL;
+		System.out.println("hell yeah");
+		ArrayList<Integer> atts = new ArrayList<Integer>();
+		atts.add(6);
+		atts.add(2);
+		atts.add(4);
+		atts.add(1);
+		int tempy = smallTest(probabilityOfClass,probabilityOfEvidence,probabilityGivenLiklihood,atts);
 		
-
-		TestSet cancer = new TestSet(cancerData);
-		cancer.train();
 	}
-	
-	public static void train(int arr[][]) {
-		/*
+	public static int smallTest(double probabilityOfClass[][], double probabilityOfEvidence[][], double probabilityGivenLiklihood[][], ArrayList<Integer> atts) {
+		int perferredclass = 0;
+		int totalValues = 0;
+		float smoothingProbability = (float)0;
+		float tempProbability = (float) 0.000000000000000000000000000000000000000000000000000001;
+		boolean found = false;
+		for(int i = 0; i < probabilityGivenLiklihood[0].length;i++) {
+			totalValues += probabilityGivenLiklihood[2][i];
+		}
+		smoothingProbability = (float)1/totalValues;
+		for(int h = 0 ; h < probabilityOfClass[0].length; h++) {
+			float likelihoodProbability = (float)probabilityOfClass[1][h];
+			for(int j = 0 ; j < atts.size(); j++) {
+				for(int i = 0; i < probabilityGivenLiklihood[0].length;i++) {
+					if(probabilityGivenLiklihood[1][i] == atts.get(j) && probabilityGivenLiklihood[0][i] == probabilityOfClass[0][h]) {
+						likelihoodProbability *= (float)probabilityGivenLiklihood[3][i]+(float)smoothingProbability;
+						found = true;
+					}
+				}
+				if(!found) {
+					likelihoodProbability *= (float)smoothingProbability;
+				}
+				found = false;
+			}
+			if(likelihoodProbability > tempProbability) {
+				tempProbability = (float)likelihoodProbability;
+				perferredclass = (int) probabilityOfClass[0][h];
+			}
+		}
+		return perferredclass;
+	}
+	public static TrainedModel train(int arr[][]) {
 		// finding priors and setting up the arrays to
 		// calculate part of Bayes Theorem ( Step 1 of 3 )
 		int NOR = arr.length; // Number of Rows
 		int NOC = arr[0].length-1; // Number of columns
-		
 		ArrayList<Integer> classList = new ArrayList<Integer>();
 		
 		int contains;   // some local variables
@@ -165,7 +182,7 @@ public class Main {
 		ArrayList<Integer> identifierList = new ArrayList<Integer>(); 		// class
 		ArrayList<Integer> identifierFreq = new ArrayList<Integer>();		// class frequency
 		ArrayList<Integer> evidenceList = new ArrayList<Integer>();			// attributes
-		ArrayList<Integer> evidenceFreqList = new ArrayList<Integer>();		// frequency of occurrence``
+		ArrayList<Integer> evidenceFreqList = new ArrayList<Integer>();		// frequency of occurrence
 		boolean matched = false;
 
 		for(int x = 0; x < NOR; x++) {
@@ -207,7 +224,7 @@ public class Main {
 		}
 		int tempsize = identifierList.size();
 		System.out.println(priors[0].length + "priors length");
-		double[][] evidenceL = new double[6][identifierList.size()];
+		double[][] evidenceL = new double[4][identifierList.size()];
 		for(int b = 0 ; b < tempsize; b++) {
 			evidenceL[0][b] = identifierList.get(b);
 			evidenceL[1][b] = evidenceList.get(b);
@@ -218,84 +235,12 @@ public class Main {
 				}
 			}
 		}
-		int spot = 0;
-		// counts the frequency the class appears and puts in the array
-		for(int n =0; n < identifierList.size(); n++) {
-			spot = identifierList.get(n);
-			if(evidenceL[0][n] == identifierList.get(n)) {
-				
-				double tempFreq = evidenceL[3][spot];
-				double freq = ++tempFreq;
-				//System.out.println(spot + "spot");
-				evidenceL[3][spot] = freq;								//sets the frequency of class
-				evidenceL[4][spot] = freq / identifierList.size();		//sets probability of class (occurrence/total lines in data)
-							
-				
-				
-				
-				//System.out.println(freq + "l");
-				//System.out.println(evidenceL[4][spot] + "d");
-				//System.out.println(evidenceL[5][n] + " n");
-			}
-			
+		System.out.println("hge");
+		TrainedModel t  = new TrainedModel();
+		t.priors = priors;
+		t.evidence = evidence;
+		t.evidenceL = evidenceL;
 		
-			}
-		
-		int spots = 0;
-		int oneOne = 0;
-		
-		//calculate probability per attribute given a class. every multiple of priors[0].length is that given class probability
-		double [][] probabilityPerClass = new double [1][priors[0].length*identifierList.size()];		//an array for the probability per attribute given a class
-		for(int b = 0; b <= priors[0].length*identifierList.size(); b ++) {								//for loop to get every attribute calculated
-			
-			//for(int oneOne = 0; oneOne < identifierList.size(); oneOne++) {
-				//for(int spots = 0; spots <= priors[0].length +1; spots++) {
-					if((evidenceL[3][spots] != 0) || (spots <= priors[0].length) ) {
-						if(oneOne == 101) {
-							spots++;
-							oneOne = 0;
-						}
-						if((evidenceL[0][oneOne ] == spots)) {
-							probabilityPerClass[0][b] = evidenceL[2][oneOne]  / evidenceL[3][spots];			//needed calculation (frequency of attribute / frequency of class)
-							System.out.println(evidenceL[2][oneOne] + "/" + evidenceL[3][spots]);
-							System.out.println(probabilityPerClass[0][b] + " sdf");
-							System.out.println(spots + " spots");
-							System.out.println(oneOne + " oneOne");
-							System.out.println(b + " B");
-							
-							
-						}
-						System.out.println(b + " B2");
-						oneOne++;
-					}
-
-				//}
-			//}
-			
-		}
-		//System.out.println(evidenceL[2][100] +"spot");
-		//System.out.println(priors[0].length + " length");
-		//System.out.println(probabilityPerClass[0][605]+ "props per class");
-	
-		*/
-		
-		/*double type1Prob = evidenceL[3][1]/101.0;
-		double type2Prob = 20.0/101.0;
-		double type3Prob = 14.0/101.0;
-		double type5Prob = 17.0/101.0;
-		double type6Prob = 14.0/101.0;
-		double type7Prob = 20.0/101.0;*/
-		
-		
-		
-		/*System.out.println((type1Prob));
-		System.out.println((type2Prob));
-		System.out.println((type3Prob));
-		System.out.println((type5Prob));
-		System.out.println((type6Prob));
-		System.out.println((type7Prob));*/
-		//System.out.println(arr[50][NOC] + " NOC");
-		//System.out.println(probabilityPerClass[0][1] + " NOC");
-		
+		return t;
 	}
 }
