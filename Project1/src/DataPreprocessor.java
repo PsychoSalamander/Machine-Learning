@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
 
+// Responsible Team Member: Axel Ward
+
 public class DataPreprocessor {
 
 	// USE THIS CLASS TO GENERATE PROCESSED DATA INTO CSVs
@@ -28,27 +30,22 @@ public class DataPreprocessor {
 			if(identifier == "cancer")
 			{
 				inData = readCancer(pIn);
-				System.out.println("Read Cancer!");
 			}
 			else if(identifier == "glass")
 			{
 				inData = readGlass(pIn);
-				System.out.println("Read Glass!");
 			}
 			else if(identifier == "iris")
 			{
 				inData = readIris(pIn);
-				System.out.println("Read Iris!");
 			}
 			else if(identifier == "soybean")
 			{
 				inData = readSoybean(pIn);
-				System.out.println("Read Soybean!");
 			}
 			else
 			{
 				inData = readVote(pIn);
-				System.out.println("Read Vote!");
 			}
 		}
 		catch (IOException e)
