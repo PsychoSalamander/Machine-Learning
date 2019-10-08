@@ -28,7 +28,9 @@ public class DataPreprocessor {
 		reader.close();
 		reader = Files.newBufferedReader(path);
 		
-		//
+		//moving all values into the temp array, will handle
+		//classification attributes in a seperate function
+		
 		for(int i = 0; i < lines; i++)
 		{
 			line = reader.readLine();
