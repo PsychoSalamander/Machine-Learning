@@ -14,6 +14,22 @@ public class Main {
 		String Fdata[][] = dp.readData(Paths.get("dataSets/forestfires/forestfires.data"));
 		String Mdata[][] = dp.readData(Paths.get("dataSets/machine/machine.data"));
 		String Sdata[][] = dp.readData(Paths.get("dataSets/segmentation/segmentation.data"));
-		System.out.print("yolo");
+		//System.out.print("yolo");
+		//testing distance measure and ascending order of distance
+		KNearestNeighbor run = new KNearestNeighbor();
+		float[][] arrayTest = new float[4][3];
+		arrayTest[0][0] = 10;
+		arrayTest[0][1] = 0;
+		arrayTest[0][2] = 55;
+		arrayTest[1][0] = 200;
+		arrayTest[1][1] = 6;
+		arrayTest[1][2] = 22;
+		arrayTest[2][0] = 60;
+		arrayTest[2][1] = 1000;
+		arrayTest[2][2] = 1005;
+		arrayTest[3][0] = 20;
+		arrayTest[3][1] = 51;
+		arrayTest[3][2] = 81;
+		run.neighbor(3,1,arrayTest);
 	}
 }
