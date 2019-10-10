@@ -52,8 +52,8 @@ public class CNearestNeighbor extends NearestNeighbor {
 			}
 		}
 		// then if we want to make this into a 2D array
-		// that completly gets rid of the zeros we will
-		// have to swap from an array to a 2D arraylist
+		// that completely gets rid of the zeros we will
+		// have to swap from an array to a 2D array list
 		// and back if needed
 		return condensed;
 	}
