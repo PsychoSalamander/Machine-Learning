@@ -31,31 +31,43 @@ public class ENearestNeighbor extends NearestNeighbor {
 	float[][] temp = inputData;
 	int column = temp[0].length;
 	int row = temp.length;
+	
 	float[][] training = new float[row / 5][column];
 	float[][] testing = new float[row / 5][column];
+	
+	int count = row-(row/5)-(row/5);
+	int tempCount = 0;
+	
+	float[][] edited = new float[count][column]; // full set
+
+	
 	for (int i = 0; i < row / 5; i++) { // first 1/5 training
 	    for (int j = 0; j < column; j++) {
 		training[i][j] = temp[i][j];
-		temp[i][j] = 0;
 	    }
 	}
 	for (int i = row / 5; i < 2 * row / 5; i++) { // second 1/5 test
 	    for (int j = 0; j < column; j++) {
 		testing[i][j] = temp[i][j];
-		temp[i][j] = 0;
+	    }
+	}
+	for (int i = 2 * row / 5; i < row ; i++) { // everything else edited
+	    for (int j = 0; j < column; j++) {
+		edited[i][j] = temp[i][j];
 	    }
 	}
 	
 	/*
 	 * ---------------------------------------------------
-	 * This will be our finishing 2D array that will
-	 * contain the final list of points
+	 * This will be our accuracy testing to know when we
+	 * need to stop removing points
 	 * ---------------------------------------------------
 	 */
 	
-	float[][] edited = new float[column][row];
-	float firstAccuracy = 0;
-	float secondAccuracy = 1;
+	float firstAccuracy = (float) 0.0;
+	float secondAccuracy = (float) 1.0;
+	int firstAccCount = 0;
+	int totalAcc = 0;
 	
 	/*
 	 * ---------------------------------------------------
@@ -69,28 +81,33 @@ public class ENearestNeighbor extends NearestNeighbor {
 	 */
 	
 	while (secondAccuracy > firstAccuracy) {
-	    for (int i = 2 * row / 5; i < row; i++) { // training
-		if (temp[i][0] != 0) {
+		secondAccuracy = firstAccuracy;
+		float[][] tempEdited = new float[tempCount][column]; // kept points
+		float[][] secondTempEdited = new float[tempCount][column]; // kept points
+	    for (int i = 0 ; i < training.length ; i++) { // training
 		    // data = new dataprocesser();
-		    int tempClass = 0;// = data.nearestneighbor(temp, temp[i]);
-		    if (tempClass != temp[i][column]) {
-			for (int j = 0; j < column; j++) {
-			    temp[i][j] = 0;
-			}
+		    //float[] tempPoint = data.nearestneighbor(edited[][], training[i]);
+	    	int tempClass = 0;// = tempPoint[0][column];
+		    if (tempClass == training[i][column]) {
+		    	tempCount++;
+		    	secondTempEdited = new float[tempCount][column]; // kept points
+		    	for(int j = 0 ; j < tempEdited.length ; j++) {
+		    		secondTempEdited[j] = tempEdited[j];
+		    	}
+		    	//secondTempEdited[tempEdited.length] = tempPoint[]; 
+		    	tempEdited = new float[tempCount][column];
+		    	tempEdited = secondTempEdited;
+		    	firstAccCount++;
 		    }
-		}
+		    totalAcc++;
 	    }
-	    for (int k = 0; k < testing.length; k++) { // testing
-		int tempClass = 0;// = data.nearestneighbor(temp, temp[i]);
-	    }
+	    edited = new float[tempCount][column];
+	    edited = tempEdited;
+	    firstAccuracy = totalAcc/totalAcc;
+	    totalAcc = 0;
+	    firstAccCount = 0;
+	    tempCount = 0;
 	}
-	
-	/*
-	 * then if we want to make this into a 2D array
-	 * that completely gets rid of the zeros we will
-	 * have to swap from an array to a 2D array list
-	 * and back if needed
-	 */
 	
 	return edited;
     }
