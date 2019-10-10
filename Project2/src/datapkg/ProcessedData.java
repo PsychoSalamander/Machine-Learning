@@ -19,7 +19,7 @@ public class ProcessedData {
     }
 
     // returns array containing the data, after it has been processed AND sorted
-    public float[][] getDataArraySorted() {
+    public float[][] getDataArrayClassSorted() {
 	return DataArrayClassSorted.clone();
     }
 
