@@ -25,15 +25,18 @@ public class DataProcessor {
     private float[] classifierOffset;				// iteration offset of the classifier
     private boolean HasHeader;					// true = input file has a header, false if it doesn't
     private int height;						// number of rows in the data array
-    ArrayList<Hashtable<String, Float>> lookupTable;
+    ArrayList<Hashtable<String, Float>> lookupTable;		// lookup table for inputed attribute elements to their corresponding new value
+    Hashtable<Integer, String> SpecialRoundings;		// flag the data at a certain column if it needs to be rounded with a special format, instead of the default of 2 decimal places
 
     // class constructor
-    public DataProcessor(Path FilePath, ProcessedData DataOutput, boolean HasHeader) {
+    public DataProcessor(Path FilePath, ProcessedData DataOutput, boolean HasHeader,
+	    Hashtable<Integer, String> SpecialRoundings) {
 
 	this.FilePath = FilePath;
 	this.OutputFilePath = generateOutputFileName(FilePath); // get the OutputFilePath file path from generateOutputFileName
 	this.DataOutput = DataOutput;
 	this.HasHeader = HasHeader;
+	this.SpecialRoundings = SpecialRoundings;
 
 	try {
 	    this.height = countLines();
@@ -41,6 +44,7 @@ public class DataProcessor {
 	    System.out.println("Input file not found for \"" + FilePath.toString() + "\"");
 	    e.printStackTrace();
 	}
+
 	loadProcessedData();
     }
 
@@ -105,6 +109,8 @@ public class DataProcessor {
 	    e.printStackTrace();
 	}
 
+	DataOutput.setDataArrayClassSorted(RawData);
+	DataOutput.setDataArrayShuffled(RawData);
     }
 
     // instantiates the arrays neccessary, after the size of them is known
@@ -142,7 +148,6 @@ public class DataProcessor {
 	while ((row = csvReader.readLine()) != null) {
 
 	    // split the string into an array, deliminated by every comma in the row
-	    System.out.println("THE ROW IS: " + row);
 	    String[] elements = row.split(",");
 
 	    // if it is the first row number, instantiate the array size
@@ -158,19 +163,11 @@ public class DataProcessor {
 
 		// if the element is a float, then round the element
 		if (isAFloat) {
-		    key = roundElement(key);
+		    key = roundElement(key, index);
 		}
 
 		key = key.toLowerCase(); 		             			// send the data to lower case
 		Hashtable<String, Float> attributeLookupTable = lookupTable.get(index); // grab the lookup table for the current attribute
-
-		// if the attributeLookupTable is null, create one
-		/*
-		 * if (attributeLookupTable == null) {
-		 * attributeLookupTable = new Hashtable<String, Float>();
-		 * attributeLookupTable.put
-		 * }
-		 */
 
 		// if the element DOES NOT HAVE the key in the dictionary
 		if (!attributeLookupTable.containsKey(key)) {
@@ -206,8 +203,22 @@ public class DataProcessor {
     }
 
     // rounds the string to 2 decimal places
-    private String roundElement(String element) {
-	DecimalFormat roundingFormat = new DecimalFormat("######.00"); // set the format to round to 2 decimal places
+    private String roundElement(String element, int column) {
+	DecimalFormat roundingFormat;
+
+	// if there are any special roundings
+	if (SpecialRoundings != null) {
+	    boolean includesKey = SpecialRoundings.containsKey(column); // see if the column number is a special rounding format
+
+	    if (includesKey) {
+		String specialFormat = SpecialRoundings.get(column); // grab the special value from the hashtable
+		roundingFormat = new DecimalFormat(specialFormat);   // set the rounding format to the special value
+	    } else {
+		roundingFormat = new DecimalFormat("######.00"); // set the format to round to 2 decimal places
+	    }
+	} else {
+	    roundingFormat = new DecimalFormat("######.00"); // set the format to round to 2 decimal places
+	}
 
 	float number;
 	String roundedNumber;
@@ -250,6 +261,45 @@ public class DataProcessor {
 
     // loads the data contained in the OutputFilePath file into the RawData array
     private void loadTheData() throws IOException {
+	BufferedReader csvReader = new BufferedReader(new FileReader(OutputFilePath.toString()));
 
+	int rowNumber = 0;
+	String row;
+
+	while ((row = csvReader.readLine()) != null) {
+
+	    // split the string into an array, deliminated by every comma in the row
+	    String[] elements = row.split(",");
+
+	    // if it is the first row number, instantiate the array size
+	    if (rowNumber == 0) {
+		instantiateArrays(elements.length);
+	    }
+
+	    // for every column in the string array
+	    for (int index = 0; index < elements.length; index++) {
+
+		String element = elements[index];	    // element for the current index
+		boolean isAFloat = isElementFloat(element); // check if the element is a float
+
+		// if the element is a NOT float, then throw an error
+		if (!isAFloat) {
+		    // Expected float at (row,col), instead got [element] for file "[OutputFilePath]"
+		    throw new IllegalArgumentException("Expected float at (" + rowNumber + ", " + index
+			    + "), instead got \"" + element + "\" for file \"" + OutputFilePath.toString() + "\"");
+		}
+
+		RawData[rowNumber][index] = Float.parseFloat(element); // set the RawData[row][col] to the value containted by the element
+	    }
+	    rowNumber++; // increase the position of the rowNumber
+	}
+
+	csvReader.close();
+    }
+
+    // calculates the number of UniqueClasses
+    private int calculateUniqueClasses() {
+
+	return 0;
     }
 }
