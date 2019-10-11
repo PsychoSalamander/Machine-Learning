@@ -41,6 +41,23 @@ public class NearestNeighbor {
 		}
 	}
 	
+	public float[] nearestNeighbor(float[][] temp, float[] interest){
+		float[] closestPoint = new float[temp[0].length];
+		float[] tempPoint = new float[temp[0].length];
+		float distance = (float) 100000.0;
+		float tempDistance = (float) 100000.0;
+		for(int i = 0 ; i < temp.length ; i++) {
+			tempPoint = temp[i];
+			tempDistance = getDistance(tempPoint, interest);
+			if(tempDistance < distance) {
+				distance = tempDistance;
+				closestPoint = temp[i];
+			}
+			tempDistance = (float) 0.0;
+		}
+		return closestPoint;
+	}
+	
 	public void setPracticeData(float[][] d) {
 		inPracticeData = d;
 	}

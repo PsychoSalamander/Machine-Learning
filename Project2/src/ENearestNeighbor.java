@@ -14,7 +14,6 @@ public class ENearestNeighbor extends NearestNeighbor {
     }
 
     public float[][] runIt(float[][] inputData) {
-	System.out.println("Empty Implementation!");
 	
 	/*
 	 * ---------------------------------------------------
@@ -36,25 +35,19 @@ public class ENearestNeighbor extends NearestNeighbor {
 	float[][] testing = new float[row / 5][column];
 	
 	int count = row-(row/5)-(row/5);
-	int tempCount = 0;
+	int tempCount = count;
 	
 	float[][] edited = new float[count][column]; // full set
 
 	
-	for (int i = 0; i < row / 5; i++) { // first 1/5 training
-	    for (int j = 0; j < column; j++) {
-		training[i][j] = temp[i][j];
-	    }
+	for (int i =0,j = 0; i < row / 5; i++,j++) { // first 1/5 training
+		training[j] = temp[i];
 	}
-	for (int i = row / 5; i < 2 * row / 5; i++) { // second 1/5 test
-	    for (int j = 0; j < column; j++) {
-		testing[i][j] = temp[i][j];
-	    }
+	for (int i = row / 5, j = 0; i < 2 * row / 5; i++, j++) { // second 1/5 test
+		testing[j] = temp[i];
 	}
-	for (int i = 2 * row / 5; i < row ; i++) { // everything else edited
-	    for (int j = 0; j < column; j++) {
-		edited[i][j] = temp[i][j];
-	    }
+	for (int i = 2 * row / 5, j = 0; i < row ; i++,j++) { // everything else edited
+		edited[j] = temp[i];
 	}
 	
 	/*
@@ -64,7 +57,7 @@ public class ENearestNeighbor extends NearestNeighbor {
 	 * ---------------------------------------------------
 	 */
 	
-	float firstAccuracy = (float) 0.0;
+	float firstAccuracy = (float) 1.0;
 	float secondAccuracy = (float) 1.0;
 	int firstAccCount = 0;
 	int totalAcc = 0;
@@ -80,35 +73,39 @@ public class ENearestNeighbor extends NearestNeighbor {
 	 * ---------------------------------------------------
 	 */
 	
-	while (secondAccuracy > firstAccuracy) {
+	while (secondAccuracy <= firstAccuracy) {
 		secondAccuracy = firstAccuracy;
 		float[][] tempEdited = new float[tempCount][column]; // kept points
-		float[][] secondTempEdited = new float[tempCount][column]; // kept points
+		tempEdited = edited;
 	    for (int i = 0 ; i < training.length ; i++) { // training
-		    // data = new dataprocesser();
-		    //float[] tempPoint = data.nearestneighbor(edited[][], training[i]);
-	    	int tempClass = 0;// = tempPoint[0][column];
-		    if (tempClass == training[i][column]) {
-		    	tempCount++;
-		    	secondTempEdited = new float[tempCount][column]; // kept points
-		    	for(int j = 0 ; j < tempEdited.length ; j++) {
-		    		secondTempEdited[j] = tempEdited[j];
-		    	}
-		    	//secondTempEdited[tempEdited.length] = tempPoint[]; 
+		    float[] tempPoint = nearestNeighbor(edited, training[i]);
+	    	float tempClass = tempPoint[column-1];
+		    if (tempClass != training[i][column-1]) {
+		    	tempCount--;
 		    	tempEdited = new float[tempCount][column];
-		    	tempEdited = secondTempEdited;
+		    	for(int j = 0, k = 0 ; j < edited.length ; j++) {
+		    		if(edited[j] != tempPoint) {
+		    			tempEdited[k] = edited[j];
+		    			k++;
+		    		}
+		    	}
+		    }
+	    }
+	    edited = new float[tempCount][column];
+	    edited = tempEdited;
+	    for (int i = 0 ; i < testing.length ; i++) { // testing
+		    float[] tempPoint = nearestNeighbor(edited, testing[i]);
+	    	float tempClass = tempPoint[column-1];
+		    if (tempClass == training[i][column-1]) {
 		    	firstAccCount++;
 		    }
 		    totalAcc++;
 	    }
-	    edited = new float[tempCount][column];
-	    edited = tempEdited;
-	    firstAccuracy = totalAcc/totalAcc;
+	    firstAccuracy = firstAccCount/totalAcc;
 	    totalAcc = 0;
 	    firstAccCount = 0;
-	    tempCount = 0;
 	}
-	
+	System.out.println("Empty Implementation!");
 	return edited;
     }
 }
