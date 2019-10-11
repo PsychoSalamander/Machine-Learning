@@ -35,7 +35,7 @@ public class ENearestNeighbor extends NearestNeighbor {
 	float[][] testing = new float[row / 5][column];
 	
 	int count = row-(row/5)-(row/5);
-	int tempCount = count;
+	
 	
 	float[][] edited = new float[count][column]; // full set
 
@@ -50,6 +50,8 @@ public class ENearestNeighbor extends NearestNeighbor {
 		edited[j] = temp[i];
 	}
 	
+	int tempCount = edited.length;
+	
 	/*
 	 * ---------------------------------------------------
 	 * This will be our accuracy testing to know when we
@@ -57,8 +59,8 @@ public class ENearestNeighbor extends NearestNeighbor {
 	 * ---------------------------------------------------
 	 */
 	
-	float firstAccuracy = (float) 1.0;
-	float secondAccuracy = (float) 1.0;
+	float firstAccuracy = (float) 0.0;
+	float secondAccuracy = (float) 0.0;
 	int firstAccCount = 0;
 	int totalAcc = 0;
 	
@@ -73,15 +75,21 @@ public class ENearestNeighbor extends NearestNeighbor {
 	 * ---------------------------------------------------
 	 */
 	
-	while (secondAccuracy <= firstAccuracy) {
-		secondAccuracy = firstAccuracy;
+	while (secondAccuracy <= firstAccuracy && edited.length > testing.length) {
+		
 		float[][] tempEdited = new float[tempCount][column]; // kept points
 		tempEdited = edited;
 	    for (int i = 0 ; i < training.length ; i++) { // training
 		    float[] tempPoint = nearestNeighbor(edited, training[i]);
 	    	float tempClass = tempPoint[column-1];
 		    if (tempClass != training[i][column-1]) {
-		    	tempCount--;
+		    	int multiplePoints = 0;
+		    	for(int l = 0 ; l < edited.length ; l++) {
+		    		if(edited[l] == tempPoint) {
+		    			multiplePoints++;
+		    		}
+		    	}
+		    	tempCount= tempCount-multiplePoints;
 		    	tempEdited = new float[tempCount][column];
 		    	for(int j = 0, k = 0 ; j < edited.length ; j++) {
 		    		if(edited[j] != tempPoint) {
@@ -89,10 +97,12 @@ public class ENearestNeighbor extends NearestNeighbor {
 		    			k++;
 		    		}
 		    	}
+		    	edited = new float[tempCount][column];
+		    	edited = tempEdited;
 		    }
 	    }
-	    edited = new float[tempCount][column];
-	    edited = tempEdited;
+	    //edited = new float[tempCount][column];
+	    //edited = tempEdited;
 	    for (int i = 0 ; i < testing.length ; i++) { // testing
 		    float[] tempPoint = nearestNeighbor(edited, testing[i]);
 	    	float tempClass = tempPoint[column-1];
@@ -101,7 +111,8 @@ public class ENearestNeighbor extends NearestNeighbor {
 		    }
 		    totalAcc++;
 	    }
-	    firstAccuracy = firstAccCount/totalAcc;
+	    secondAccuracy = firstAccuracy;
+	    firstAccuracy = (float)firstAccCount/totalAcc;
 	    totalAcc = 0;
 	    firstAccCount = 0;
 	}
