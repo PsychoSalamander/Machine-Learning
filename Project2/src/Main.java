@@ -83,7 +83,7 @@ public class Main {
 	KMeansNearestNeighbor KMNN = new KMeansNearestNeighbor();
 	PAMNearestNeighbor PAMNN = new PAMNearestNeighbor();
 	
-	
+	// Run KNN Algorithm
 	System.out.println("Running KNN Algorithm:");
 	System.out.println("Running Abalone Data:");
 	dr.runTests(KNN, abaloneData, true, false, false, false);
@@ -100,7 +100,7 @@ public class Main {
 	System.out.println("Running White Wine Data:");
 	dr.runTests(KNN, winequalityWhiteData, false, true, false, false);
 	
-	
+	// Run ENN Algorithm
 	System.out.println("Running ENN Algorithm:");
 	System.out.println("Running Abalone Data:");
 	dr.runTests(ENN, abaloneData, true, false, false, false);
@@ -109,7 +109,7 @@ public class Main {
 	System.out.println("Running Segmentation Data:");
 	dr.runTests(ENN, segmentationData, true, false, false, false);
 	
-	
+	// Run CNN Algorithm
 	System.out.println("Running CNN Algorithm:");
 	System.out.println("Running Abalone Data:");
 	dr.runTests(CNN, abaloneData, true, false, false, false);
@@ -118,7 +118,7 @@ public class Main {
 	System.out.println("Running Segmentation Data:");
 	dr.runTests(CNN, segmentationData, true, false, false, false);
 	
-	
+	// Run KMNN Algorithm
 	System.out.println("Running KMNN Algorithm:");
 	System.out.println("Running Abalone Data:");
 	dr.runTests(KMNN, abaloneData, true, false, true, false);
@@ -135,7 +135,7 @@ public class Main {
 	System.out.println("Running White Wine Data:");
 	dr.runTests(KMNN, winequalityWhiteData, false, true, false, true);
 	
-	
+	// Run PAMNN Algorithm
 	System.out.println("Running PAMNN Algorithm:");
 	System.out.println("Running Abalone Data:");
 	dr.runTests(PAMNN, abaloneData, true, false, true, false);
