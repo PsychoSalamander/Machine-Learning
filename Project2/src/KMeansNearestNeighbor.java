@@ -2,8 +2,8 @@ import java.util.Random;
 
 public class KMeansNearestNeighbor extends NearestNeighbor {
 
-	KMeansNearestNeighbor(int classL) {
-		classLocation = classL;
+	KMeansNearestNeighbor() {
+		classLocation = 0;
 	}
 	
 	private int numClasses = 0;
