@@ -3,85 +3,74 @@ import java.util.Random;
 public class KMeansNearestNeighbor extends NearestNeighbor {
 
 	KMeansNearestNeighbor() {
-		classLocation = -1;
+		
 	}
 	
-	private int numClasses = 0;
+	KNearestNeighbor KNN = new KNearestNeighbor();
 	
 	// Parameter to define how close the mean has to be to the actual mean to accept
 	private float MT = 0.1f;
 	
-	void runClass() {
+	void runClass(int K) {
 		
-		// Get number of classes and the means for the dataset
+		// Get the means for the data set
+		float means[][] = getMeans(inPracticeData, K);
 		
-		int classes[] = getClasses();
-		
-		float means[][] = getMeans(inPracticeData, numClasses);
-		int clusterClass[] = new int[means.length];
-		
-		// Assign a class to each mean cluster
-		int usedClusters[] = new int[means.length];
-		for(int i : classes) {
-			
-			// Initialize point search variables
-			boolean foundDataPoint = false;
-			int iter = 0;
-			float[] dp = inPracticeData[iter];
-			
-			// Find point that has a class that hasn't been seen yet
-			while(!foundDataPoint) {
-				if(dp[classLocation] == i) {
-					foundDataPoint = true;
-				} else if(iter == inPracticeData.length - 1) {
-					System.out.println("Could not find data for class: " + i);
-				} else {				
-					dp = inPracticeData[iter];
-					iter++;
-				}
-			}
-			
+		for(int i = 0; i < K; i++) {
 			float minDist = 1000000;
-			int minCluster = 0;
-			for(int j = 0; j < means.length; j++) {
-				if((getDistance(dp, means[j]) < minDist) && (usedClusters[j] == 0)) {
-					minDist = getDistance(dp, means[i]);
-					minCluster = j;
+			int minIndex = 0;
+			
+			// Check each of the data points in the practice set
+			for(int j = 0; j < inPracticeData.length; j++) {
+				
+				// Check to find the closest point that has not already been used
+				if((getDistance(means[i], inPracticeData[j]) < minDist)) {
+					minDist = getDistance(means[i], inPracticeData[j]);
+					minIndex = j;
 				}
 			}
 			
-			usedClusters[minCluster] = 1;
-			clusterClass[minCluster] = (int) dp[classLocation];
+			// Set class for mean equal to the closest practice point
+			means[i][classLocation] = inPracticeData[minIndex][classLocation];
 		}
 		
-		// Check the nearest cluster to each point in the test set, and check to see if the class matches.
-		float correct = 0;
-		float incorrect = 0;
-		for(int i = 0; i < inTestData.length; i++) {
-			float dp[] = inTestData[i];
-			
-			float minDist = 1000000;
-			int minCluster = 0;
-			for(int j = 0; j < means.length; j++) {
-				if((getDistance(dp, means[j]) < minDist)) {
-					minDist = getDistance(dp, means[i]);
-					minCluster = j;
-				}
-			}
-			
-			if(clusterClass[minCluster] == inTestData[i][classLocation]) {
-				correct += 1;
-			} else {
-				incorrect += 1;
-			}
-		}
+		// Setup K nearest neighbor with means and test data
+		KNN.setClassLocation(this.classLocation);
+		KNN.setPracticeData(means);
+		KNN.setTestData(this.inTestData);
 		
-		// Print number of classes that are correct
-		System.out.println(correct/(incorrect+correct));
+		// run classification for testData against means
+		KNN.runClass(1);
 	}
 	
-	void runRegress() {
-		System.out.println("Empty Implementation!");
+	void runRegress(int K) {
+		float means[][] = getMeans(inPracticeData, K);
+		
+		for(int i = 0; i < K; i++) {
+			float minDist = 1000000;
+			int minIndex = 0;
+			
+			// Check each of the data points in the practice set
+			for(int j = 0; j < inPracticeData.length; j++) {
+				
+				// Check to find the closest point that has not already been used
+				if((getDistance(means[i], inPracticeData[j]) < minDist)) {
+					minDist = getDistance(means[i], inPracticeData[j]);
+					minIndex = j;
+				}
+			}
+			
+			// Set regression value for mean equal to the closest practice point's regression value
+			means[i][classLocation] = inPracticeData[minIndex][classLocation];
+		}
+		
+		// Setup K nearest neighbor with means and test data
+		KNN.setClassLocation(this.classLocation);
+		KNN.setPracticeData(means);
+		KNN.setTestData(this.inTestData);
+				
+		// run regression for testData against means
+		KNN.runRegress(1);
 	}
 	
 	float[][] getMeans(float[][] D, int K) {
@@ -174,6 +163,7 @@ public class KMeansNearestNeighbor extends NearestNeighbor {
 	
 	int[] getClasses() {
 		int seen[] = new int[100];
+		int numClasses = 0;
 		
 		for(int i = 0; i < inPracticeData.length; i++) {
 			if(seen[(int)inPracticeData[i][classLocation]] != 1) {
