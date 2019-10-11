@@ -5,41 +5,45 @@ public class PAMNearestNeighbor extends NearestNeighbor {
 	PAMNearestNeighbor() {
 		
 	}
-	int numClasses = 0;
 	
-	void runClass() {
-		getClasses();
+	KNearestNeighbor KNN = new KNearestNeighbor();
+	
+	void runClass(int K) {
+		// Get medoid indices from function
+		int medoids[] = getMedoids(inPracticeData, K);
 		
-		int medoids[] = getMedoids(inPracticeData, numClasses);
-		
-		float correct = 0;
-		float incorrect = 0;
-		for(int x = 0; x < inTestData.length; x++) {
-			float[] Xi = inTestData[x];
-			
-			int minMedoid = 0;
-			float minDist = 1000000;
-			for(int i = 0; i < medoids.length; i++) {
-				if(getDistance(Xi, inTestData[medoids[i]]) < minDist) {
-					minDist = getDistance(Xi, inTestData[medoids[i]]);
-					minMedoid = i;
-				}
-			}
-			
-			int classification = (int) inTestData[medoids[minMedoid]][classLocation];
-			
-			if(classification == Xi[classLocation]) {
-				correct += 1;
-			} else {
-				incorrect += 1;
-			}
+		// Fill in "practice" data with medoid data
+		float outPracticeData[][] = new float[medoids.length][inPracticeData[0].length];
+		for(int i = 0; i < medoids.length; i++) {
+			outPracticeData[i] = inPracticeData[medoids[i]];
 		}
 		
-		System.out.println(correct/(incorrect+correct));
+		// Set up KNN to test medoids
+		KNN.setClassLocation(this.classLocation);
+		KNN.setPracticeData(outPracticeData);
+		KNN.setTestData(inTestData);
+		
+		// Run classification test
+		KNN.runClass(1);
 	}
 	
-	void runRegress() {
-		System.out.println("Empty Implementation!");
+	void runRegress(int K) {
+		// Get medoids indices from function
+		int medoids[] = getMedoids(inPracticeData, K);
+		
+		// Fill in "practice" data with medoid data
+		float outPracticeData[][] = new float[medoids.length][inPracticeData[0].length];
+		for(int i = 0; i < medoids.length; i++) {
+			outPracticeData[i] = inPracticeData[medoids[i]];
+		}
+		
+		// Set up KNN to test medoids
+		KNN.setClassLocation(this.classLocation);
+		KNN.setPracticeData(outPracticeData);
+		KNN.setTestData(inTestData);
+		
+		// Run regression test
+		KNN.runRegress(1);
 	}
 	
 	int[] getMedoids(float[][] D, int K) {
@@ -105,30 +109,5 @@ public class PAMNearestNeighbor extends NearestNeighbor {
 		}
 		
 		return medoids;
-	}
-	
-	int[] getClasses() {
-		int seen[] = new int[100];
-		
-		for(int i = 0; i < inPracticeData.length; i++) {
-			if(seen[(int)inPracticeData[i][classLocation]] != 1) {
-				numClasses += 1;
-				seen[(int)inPracticeData[i][classLocation]] = 1;
-			}
-		}
-		
-		int classes[] = new int[numClasses];
-		
-		seen = new int[100];
-		int iter = 0;
-		for(int i = 0; i < inPracticeData.length; i++) {
-			if(seen[(int)inPracticeData[i][classLocation]] != 1) {
-				classes[iter] = (int)inPracticeData[i][classLocation];
-				seen[(int)inPracticeData[i][classLocation]] = 1;
-				iter += 1;
-			}
-		}
-		
-		return classes;
 	}
 }
