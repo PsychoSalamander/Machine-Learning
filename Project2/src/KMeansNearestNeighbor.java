@@ -3,7 +3,7 @@ import java.util.Random;
 public class KMeansNearestNeighbor extends NearestNeighbor {
 
 	KMeansNearestNeighbor() {
-		classLocation = 0;
+		classLocation = -1;
 	}
 	
 	private int numClasses = 0;
@@ -55,8 +55,8 @@ public class KMeansNearestNeighbor extends NearestNeighbor {
 		}
 		
 		// Check the nearest cluster to each point in the test set, and check to see if the class matches.
-		int correct = 0;
-		int incorrect = 0;
+		float correct = 0;
+		float incorrect = 0;
 		for(int i = 0; i < inTestData.length; i++) {
 			float dp[] = inTestData[i];
 			
