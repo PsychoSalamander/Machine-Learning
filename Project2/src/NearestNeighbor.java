@@ -16,7 +16,7 @@ public class NearestNeighbor {
 		System.out.println("Empty Implementation!");
 	}
 	
-	// Get the distance between two points in N-Space
+	// Get the Euclidian distance between two points in N-Space
 	float getDistance(float[] p1, float[] p2) {
 		if(p1.length == p2.length) {
 			float d = 0;
@@ -64,5 +64,9 @@ public class NearestNeighbor {
 	
 	public void setTestData(float[][] d) {
 		inTestData = d;
+	}
+	
+	public void setClassLocation(int loc) {
+		classLocation = loc;
 	}
 }
