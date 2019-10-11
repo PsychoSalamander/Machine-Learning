@@ -10,29 +10,36 @@ public class Main {
 	ProcessedData abaloneData = new ProcessedData();
 	DataProcessor abaloneProcessor = new DataProcessor(Paths.get("dataSets/abalone/abalone.data"), abaloneData,
 		false);
+	System.out.println(abaloneData.getUniqueClasses());
 
 	ProcessedData carData = new ProcessedData();
 	DataProcessor carProcessor = new DataProcessor(Paths.get("dataSets/car/car.data"), carData, false);
+	System.out.println(carData.getUniqueClasses());
 
 	ProcessedData forestfiresData = new ProcessedData();
 	DataProcessor forestfiresProcessor = new DataProcessor(Paths.get("dataSets/forestfires/forestfires.data"),
 		forestfiresData, false);
+	System.out.println(forestfiresData.getUniqueClasses());
 
 	ProcessedData machineData = new ProcessedData();
 	DataProcessor machineProcessor = new DataProcessor(Paths.get("dataSets/machine/machine.data"), machineData,
 		false);
+	System.out.println(machineData.getUniqueClasses());
 
 	ProcessedData segmentationData = new ProcessedData();
 	DataProcessor segmentationProcessor = new DataProcessor(Paths.get("dataSets/segmentation/segmentation.data"),
 		segmentationData, false);
+	System.out.println(segmentationData.getUniqueClasses());
 
 	ProcessedData winequalityRedData = new ProcessedData();
 	DataProcessor winequalityRedProcessor = new DataProcessor(
 		Paths.get("dataSets/winequality-red/winequality-red.csv"), winequalityRedData, true);
+	System.out.println(winequalityRedData.getUniqueClasses());
 
 	ProcessedData winequalityWhiteData = new ProcessedData();
 	DataProcessor winequalityWhiteProcessor = new DataProcessor(
 		Paths.get("dataSets/winequality-white/winequality-white.csv"), winequalityWhiteData, true);
+	System.out.println(winequalityWhiteData.getUniqueClasses());
 
 	//asdf.getProcessedData();
 
