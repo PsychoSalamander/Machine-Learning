@@ -27,21 +27,29 @@ public class Main {
 	 */
 	
 	KNearestNeighbor run = new KNearestNeighbor();
-	 float[][] arrayTest = new float[4][3];
+	 float[][] arrayTest = new float[4][4];
 	 arrayTest[0][0] = 10;
-	 arrayTest[0][1] = 0;
+	 arrayTest[0][1] = 33;
 	 arrayTest[0][2] = 55;
-	 arrayTest[1][0] = 200;
-	 arrayTest[1][1] = 6;
-	 arrayTest[1][2] = 22;
-	 arrayTest[2][0] = 60;
-	 arrayTest[2][1] = 1000;
-	 arrayTest[2][2] = 1005;
-	 arrayTest[3][0] = 20;
+	 arrayTest[0][3] = 22;
+	 arrayTest[1][0] = 20;
+	 arrayTest[1][1] = 33;
+	 arrayTest[1][2] = 23;
+	 arrayTest[1][3] = 21;
+	 arrayTest[2][0] = 12;
+	 arrayTest[2][1] = 30;
+	 arrayTest[2][2] = 25;
+	 arrayTest[2][3] = 15;
+	 arrayTest[3][0] = 21;
 	 arrayTest[3][1] = 51;
 	 arrayTest[3][2] = 81;
-	 float[] point = { (float) 10.0, (float) 2.0,(float) 0.5};
-	 run.neighbor(point, arrayTest);
+	 arrayTest[3][3] = 31;
+	 float[] point = new float[3];
+	 point[0] = 33;
+	 point[1] = 55;
+	 point[2] = 20;
+	 
+	 run.neighbor(point, arrayTest,1);
 	 
     }
 }
