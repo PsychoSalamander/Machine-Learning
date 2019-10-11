@@ -7,9 +7,35 @@ import datapkg.*;
 public class Main {
     public static void main(String[] args) throws IOException {
 
-	DataProcessor asdf = new DataProcessor(Paths.get("dataSets/abalone/abalone.data"));
-	asdf.getProcessedData();
-	
+	ProcessedData abaloneData = new ProcessedData();
+	DataProcessor abaloneProcessor = new DataProcessor(Paths.get("dataSets/abalone/abalone.data"), abaloneData,
+		false);
+
+	ProcessedData carData = new ProcessedData();
+	DataProcessor carProcessor = new DataProcessor(Paths.get("dataSets/car/car.data"), carData, false);
+
+	ProcessedData forestfiresData = new ProcessedData();
+	DataProcessor forestfiresProcessor = new DataProcessor(Paths.get("dataSets/forestfires/forestfires.data"),
+		forestfiresData, false);
+
+	ProcessedData machineData = new ProcessedData();
+	DataProcessor machineProcessor = new DataProcessor(Paths.get("dataSets/machine/machine.data"), machineData,
+		false);
+
+	ProcessedData segmentationData = new ProcessedData();
+	DataProcessor segmentationProcessor = new DataProcessor(Paths.get("dataSets/segmentation/segmentation.data"),
+		segmentationData, false);
+
+	ProcessedData winequalityRedData = new ProcessedData();
+	DataProcessor winequalityRedProcessor = new DataProcessor(
+		Paths.get("dataSets/winequality-red/winequality-red.csv"), winequalityRedData, true);
+
+	ProcessedData winequalityWhiteData = new ProcessedData();
+	DataProcessor winequalityWhiteProcessor = new DataProcessor(
+		Paths.get("dataSets/winequality-white/winequality-white.csv"), winequalityWhiteData, true);
+
+	//asdf.getProcessedData();
+
 	/*
 	 * // Start GENERALIZED preprocessing. For this I will use
 	 * // text files and transfer them to 2D arrays. If wanting to
