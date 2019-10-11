@@ -66,8 +66,6 @@ public class Main {
 		winequalityRedRoundings);
 	DataProcessor winequalityWhiteProcessor = new DataProcessor(winequalityWhitePath, winequalityWhiteData, true,
 		winequalityWhiteRoundings);
-
-
 	
 	
 	
