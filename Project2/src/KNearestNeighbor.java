@@ -1,10 +1,5 @@
 public class KNearestNeighbor extends NearestNeighbor {
 
-public int height = 0;
-public int width = 0;
-public int kVal = 0;
-public float classif = 0;		// variable for the classification value in the regression method
-public float classification = 0;	// variable to save the classification value returned by regression
     KNearestNeighbor() {
 	
     }
