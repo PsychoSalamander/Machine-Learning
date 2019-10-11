@@ -1,52 +1,52 @@
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
 
 public class KNearestNeighbor extends NearestNeighbor {
-    int zeroX = 0;
-    int zeroY = 0;
+    	public int height = 0;
+	public int width = 0;
 
     KNearestNeighbor() {
+	
     }
 
     public void runClass() {
 	System.out.println("Empty Implementation!");
     }
 
-    public void neighbor(int pointX, int pointY, float data[][]) {
+    public void neighbor(float point[], float data[][]) {
 
 	// get dimensions of the array
-	int height = data.length;
-	int width = data[0].length;
-
+	height = data.length;
+	width = data[0].length;
+	float[] pointComp = new float[width];
 	// instantiating variables
-	float[][] neighborDist = new float[height][width]; // distance from test point of the data element
-	float neighbor[][] = new float[height][width];	   // dummy clone array of neighborDist
-	float dataOrig[][] = data.clone();		   // clone of the inputed data
+	float[][] neighborDist = new float[height][width+1]; 	// distance from test point of the data element
+	float neighbor[][] = new float[height][width+1];	   // dummy clone array of neighborDist
+	float dataOrig[][] = data.clone();		   	// clone of the inputed data
 
 	// shift through the array to find neighbor distance
-	for (int x = 0; x < height; x++) {
-	    for (int y = 0; y < width; y++) {
-		float distance = getDistance(pointX, pointY, x, y);
-		neighborDist[x][y] = distance;
-		neighbor[x][y] = distance;
+	for (int y = 0; y < height; y++) {
+	    for(int x = 0; x < width; x++) {
+		if( x >= 1) {
+		    neighborDist[y][x] = dataOrig[y][x-1];
+		    neighbor[y][x] = dataOrig[y][x-1];
+		}
+		
+		float distance = getDistance(pointComp, dataOrig, y);
+		neighborDist[y][0] = distance;
+		neighbor[y][0] = distance;
 	    }
+		
+	    
 	}
-
-	// float kNeighbor[] = new float[kVal];
-	
 	neighborDist = sortDistance(neighborDist, height, width);
 	
 	// print statements to verify methods
 	System.out.println("sorted distance");
 	for (int b = 0; b < height; b++) {
-	    for (int n = 0; n < width; n++) {
-		System.out.println(neighborDist[b][n]);
-	    }
+	    
+		System.out.println(neighborDist[b][0]);
+	  
 	}
 	System.out.print("\n");
 	System.out.println("unsorted distance");
@@ -58,47 +58,47 @@ public class KNearestNeighbor extends NearestNeighbor {
 	System.out.print("\n");
 	System.out.println("original data array");
 	for (int b = 0; b < height; b++) {
-	    for (int n = 0; n < width; n++) {
-		System.out.println(dataOrig[b][n]);
+	    for(int n = 0; n < width; n++) {
+		System.out.println(neighborDist[b][n]);
 	    }
+		
+	    
 	}
 
     }
 
     // calculates how far the data point is from the reference point
-    float getDistance(int pointX, int pointY, int compX, int compY) {
-
+    float getDistance(float pointComp[], float dataOrig[][], int row) {
 	float calcDistance = 0;
-
-	float distX = (compX - pointX) * (compX - pointX);
-	float distY = (compY - pointY) * (compY - pointY);
-
-	calcDistance = distX + distY;
-
+	float dist = 0;
+	//for loop to go through the columns of each "point" and get the distance
+	
+	for(int j  = 0; j < (width -1); j++) {
+		
+	    dist = dist + ((dataOrig[row][j] - pointComp[j]) * (dataOrig[row][j] - pointComp[j]));
+		
+	}
+	    calcDistance = (float) Math.sqrt(dist);	// sqrt of the total distance for the point compared to the inserted point
+	   
+	
 	return calcDistance;
 
     }
 
     // method to sort the distances in ascending order
     float[][] sortDistance(float[][] neighborDist, int height, int width) {
-	int k = 0;
-	float tempArr[] = new float[height * width];
-	for (int i = 0; i < height; i++) {
-	    for (int j = 0; j < width; j++) {
+	// Comparator to sort the data by the distance
+	Arrays.sort(neighborDist, new Comparator<float[]>() {
 
-		tempArr[k++] = neighborDist[i][j];
+	    @Override
+	    public int compare(float[] o1, float[] o2) {
 
+		 float data1 = o1[0];
+		 float data2 = o2[0];
+		return Float.compare(data1, data2);
 	    }
-	}
-	Arrays.sort(tempArr);
-	int l = 0;
-	for (int i = 0; i < height; i++) {
-	    for (int j = 0; j < width; j++) {
-		neighborDist[i][j] = tempArr[l];
-		l++;
-	    }
-	}
-
+	    
+	});
 	return neighborDist;
 
     }
