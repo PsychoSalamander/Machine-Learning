@@ -14,7 +14,7 @@ public class CNearestNeighbor extends NearestNeighbor {
 	}
 	
 	public float[][] runIt(float[][] inputData) {
-		System.out.println("Empty Implementation!");
+		
 		//---------------------------------------------------
 		// input is stored as a temp data set, we will then
 		// call nearest neighbor function, one at a time,
@@ -41,20 +41,16 @@ public class CNearestNeighbor extends NearestNeighbor {
 		//---------------------------------------------------
 		condensed[0] = temp[0];
 		tempCondensed[0] = temp[0];
-		for(int i = 0 ; i < row ; i++) {
-			//data = new dataprocesser();
-			int tempClass = 0;// = data.nearestneighbor(condensed, temp[i]);
-			if(tempClass == temp[i][column]) {
-				//for(int j = 0 ; j < column ; j++) {
-					//condensed[i][j] = 0;
-				//}
-			}else {
+		for(int i = 1 ; i < row ; i++) {
+			float[] tempPoint = nearestNeighbor(condensed, temp[i]);
+			float tempClass = tempPoint[column-1];
+			if(tempClass != temp[i][column-1]) {
 				count++;
 				condensed = new float[count][column];
 				for(int j = 0 ; j < tempCondensed.length ; j++) {
 					condensed[j] = tempCondensed[j];
 				}
-				condensed[count+1] = temp[i];
+				condensed[count-1] = temp[i];
 				tempCondensed = new float[count][column];
 				tempCondensed = condensed;
 			}
@@ -63,6 +59,7 @@ public class CNearestNeighbor extends NearestNeighbor {
 		// that completely gets rid of the zeros we will
 		// have to swap from an array to a 2D array list
 		// and back if needed
+		System.out.println("Empty Implementation!");
 		return condensed;
 	}
 }
