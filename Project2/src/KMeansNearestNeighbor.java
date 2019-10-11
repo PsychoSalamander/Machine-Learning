@@ -2,9 +2,11 @@ import java.util.Random;
 
 public class KMeansNearestNeighbor extends NearestNeighbor {
 
-	KMeansNearestNeighbor() {
-		
+	KMeansNearestNeighbor(int classL) {
+		classLocation = classL;
 	}
+	
+	private int numClasses = 0;
 	
 	// Parameter to define how close the mean has to be to the actual mean to accept
 	private float MT = 0.1f;
@@ -12,13 +14,15 @@ public class KMeansNearestNeighbor extends NearestNeighbor {
 	void runClass() {
 		
 		// Get number of classes and the means for the dataset
-		int numClasses = 5;
+		
+		int classes[] = getClasses();
+		
 		float means[][] = getMeans(inPracticeData, numClasses);
 		int clusterClass[] = new int[means.length];
 		
 		// Assign a class to each mean cluster
 		int usedClusters[] = new int[means.length];
-		for(int i = 0; i < numClasses; i++) {
+		for(int i : classes) {
 			
 			// Initialize point search variables
 			boolean foundDataPoint = false;
@@ -27,7 +31,7 @@ public class KMeansNearestNeighbor extends NearestNeighbor {
 			
 			// Find point that has a class that hasn't been seen yet
 			while(!foundDataPoint) {
-				if(dp[dp.length - 1] == i) {
+				if(dp[classLocation] == i) {
 					foundDataPoint = true;
 				} else if(iter == inPracticeData.length - 1) {
 					System.out.println("Could not find data for class: " + i);
@@ -47,7 +51,7 @@ public class KMeansNearestNeighbor extends NearestNeighbor {
 			}
 			
 			usedClusters[minCluster] = 1;
-			clusterClass[minCluster] = (int) dp[dp.length-1];
+			clusterClass[minCluster] = (int) dp[classLocation];
 		}
 		
 		// Check the nearest cluster to each point in the test set, and check to see if the class matches.
@@ -65,7 +69,7 @@ public class KMeansNearestNeighbor extends NearestNeighbor {
 				}
 			}
 			
-			if(clusterClass[minCluster] == inTestData[i][inTestData.length-1]) {
+			if(clusterClass[minCluster] == inTestData[i][classLocation]) {
 				correct += 1;
 			} else {
 				incorrect += 1;
@@ -85,24 +89,26 @@ public class KMeansNearestNeighbor extends NearestNeighbor {
 
 		// Randomly Generate Mean Start Points
 		for(int i = 0; i < D[0].length; i++) {
-			float randMin = 1000000;
-			float randMax = -1000000;
-			
-			// Get min and max for the feature
-			for(int j = 0; j < D.length; j++) {
-				if(D[j][i] > randMax) {
-					randMax = D[j][i];
-				}
-				if(D[j][i] < randMin) {
-					randMin = D[j][i];
-				}
-			}
-			
-			// Generate a random number based on the range of the feature
-			for(int j = 0; j < means.length; j++) {
-				Random r = new Random();
+			if(i != classLocation) {
+				float randMin = 1000000;
+				float randMax = -1000000;
 				
-				means[j][i] = (r.nextFloat()*(randMax - randMin)) + randMin;
+				// Get min and max for the feature
+				for(int j = 0; j < D.length; j++) {
+					if(D[j][i] > randMax) {
+						randMax = D[j][i];
+					}
+					if(D[j][i] < randMin) {
+						randMin = D[j][i];
+					}
+				}
+				
+				// Generate a random number based on the range of the feature
+				for(int j = 0; j < means.length; j++) {
+					Random r = new Random();
+					
+					means[j][i] = (r.nextFloat()*(randMax - randMin)) + randMin;
+				}
 			}
 		}
 		
@@ -132,14 +138,18 @@ public class KMeansNearestNeighbor extends NearestNeighbor {
 			float newMeans[][] = new float[means.length][means[0].length];
 			for(int x = 0; x < cluster.length; x++) {
 				for(int i = 0; i < D[0].length; i++) {
-					newMeans[cluster[x]][i] += D[x][i];
+					if(i != classLocation) {
+						newMeans[cluster[x]][i] += D[x][i];
+					}
 				}
 			}
 			
 			// Divide by number of examples to get means
 			for(int i = 0; i < newMeans.length; i++) {
 				for(int j = 0; j < newMeans[0].length; j++) {
-					newMeans[i][j] = newMeans[i][j] / clusterCount[i];
+					if(j != classLocation) {
+						newMeans[i][j] = newMeans[i][j] / clusterCount[i];
+					}
 				}
 			}
 			
@@ -147,9 +157,11 @@ public class KMeansNearestNeighbor extends NearestNeighbor {
 			movement = false;
 			for(int i = 0; i < newMeans.length; i++) {
 				for(int j = 0; j < newMeans[0].length; j++) {
-					if((newMeans[i][j] < means[i][j] + MT) && (newMeans[i][j] > means[i][j] - MT)) {
-						movement = true;
-						break;
+					if(j != classLocation) {
+						if((newMeans[i][j] < means[i][j] + MT) && (newMeans[i][j] > means[i][j] - MT)) {
+							movement = true;
+							break;
+						}
 					}
 				}
 			}
@@ -158,5 +170,30 @@ public class KMeansNearestNeighbor extends NearestNeighbor {
 		}
 		
 		return means;
+	}
+	
+	int[] getClasses() {
+		int seen[] = new int[100];
+		
+		for(int i = 0; i < inPracticeData.length; i++) {
+			if(seen[(int)inPracticeData[i][classLocation]] != 1) {
+				numClasses += 1;
+				seen[(int)inPracticeData[i][classLocation]] = 1;
+			}
+		}
+		
+		int classes[] = new int[numClasses];
+		
+		seen = new int[100];
+		int iter = 0;
+		for(int i = 0; i < inPracticeData.length; i++) {
+			if(seen[(int)inPracticeData[i][classLocation]] != 1) {
+				classes[iter] = (int)inPracticeData[i][classLocation];
+				seen[(int)inPracticeData[i][classLocation]] = 1;
+				iter += 1;
+			}
+		}
+		
+		return classes;
 	}
 }
