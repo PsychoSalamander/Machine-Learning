@@ -5,12 +5,15 @@ public class CNearestNeighbor extends NearestNeighbor {
 		
 	}
 	
-	void runClass() {
-		System.out.println("Empty Implementation!");
-	}
-	
-	void runRegress() {
-		System.out.println("Empty Implementation!");
+	void runClass(int K) {
+		float[][] ENearestNeighborArray = runIt(inPracticeData);
+    	KNearestNeighbor run = new KNearestNeighbor();
+    	
+    	run.setClassLocation(this.classLocation);
+    	run.setPracticeData(ENearestNeighborArray);
+    	run.setTestData(this.inTestData);
+    	
+    	run.runClass(K);
 	}
 	
 	public float[][] runIt(float[][] inputData) {
@@ -43,8 +46,8 @@ public class CNearestNeighbor extends NearestNeighbor {
 		tempCondensed[0] = temp[0];
 		for(int i = 1 ; i < row ; i++) {
 			float[] tempPoint = nearestNeighbor(condensed, temp[i]);
-			float tempClass = tempPoint[column-1];
-			if(tempClass != temp[i][column-1]) {
+			float tempClass = tempPoint[classLocation];
+			if(tempClass != temp[i][classLocation]) {
 				count++;
 				condensed = new float[count][column];
 				for(int j = 0 ; j < tempCondensed.length ; j++) {

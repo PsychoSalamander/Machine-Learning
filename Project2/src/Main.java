@@ -75,8 +75,7 @@ public class Main {
 	DataProcessor winequalityWhiteProcessor = new DataProcessor(winequalityWhitePath, winequalityWhiteData, true,
 		winequalityWhiteRoundings);
 	
-	ENearestNeighbor run = new ENearestNeighbor();
-	run.runIt(carData.getDataArrayShuffled());
+	
 	
 	
 	/*
