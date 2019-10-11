@@ -1,6 +1,3 @@
-import java.util.Arrays;
-import java.util.Comparator;
-
 public class KNearestNeighbor extends NearestNeighbor {
     	public int height = 0;
 	public int width = 0;
@@ -9,115 +6,130 @@ public class KNearestNeighbor extends NearestNeighbor {
 	
     }
 
-    public void runClass() {
-	System.out.println("Empty Implementation!");
+    // Run classification based on K nearest neighbors
+    public void runClass(int K) {
+    	int classCount[] = new int[100];
+    	
+    	int correct = 0;
+    	int incorrect = 0;
+    	for(int x = 0; x < inTestData.length; x++) {
+    		int nearestNeighbors[] = new int[K];
+    		
+    		// Get test point
+    		float[] Xi = inTestData[x];
+    		
+    		// Set all nearest neighbor indices to -1
+    		for(int i = 0; i < K; i++) {
+    			nearestNeighbors[i] = -1;
+    		}
+    		
+    		// Find K nearest neighbors
+    		for(int i = 0; i < K; i++) {
+    			float minDist = 1000000;
+				int minIndex = 0;
+				
+				// Check each of the data points in the practice set
+    			for(int j = 0; j < inPracticeData.length; j++) {
+    				
+    				// Check to find the closest point that has not already been used
+    				if((getDistance(Xi, inPracticeData[j]) < minDist) && !inArray(j, nearestNeighbors)) {
+    					minDist = getDistance(Xi, inPracticeData[j]);
+    					minIndex = j;
+    				}
+    			}
+    			
+    			// Add nearest unused neighbor to array
+    			nearestNeighbors[i] = minIndex;
+    		}
+    		
+    		// Count the number of occurences of each class in the nearest neighbors
+    		for(int i = 0; i < K; i++) {
+    			classCount[(int) inPracticeData[nearestNeighbors[i]][classLocation]] += 1;
+    		}
+    		
+    		// Check to find which class occurs the most
+    		int highestValue = 0;
+    		int highClass = 0;
+    		for(int i = 0; i < classCount.length; i++) {
+    			if(classCount[i] > highestValue) {
+    				highClass = i;
+    				highestValue = classCount[i];
+    			}
+    		}
+    		
+    		// Use highest occurrence class as guess
+    		int classGuess = highClass;
+    		
+    		// Check guess to see if it's correct
+    		if(classGuess == (int) Xi[classLocation]) {
+    			correct += 1;
+    		} else {
+    			incorrect += 1;
+    		}
+    	}
+    	
+    	// Get percent correctness and print it to console
+    	System.out.println("Percent correctness with " + K + " nearest neighbors: " + (correct/(incorrect+correct)));
     }
 
-    public void neighbor(float point[], float data[][]) {
-
-	// get dimensions of the array
-	height = data.length;
-	width = data[0].length;
-	float[] pointComp = new float[width];
-	// instantiating variables
-	float[][] neighborDist = new float[height][width+1]; 	// distance from test point of the data element
-	float neighbor[][] = new float[height][width+1];	   // dummy clone array of neighborDist
-	float dataOrig[][] = data.clone();		   	// clone of the inputed data
-
-	// shift through the array to find neighbor distance
-	for (int y = 0; y < height; y++) {
-	    for(int x = 0; x < width; x++) {
-		if( x >= 1) {
-		    neighborDist[y][x] = dataOrig[y][x-1];
-		    neighbor[y][x] = dataOrig[y][x-1];
-		}
-		
-		float distance = getDistance(pointComp, dataOrig, y);
-		neighborDist[y][0] = distance;
-		neighbor[y][0] = distance;
-	    }
-		
-	    
-	}
-	neighborDist = sortDistance(neighborDist, height, width);
-	
-	// print statements to verify methods
-	System.out.println("sorted distance");
-	for (int b = 0; b < height; b++) {
-	    
-		System.out.println(neighborDist[b][0]);
-	  
-	}
-	System.out.print("\n");
-	System.out.println("unsorted distance");
-	for (int b = 0; b < height; b++) {
-	    for (int n = 0; n < width; n++) {
-		System.out.println(neighbor[b][n]);
-	    }
-	}
-	System.out.print("\n");
-	System.out.println("Sorted distance data array");
-	for (int b = 0; b < height; b++) {
-	    for(int n = 0; n < width; n++) {
-		System.out.println(neighborDist[b][n]);
-	    }
-		
-	    
-	}
-
+    // Run regression based on K nearest neighbors
+    public void runRegress(int K) {
+    	float accuracy = 0;
+    	for(int x = 0; x < inTestData.length; x++) {
+    		int nearestNeighbors[] = new int[K];
+    		
+    		// Get test Point
+    		float[] Xi = inTestData[x];
+    		
+    		// Set all nearest neighbor indices to -1
+    		for(int i = 0; i < K; i++) {
+    			nearestNeighbors[i] = -1;
+    		}
+    		
+    		// Find K nearest neighbors
+    		for(int i = 0; i < K; i++) {
+    			float minDist = 1000000;
+				int minIndex = 0;
+				
+				// Check each of the data points in the practice set
+    			for(int j = 0; j < inPracticeData.length; j++) {
+    				
+    				// Check to find the closest point that has not already been used
+    				if((getDistance(Xi, inPracticeData[j]) < minDist) && !inArray(j, nearestNeighbors)) {
+    					minDist = getDistance(Xi, inPracticeData[j]);
+    					minIndex = j;
+    				}
+    			}
+    			
+    			// Add nearest unused neighbor to array
+    			nearestNeighbors[i] = minIndex;
+    		}
+    		
+    		// Sum the values of the nearest neighbor
+    		float practiceSum = 0;
+    		for(int i = 0; i < K; i++) {
+    			practiceSum += inPracticeData[nearestNeighbors[i]][classLocation];
+    		}
+    		
+    		// Take the average of the sum, giving you you're estimated value
+    		float regressionEst = (1/K)*practiceSum;
+    		
+    		// Add difference to accuracy value
+    		accuracy += Math.abs(Xi[classLocation] - regressionEst);
+    	}
+    	
+    	// Take average of differences, and print it
+    	System.out.println("Estimate was off by an average of: " + (accuracy / inTestData.length));
     }
-
-    // calculates how far the data point is from the reference point
-    float getDistance(float pointComp[], float dataOrig[][], int row) {
-	float calcDistance = 0;
-	float dist = 0;
-	//for loop to go through the columns of each "point" and get the distance
-	
-	for(int j  = 0; j < (width -1); j++) {		// for loop does not look at the last column value since that is the classifier not data 
-		
-	    dist = dist + ((dataOrig[row][j] - pointComp[j]) * (dataOrig[row][j] - pointComp[j]));
-		
-	}
-	    calcDistance = (float) Math.sqrt(dist);	// sqrt of the total distance for the point compared to the inserted point
-	   
-	
-	return calcDistance;
-
-    }
-
-    // method to sort the distances in ascending order
-    float[][] sortDistance(float[][] neighborDist, int height, int width) {
-	// Comparator to sort the data by the distance
-	Arrays.sort(neighborDist, new Comparator<float[]>() {
-
-	    @Override
-	    public int compare(float[] o1, float[] o2) {
-
-		 float data1 = o1[0];
-		 float data2 = o2[0];
-		return Float.compare(data1, data2);
-	    }
-	    
-	});
-	return neighborDist;
-
-    }
-
-    // get the value of the neighbors
-    float whatNeighbor(int kValue) {
-	float howdy = 0;
-
-	float kArr[] = new float[kValue];
-
-	for (int i = 0; i < kValue; i++) {
-
-	}
-
-	return howdy;
-
-    }
-
-    public void runRegress() {
-	System.out.println("Empty Implementation!");
+    
+    // See if given element is in given array
+    public boolean inArray(int element, int[] array) {
+    	for(int i : array) {
+    		if(element == i) {
+    			return true;
+    		}
+    	}
+    	
+    	return false;
     }
 }
