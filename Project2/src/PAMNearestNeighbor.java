@@ -12,4 +12,6 @@ public class PAMNearestNeighbor extends NearestNeighbor {
 	void runRegress() {
 		System.out.println("Empty Implementation!");
 	}
+	
+	
 }

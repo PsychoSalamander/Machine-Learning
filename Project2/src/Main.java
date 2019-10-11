@@ -7,9 +7,35 @@ import datapkg.*;
 public class Main {
     public static void main(String[] args) throws IOException {
 
-	DataProcessor asdf = new DataProcessor(Paths.get("dataSets/abalone/abalone.data"));
-	asdf.getProcessedData();
-	
+	ProcessedData abaloneData = new ProcessedData();
+	DataProcessor abaloneProcessor = new DataProcessor(Paths.get("dataSets/abalone/abalone.data"), abaloneData,
+		false);
+
+	ProcessedData carData = new ProcessedData();
+	DataProcessor carProcessor = new DataProcessor(Paths.get("dataSets/car/car.data"), carData, false);
+
+	ProcessedData forestfiresData = new ProcessedData();
+	DataProcessor forestfiresProcessor = new DataProcessor(Paths.get("dataSets/forestfires/forestfires.data"),
+		forestfiresData, false);
+
+	ProcessedData machineData = new ProcessedData();
+	DataProcessor machineProcessor = new DataProcessor(Paths.get("dataSets/machine/machine.data"), machineData,
+		false);
+
+	ProcessedData segmentationData = new ProcessedData();
+	DataProcessor segmentationProcessor = new DataProcessor(Paths.get("dataSets/segmentation/segmentation.data"),
+		segmentationData, false);
+
+	ProcessedData winequalityRedData = new ProcessedData();
+	DataProcessor winequalityRedProcessor = new DataProcessor(
+		Paths.get("dataSets/winequality-red/winequality-red.csv"), winequalityRedData, true);
+
+	ProcessedData winequalityWhiteData = new ProcessedData();
+	DataProcessor winequalityWhiteProcessor = new DataProcessor(
+		Paths.get("dataSets/winequality-white/winequality-white.csv"), winequalityWhiteData, true);
+
+	//asdf.getProcessedData();
+
 	/*
 	 * // Start GENERALIZED preprocessing. For this I will use
 	 * // text files and transfer them to 2D arrays. If wanting to
@@ -24,21 +50,32 @@ public class Main {
 	 * dp.readData(Paths.get("dataSets/segmentation/segmentation.data"));
 	 * // System.out.print("yolo");
 	 * // testing distance measure and ascending order of distance
-	 * KNearestNeighbor run = new KNearestNeighbor();
-	 * float[][] arrayTest = new float[4][3];
-	 * arrayTest[0][0] = 10;
-	 * arrayTest[0][1] = 0;
-	 * arrayTest[0][2] = 55;
-	 * arrayTest[1][0] = 200;
-	 * arrayTest[1][1] = 6;
-	 * arrayTest[1][2] = 22;
-	 * arrayTest[2][0] = 60;
-	 * arrayTest[2][1] = 1000;
-	 * arrayTest[2][2] = 1005;
-	 * arrayTest[3][0] = 20;
-	 * arrayTest[3][1] = 51;
-	 * arrayTest[3][2] = 81;
-	 * run.neighbor(3, 1, arrayTest);
 	 */
+	
+	KNearestNeighbor run = new KNearestNeighbor();
+	 float[][] arrayTest = new float[4][4];
+	 arrayTest[0][0] = 10;
+	 arrayTest[0][1] = 33;
+	 arrayTest[0][2] = 55;
+	 arrayTest[0][3] = 22;
+	 arrayTest[1][0] = 20;
+	 arrayTest[1][1] = 33;
+	 arrayTest[1][2] = 23;
+	 arrayTest[1][3] = 21;
+	 arrayTest[2][0] = 12;
+	 arrayTest[2][1] = 30;
+	 arrayTest[2][2] = 25;
+	 arrayTest[2][3] = 15;
+	 arrayTest[3][0] = 21;
+	 arrayTest[3][1] = 51;
+	 arrayTest[3][2] = 81;
+	 arrayTest[3][3] = 31;
+	 float[] point = new float[3];
+	 point[0] = 33;
+	 point[1] = 55;
+	 point[2] = 20;
+	 
+	 run.neighbor(point, arrayTest,1);
+	 
     }
 }

@@ -1,7 +1,8 @@
 public class NearestNeighbor {
 	
-	float inPracticeData[][];
-	float inTestData[][];
+	public float inPracticeData[][];
+	public float inTestData[][];
+	int classLocation;
 	
 	NearestNeighbor() {
 		
@@ -22,9 +23,11 @@ public class NearestNeighbor {
 			
 			// Get the total distance
 			for(int i = 0; i < p1.length; i++) {
-				float t = p2[i] - p1[i];
-				t = t * t;
-				d = d + t;
+				if(i != classLocation) {
+					float t = p2[i] - p1[i];
+					t = t * t;
+					d = d + t;
+				}
 			}
 			
 			// Take Square root of that distance
@@ -36,5 +39,13 @@ public class NearestNeighbor {
 							 + "DIMENSION SPACES!");
 			return 0;
 		}
+	}
+	
+	public void setPracticeData(float[][] d) {
+		inPracticeData = d;
+	}
+	
+	public void setTestData(float[][] d) {
+		inTestData = d;
 	}
 }
