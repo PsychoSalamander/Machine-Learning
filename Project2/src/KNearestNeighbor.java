@@ -56,7 +56,7 @@ public class KNearestNeighbor extends NearestNeighbor {
 	    }
 	}
 	System.out.print("\n");
-	System.out.println("original data array");
+	System.out.println("Sorted distance data array");
 	for (int b = 0; b < height; b++) {
 	    for(int n = 0; n < width; n++) {
 		System.out.println(neighborDist[b][n]);
@@ -73,7 +73,7 @@ public class KNearestNeighbor extends NearestNeighbor {
 	float dist = 0;
 	//for loop to go through the columns of each "point" and get the distance
 	
-	for(int j  = 0; j < (width -1); j++) {
+	for(int j  = 0; j < (width -1); j++) {		// for loop does not look at the last column value since that is the classifier not data 
 		
 	    dist = dist + ((dataOrig[row][j] - pointComp[j]) * (dataOrig[row][j] - pointComp[j]));
 		
