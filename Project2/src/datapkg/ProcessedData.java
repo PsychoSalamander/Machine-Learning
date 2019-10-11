@@ -7,8 +7,8 @@ public class ProcessedData {
     private int ClassColumn; 		    // position of the class within both of the arrays
     private int UniqueClasses;		    // number of unique classes given within the data array
 
-    public ProcessedData(int UniqueClasses) {
-	this.UniqueClasses = UniqueClasses;
+    public ProcessedData(int ClassColumn) {
+	this.ClassColumn = ClassColumn;
     }
 
     /*
