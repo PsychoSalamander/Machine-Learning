@@ -62,7 +62,6 @@ public class CNearestNeighbor extends NearestNeighbor {
 		// that completely gets rid of the zeros we will
 		// have to swap from an array to a 2D array list
 		// and back if needed
-		System.out.println("Empty Implementation!");
 		return condensed;
 	}
 }

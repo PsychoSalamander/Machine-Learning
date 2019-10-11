@@ -6,6 +6,8 @@ public class PAMNearestNeighbor extends NearestNeighbor {
 		
 	}
 	
+	float tolerance = 0.5f;
+	
 	KNearestNeighbor KNN = new KNearestNeighbor();
 	
 	void runClass(int K) {
@@ -94,14 +96,16 @@ public class PAMNearestNeighbor extends NearestNeighbor {
 						float newDistortion = 0;
 						for(int d = 0; d < D.length; d++) {
 							if(cluster[d] == i) {
-								newDistortion += getDistance(D[newMedoid], D[i]);
+								newDistortion += getDistance(D[newMedoid], D[d]);
 							}
 						}
-						// Check to see if new medoid has less distortion than original medoid
-						if(newDistortion < distortions[i]) {
+						// Check to see if new medoid has less distortion than original medoid						
+						if(newDistortion < distortions[i] - tolerance) {
 							medoids[i] = newMedoid;
 							distortions[i] = newDistortion;
 							movement = true;
+						} else {
+							
 						}
 					}
 				}

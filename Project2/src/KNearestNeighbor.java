@@ -8,8 +8,8 @@ public class KNearestNeighbor extends NearestNeighbor {
     public void runClass(int K) {
     	int classCount[] = new int[100];
     	
-    	int correct = 0;
-    	int incorrect = 0;
+    	float correct = 0;
+    	float incorrect = 0;
     	for(int x = 0; x < inTestData.length; x++) {
     		int nearestNeighbors[] = new int[K];
     		
@@ -67,7 +67,7 @@ public class KNearestNeighbor extends NearestNeighbor {
     	}
     	
     	// Get percent correctness and print it to console
-    	System.out.println("Percent correctness with " + K + " nearest neighbors: " + (correct/(incorrect+correct)));
+    	System.out.println("Percent correctness: " + (correct/(incorrect+correct))*100);
     }
 
     // Run regression based on K nearest neighbors

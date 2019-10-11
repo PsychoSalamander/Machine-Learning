@@ -2,12 +2,6 @@ import datapkg.*;
 
 public class DataRunner {
 	
-//	KNN = new KNearestNeighbor();
-//	ENN = new ENearestNeighbor();
-//	CNN = new CNearestNeighbor();
-//	KMNN = new KMeansNearestNeighbor();
-//	PAMNN = new PAMNearestNeighbor();
-	
 	DataRunner() {
 		
 	}
@@ -43,9 +37,12 @@ public class DataRunner {
 		}
 		
 		// Run K-Fold tests for K values of 3, 5, and 7 for the algorithm
-		runKFold(10, 3, algorithm, classLocation, inData, runClassification, runRegression);
+		System.out.println("k = 5");
 		runKFold(10, 5, algorithm, classLocation, inData, runClassification, runRegression);
+		System.out.println("k = 7");
 		runKFold(10, 7, algorithm, classLocation, inData, runClassification, runRegression);
+		System.out.println("k = 10");
+		runKFold(10, 10, algorithm, classLocation, inData, runClassification, runRegression);
 	}
 	
 	public void runKFold(int runK, int testK, NearestNeighbor algorithm, int classLoc, float[][] data, boolean testClassification, boolean testRegression) {

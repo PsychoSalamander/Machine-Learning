@@ -24,7 +24,7 @@ public class Main {
 	 * the data processors below.
 	 */
 	ProcessedData abaloneData = new ProcessedData(8);
-	ProcessedData carData = new ProcessedData(7);
+	ProcessedData carData = new ProcessedData(6);
 	ProcessedData forestfiresData = new ProcessedData(12);
 	ProcessedData machineData = new ProcessedData(8);
 	ProcessedData segmentationData = new ProcessedData(0);
@@ -75,51 +75,81 @@ public class Main {
 	DataProcessor winequalityWhiteProcessor = new DataProcessor(winequalityWhitePath, winequalityWhiteData, true,
 		winequalityWhiteRoundings);
 	
-	
-	
-	
-	/*
-	 * // Start GENERALIZED preprocessing. For this I will use
-	 * // text files and transfer them to 2D arrays. If wanting to
-	 * // use array lists, a transfer will have to be made
-	 * DataPreprocessor dp = new DataPreprocessor();
-	 * String Adata[][] = dp.readData(Paths.get("dataSets/abalone/abalone.data"));
-	 * String Cdata[][] = dp.readData(Paths.get("dataSets/car/car.data"));
-	 * String Fdata[][] =
-	 * dp.readData(Paths.get("dataSets/forestfires/forestfires.data"));
-	 * String Mdata[][] = dp.readData(Paths.get("dataSets/machine/machine.data"));
-	 * String Sdata[][] =
-	 * dp.readData(Paths.get("dataSets/segmentation/segmentation.data"));
-	 * // System.out.print("yolo");
-	 * // testing distance measure and ascending order of distance
-	 */
+	DataRunner dr = new DataRunner();
 
-	/*
-	 * KNearestNeighbor run = new KNearestNeighbor();
-	 * float[][] arrayTest = new float[4][4];
-	 * arrayTest[0][0] = 10;
-	 * arrayTest[0][1] = 33;
-	 * arrayTest[0][2] = 55;
-	 * arrayTest[0][3] = 22;
-	 * arrayTest[1][0] = 20;
-	 * arrayTest[1][1] = 33;
-	 * arrayTest[1][2] = 23;
-	 * arrayTest[1][3] = 21;
-	 * arrayTest[2][0] = 12;
-	 * arrayTest[2][1] = 30;
-	 * arrayTest[2][2] = 25;
-	 * arrayTest[2][3] = 15;
-	 * arrayTest[3][0] = 21;
-	 * arrayTest[3][1] = 51;
-	 * arrayTest[3][2] = 81;
-	 * arrayTest[3][3] = 31;
-	 * float[] point = new float[3];
-	 * point[0] = 33;
-	 * point[1] = 55;
-	 * point[2] = 20;
-	 * 
-	 * run.neighbor(point, arrayTest,1);
-	 */
-
+	KNearestNeighbor KNN = new KNearestNeighbor();
+	ENearestNeighbor ENN = new ENearestNeighbor();
+	CNearestNeighbor CNN = new CNearestNeighbor();
+	KMeansNearestNeighbor KMNN = new KMeansNearestNeighbor();
+	PAMNearestNeighbor PAMNN = new PAMNearestNeighbor();
+	
+	
+	System.out.println("Running KNN Algorithm:");
+	System.out.println("Running Abalone Data:");
+	dr.runTests(KNN, abaloneData, true, false, false, false);
+	System.out.println("Running Car Data:");
+	dr.runTests(KNN, carData, true, false, false, false);
+	System.out.println("Running Segmentation Data:");
+	dr.runTests(KNN, segmentationData, true, false, false, false);
+	System.out.println("Running Forest Fire Data:");
+	dr.runTests(KNN, forestfiresData, false, true, false, false);
+	System.out.println("Running Machine Data:");
+	dr.runTests(KNN, machineData, false, true, false, false);
+	System.out.println("Running Red Wine Data:");
+	dr.runTests(KNN, winequalityRedData, false, true, false, false);
+	System.out.println("Running White Wine Data:");
+	dr.runTests(KNN, winequalityWhiteData, false, true, false, false);
+	
+	
+	System.out.println("Running ENN Algorithm:");
+	System.out.println("Running Abalone Data:");
+	dr.runTests(ENN, abaloneData, true, false, false, false);
+	System.out.println("Running Car Data:");
+	dr.runTests(ENN, carData, true, false, false, false);
+	System.out.println("Running Segmentation Data:");
+	dr.runTests(ENN, segmentationData, true, false, false, false);
+	
+	
+	System.out.println("Running CNN Algorithm:");
+	System.out.println("Running Abalone Data:");
+	dr.runTests(CNN, abaloneData, true, false, false, false);
+	System.out.println("Running Car Data:");
+	dr.runTests(CNN, carData, true, false, false, false);
+	System.out.println("Running Segmentation Data:");
+	dr.runTests(CNN, segmentationData, true, false, false, false);
+	
+	
+	System.out.println("Running KMNN Algorithm:");
+	System.out.println("Running Abalone Data:");
+	dr.runTests(KMNN, abaloneData, true, false, true, false);
+	System.out.println("Running Car Data:");
+	dr.runTests(KMNN, carData, true, false, true, false);
+	System.out.println("Running Segmentation Data:");
+	dr.runTests(KMNN, segmentationData, true, false, true, false);
+	System.out.println("Running Forest Fire Data:");
+	dr.runTests(KMNN, forestfiresData, false, true, false, false);
+	System.out.println("Running Machine Data:");
+	dr.runTests(KMNN, machineData, false, true, false, true);
+	System.out.println("Running Red Wine Data:");
+	dr.runTests(KMNN, winequalityRedData, false, true, false, true);
+	System.out.println("Running White Wine Data:");
+	dr.runTests(KMNN, winequalityWhiteData, false, true, false, true);
+	
+	
+	System.out.println("Running PAMNN Algorithm:");
+	System.out.println("Running Abalone Data:");
+	dr.runTests(PAMNN, abaloneData, true, false, true, false);
+	System.out.println("Running Car Data:");
+	dr.runTests(PAMNN, carData, true, false, true, false);
+	System.out.println("Running Segmentation Data:");
+	dr.runTests(PAMNN, segmentationData, true, false, true, false);
+	System.out.println("Running Forest Fire Data:");
+	dr.runTests(PAMNN, forestfiresData, false, true, false, false);
+	System.out.println("Running Machine Data:");
+	dr.runTests(PAMNN, machineData, false, true, false, true);
+	System.out.println("Running Red Wine Data:");
+	dr.runTests(PAMNN, winequalityRedData, false, true, false, true);
+	System.out.println("Running White Wine Data:");
+	dr.runTests(PAMNN, winequalityWhiteData, false, true, false, true);
     }
 }

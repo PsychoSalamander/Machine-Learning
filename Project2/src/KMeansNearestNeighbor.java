@@ -9,7 +9,7 @@ public class KMeansNearestNeighbor extends NearestNeighbor {
 	KNearestNeighbor KNN = new KNearestNeighbor();
 	
 	// Parameter to define how close the mean has to be to the actual mean to accept
-	private float MT = 0.1f;
+	private float MT = 0.0f;
 	
 	void runClass(int K) {
 		
