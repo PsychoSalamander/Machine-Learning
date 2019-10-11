@@ -43,10 +43,10 @@ public class ENearestNeighbor extends NearestNeighbor {
 	for (int i =0,j = 0; i < row / 5; i++,j++) { // first 1/5 training
 		training[j] = temp[i];
 	}
-	for (int i = row / 5, j = 0; i < 2 * row / 5; i++, j++) { // second 1/5 test
+	for (int i = row / 5, j = 0; i < (row / 5) + (row/5); i++, j++) { // second 1/5 test
 		testing[j] = temp[i];
 	}
-	for (int i = 2 * row / 5, j = 0; i < row ; i++,j++) { // everything else edited
+	for (int i = (row / 5) + (row/5), j = 0; i < row ; i++,j++) { // everything else edited
 		edited[j] = temp[i];
 	}
 	
@@ -59,7 +59,7 @@ public class ENearestNeighbor extends NearestNeighbor {
 	 * ---------------------------------------------------
 	 */
 	
-	float firstAccuracy = (float) 0.0;
+	float firstAccuracy = (float) 1.0;
 	float secondAccuracy = (float) 0.0;
 	int firstAccCount = 0;
 	int totalAcc = 0;
@@ -75,7 +75,7 @@ public class ENearestNeighbor extends NearestNeighbor {
 	 * ---------------------------------------------------
 	 */
 	
-	while (secondAccuracy <= firstAccuracy && edited.length > testing.length) {
+	while (secondAccuracy < firstAccuracy && edited.length > testing.length) {
 		
 		float[][] tempEdited = new float[tempCount][column]; // kept points
 		tempEdited = edited;
