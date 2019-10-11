@@ -9,7 +9,7 @@ public class Main {
     @SuppressWarnings("unused") //supresses the warnings for the DataProcessor instances below, as the constructor runs the code.
     
     public static void main(String[] args) throws IOException {
-
+	
 	// path of each data set import file
 	Path abalonePath = Paths.get("dataSets/abalone/abalone.data");
 	Path carPath = Paths.get("dataSets/car/car.data");
@@ -38,15 +38,23 @@ public class Main {
 	 * special roundings are needed, and will use the default of rounding to two
 	 * decimal places.
 	 */
-	Hashtable<Integer, String> abaloneSpecialRoundings = null;
-	Hashtable<Integer, String> carSpecialRoundings = null;
-	Hashtable<Integer, String> forestSpecialRoundings = null; //new Hashtable<Integer, String>();
-	//forestSpecialRoundings.put(4, "####"); // Round FFMC to the nearest whole number.
+	Hashtable<Integer, Integer> abaloneSpecialRoundings = null;
+	Hashtable<Integer, Integer> carSpecialRoundings = null;
+	Hashtable<Integer, Integer> forestSpecialRoundings = new Hashtable<Integer, Integer>();
+	forestSpecialRoundings.put(4, 1); // Round FFMC to the nearest whole number.
 	
-	Hashtable<Integer, String> machineSpecialRoundings = null;
-	Hashtable<Integer, String> segmentationSpecialRoundings = null;
-	Hashtable<Integer, String> winequalityRedRoundings = null;
-	Hashtable<Integer, String> winequalityWhiteRoundings = null;
+	Hashtable<Integer, Integer> machineSpecialRoundings = new Hashtable<Integer, Integer>();
+	machineSpecialRoundings.put(9, -9); // Round ERP to 0.
+	
+	Hashtable<Integer, Integer> segmentationSpecialRoundings = new Hashtable<Integer, Integer>();
+	segmentationSpecialRoundings.put(17, 1); // Round saturatoin-mean to the tenths place.
+	segmentationSpecialRoundings.put(18, 1); // Round hue-mean to the tenths place.
+	
+	Hashtable<Integer, Integer> winequalityRedRoundings = new Hashtable<Integer, Integer>();
+	winequalityRedRoundings.put(7, 3); // Round density to the thousandths place.
+	
+	Hashtable<Integer, Integer> winequalityWhiteRoundings = new Hashtable<Integer, Integer>();
+	winequalityWhiteRoundings.put(7, 3); // Round density to the thousandths place.
 
 	/*
 	 * Instantiations of the data processors.

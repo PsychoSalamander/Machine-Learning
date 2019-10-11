@@ -8,12 +8,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DecimalFormat;
 import java.util.Hashtable;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class DataProcessor {
 
@@ -26,11 +27,11 @@ public class DataProcessor {
     private boolean HasHeader;					// true = input file has a header, false if it doesn't
     private int height;						// number of rows in the data array
     ArrayList<Hashtable<String, Float>> lookupTable;		// lookup table for inputed attribute elements to their corresponding new value
-    Hashtable<Integer, String> SpecialRoundings;		// flag the data at a certain column if it needs to be rounded with a special format, instead of the default of 2 decimal places
+    Hashtable<Integer, Integer> SpecialRoundings;		// flag the data at a certain column if it needs to be rounded with a special format, instead of the default of 2 decimal places
 
     // class constructor
     public DataProcessor(Path FilePath, ProcessedData DataOutput, boolean HasHeader,
-	    Hashtable<Integer, String> SpecialRoundings) {
+	    Hashtable<Integer, Integer> SpecialRoundings) {
 
 	this.FilePath = FilePath;
 	this.OutputFilePath = generateOutputFileName(FilePath); // get the OutputFilePath file path from generateOutputFileName
@@ -110,7 +111,7 @@ public class DataProcessor {
 	}
 
 	DataOutput.setDataArrayClassSorted(RawData);
-	DataOutput.setDataArrayShuffled(RawData);
+	shuffleArray();
     }
 
     // instantiates the arrays neccessary, after the size of them is known
@@ -147,8 +148,16 @@ public class DataProcessor {
 	// for every row in the data file
 	while ((row = csvReader.readLine()) != null) {
 
-	    // split the string into an array, deliminated by every comma in the row
-	    String[] elements = row.split(",");
+	    String[] elements = null;
+
+	    // split the string into an array, deliminated by every separator in the row
+	    if (row.contains(",")) {
+		elements = row.split(",");
+	    }
+
+	    if (row.contains(";")) {
+		elements = row.split(";");
+	    }
 
 	    // if it is the first row number, instantiate the array size
 	    if (rowNumber == 0) {
@@ -204,31 +213,30 @@ public class DataProcessor {
 
     // rounds the string to 2 decimal places
     private String roundElement(String element, int column) {
-	DecimalFormat roundingFormat;
+	double scale;
 
 	// if there are any special roundings
 	if (SpecialRoundings != null) {
 	    boolean includesKey = SpecialRoundings.containsKey(column); // see if the column number is a special rounding format
 
 	    if (includesKey) {
-		String specialFormat = SpecialRoundings.get(column); // grab the special value from the hashtable
-		roundingFormat = new DecimalFormat(specialFormat);   // set the rounding format to the special value
+		scale = Math.pow(10, SpecialRoundings.get(column)); // grab the special value from the hashtable
 	    } else {
-		roundingFormat = new DecimalFormat("######.00"); // set the format to round to 2 decimal places
+		scale = Math.pow(10, 2); // set the format to round to 2 decimal places
 	    }
 	} else {
-	    roundingFormat = new DecimalFormat("######.00"); // set the format to round to 2 decimal places
+	    scale = Math.pow(10, 2); // set the format to round to 2 decimal places
 	}
 
-	float number;
+	double number;
 	String roundedNumber;
 
 	// try parsing the number from string to float
 	try {
-	    number = Float.parseFloat(element);
-	    roundedNumber = roundingFormat.format(number); // round the number
+	    number = Double.parseDouble(element);
+	    roundedNumber = Double.toString(Math.round(number * scale) / scale);
 	} catch (NumberFormatException | NullPointerException nfe) {
-	    System.out.println("ERROR: ELEMENT \"" + element + "\" IS NOT A FLOAT");
+	    System.out.println("ERROR: ELEMENT \"" + element + "\" IS NOT A DOUBLE");
 	    roundedNumber = null;
 	}
 
@@ -301,5 +309,28 @@ public class DataProcessor {
     private int calculateUniqueClasses() {
 
 	return 0;
+    }
+
+    private void shuffleArray() {
+	
+	float[][] shuffledArray = RawData.clone();
+	
+	Random randomGenerator = new Random();
+	
+	for (int index = 0; index < shuffledArray.length; index++) {
+	    int randomPosition = randomGenerator.nextInt(shuffledArray.length);
+	    float[] hold = shuffledArray[index];
+	    shuffledArray[index] = shuffledArray[randomPosition];
+	    shuffledArray[randomPosition] = hold;
+	}
+	
+	DataOutput.setDataArrayShuffled(shuffledArray.clone());
+    }
+
+    private void sortArrayByClass() {
+	
+	float[][] sortedArray = RawData.clone();
+	
+	//Arrays.sort();
     }
 }
