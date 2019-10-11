@@ -17,18 +17,23 @@ public class DataRunner {
 		float inData[][] = data.getDataArrayShuffled();
 		int classLocation = data.getClassColumnPosition();
 		
+		// Check to make sure data is not edited and fourthed
 		if(editData && fourthData) {
 			System.out.println("Do not edit and fourth data!");
+			System.exit(-1);
 		} else {
+			// Edit Data if that flag is ticked
 			if(editData) {
 				ENearestNeighbor ENN = new ENearestNeighbor();
 				inData = ENN.runIt(inData);
 			}
+			// Fourth Data if that flag is ticked
 			if(fourthData) {
 				// Get fourth of data to run in regression algorithms
 				int dataSize = inData.length;
 				float fourthedData[][] = new float[Math.round(dataSize/4)][inData[0].length];
 				
+				// Fill in fourthedData structure
 				for(int i = 0; i < Math.round(dataSize/4); i++) {
 					fourthedData[i] = inData[i];
 				}
@@ -37,6 +42,7 @@ public class DataRunner {
 			}
 		}
 		
+		// Run K-Fold tests for K values of 3, 5, and 7 for the algorithm
 		runKFold(10, 3, algorithm, classLocation, inData, runClassification, runRegression);
 		runKFold(10, 5, algorithm, classLocation, inData, runClassification, runRegression);
 		runKFold(10, 7, algorithm, classLocation, inData, runClassification, runRegression);
