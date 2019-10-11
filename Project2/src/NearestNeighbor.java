@@ -8,11 +8,11 @@ public class NearestNeighbor {
 		
 	}
 	
-	void runClass() {
+	void runClass(int K) {
 		System.out.println("Empty Implementation!");
 	}
 	
-	void runRegress() {
+	void runRegress(int K) {
 		System.out.println("Empty Implementation!");
 	}
 	
