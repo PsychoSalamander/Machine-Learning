@@ -5,16 +5,19 @@ public class CNearestNeighbor extends NearestNeighbor {
 		
 	}
 	
-	void runClass() {
-		System.out.println("Empty Implementation!");
-	}
-	
-	void runRegress() {
-		System.out.println("Empty Implementation!");
+	void runClass(int K) {
+		float[][] ENearestNeighborArray = runIt(inPracticeData);
+    	KNearestNeighbor run = new KNearestNeighbor();
+    	
+    	run.setClassLocation(this.classLocation);
+    	run.setPracticeData(ENearestNeighborArray);
+    	run.setTestData(this.inTestData);
+    	
+    	run.runClass(K);
 	}
 	
 	public float[][] runIt(float[][] inputData) {
-		System.out.println("Empty Implementation!");
+		
 		//---------------------------------------------------
 		// input is stored as a temp data set, we will then
 		// call nearest neighbor function, one at a time,
@@ -29,7 +32,9 @@ public class CNearestNeighbor extends NearestNeighbor {
 		// of our extreme values and will swap all
 		// uninteresting values to zero
 		//---------------------------------------------------
-		float[][] condensed = new float[column][row];
+		int count = 1;
+		float[][] condensed = new float[count][column];
+		float[][] tempCondensed = new float[count][column];
 		//---------------------------------------------------
 		// now we will call nearest neighbor, and if the
 		// point of interest matches the class of it's
@@ -38,17 +43,19 @@ public class CNearestNeighbor extends NearestNeighbor {
 		// make sense to first scramble all the data.
 		//---------------------------------------------------
 		condensed[0] = temp[0];
-		for(int i = 0 ; i < row ; i++) {
-			//data = new dataprocesser();
-			int tempClass = 0;// = data.nearestneighbor(condensed, temp[i]);
-			if(tempClass == temp[i][column]) {
-				for(int j = 0 ; j < column ; j++) {
-					condensed[i][j] = 0;
+		tempCondensed[0] = temp[0];
+		for(int i = 1 ; i < row ; i++) {
+			float[] tempPoint = nearestNeighbor(condensed, temp[i]);
+			float tempClass = tempPoint[classLocation];
+			if(tempClass != temp[i][classLocation]) {
+				count++;
+				condensed = new float[count][column];
+				for(int j = 0 ; j < tempCondensed.length ; j++) {
+					condensed[j] = tempCondensed[j];
 				}
-			}else {
-				for(int j = 0 ; j < column ; j++) {
-					condensed[i][j] = temp[i][j];
-				}
+				condensed[count-1] = temp[i];
+				tempCondensed = new float[count][column];
+				tempCondensed = condensed;
 			}
 		}
 		// then if we want to make this into a 2D array

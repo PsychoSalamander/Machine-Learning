@@ -3,24 +3,34 @@ package datapkg;
 public class ProcessedData {
 
     private float[][] DataArrayShuffled;    // array containing the data, after it has been processed AND shuffled
-    private float[][] DataArrayClassSorted; // array containing the data, after it has been processed AND sorted
     private int ClassColumn; 		    // position of the class within both of the arrays
 
-    ProcessedData(float[][] DataArrayShuffled, float[][] DataArrayClassSorted, int ClassColumn) {
-	this.DataArrayShuffled = DataArrayShuffled;
-	this.DataArrayClassSorted = DataArrayClassSorted;
+    public ProcessedData(int ClassColumn) {
 	this.ClassColumn = ClassColumn;
     }
 
-    // returns the array containing the data, after it has been processed AND
-    // shuffled
-    public float[][] getDataArrayShuffled() {
-	return DataArrayShuffled.clone();
+    /*
+     * Set Methods
+     */
+    
+    // sets the DataArrayShuffled to the input
+    public void setDataArrayShuffled(float[][] DataArrayShuffled) {
+	this.DataArrayShuffled = DataArrayShuffled;
     }
 
-    // returns array containing the data, after it has been processed AND sorted
-    public float[][] getDataArrayClassSorted() {
-	return DataArrayClassSorted.clone();
+    // sets the ClassColumn to the input
+    public void setClassColumn(int ClassColumn) {
+	this.ClassColumn = ClassColumn;
+    }
+
+
+    /*
+     * Get Methods
+     */
+
+    // returns the array containing the data, after it has been processed AND shuffled
+    public float[][] getDataArrayShuffled() {
+	return DataArrayShuffled.clone();
     }
 
     // returns array containing the data, after it has been processed AND sorted
