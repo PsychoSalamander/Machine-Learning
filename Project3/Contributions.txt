@@ -1,0 +1,16 @@
+Axel Ward:
+ - PAMNearestNeighbor.java
+ - KMeansNearestNeighbor.java
+ - NearestNeighbor.java
+
+Franki Taylor:
+ - KNearestNeighbor.java
+ - DataRunner.java
+ 
+Spencer Raymond:
+ - ENearestNeighbor.java
+ - CNearestNeighbor.java
+ 
+Blake Mitchell:
+ - DataProcessor.java
+ - ProcessedData.java
