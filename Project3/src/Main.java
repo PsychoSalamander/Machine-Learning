@@ -83,6 +83,7 @@ public class Main {
 	KMeansNearestNeighbor KMNN = new KMeansNearestNeighbor();
 	PAMNearestNeighbor PAMNN = new PAMNearestNeighbor();
 	
+	/*
 	// Run KNN Algorithm
 	System.out.println("Running KNN Algorithm:");
 	System.out.println("Running Abalone Data:");
@@ -151,5 +152,6 @@ public class Main {
 	dr.runTests(PAMNN, winequalityRedData, false, true, false, true);
 	System.out.println("Running White Wine Data:");
 	dr.runTests(PAMNN, winequalityWhiteData, false, true, false, true);
+	*/
     }
 }
