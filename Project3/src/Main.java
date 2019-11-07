@@ -85,8 +85,8 @@ public class Main {
 	
 	int nodes[] = {10, 7};
 	
-	//dr.runFeedForward(carData, 10, nodes, 10, true);
-	dr.runFeedForward(machineData, 10, nodes, 10, false);
+	// dr.runFeedForward(carData, 10, nodes, 10, true, "car");
+	dr.runFeedForward(machineData, 10, nodes, 10, false, "machine");
 	
 	/*
 	// Run KNN Algorithm

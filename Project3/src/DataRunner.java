@@ -107,7 +107,7 @@ public class DataRunner {
 		}	
 	}
 	
-	public void runFeedForward(ProcessedData inData, int runK, int[] nodeCount, int regressionOutputCount, boolean testClassification) {
+	public void runFeedForward(ProcessedData inData, int runK, int[] nodeCount, int regressionOutputCount, boolean testClassification, String name) {
 		
 		float data[][] = inData.getDataArrayShuffled();
 		int classLoc = inData.getClassColumnPosition();
@@ -218,6 +218,9 @@ public class DataRunner {
 			
 			// Set Scales for activation calculation
 			algorithm.setScales(scales);
+			
+			// Set file output name
+			algorithm.setFileName("classification_" + name + "_" + t);
 			
 			if(testClassification) {
 				algorithm.runClass();
