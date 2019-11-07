@@ -3,7 +3,7 @@ import java.util.Random;
 public class FeedForward {
 	
 	// Initialization Multiplier
-	final static float IM = .5f;
+	final static float IM = 1.0f;
 	
 	// Learning Multiplier
 	final static float N = .1f;
@@ -26,7 +26,7 @@ public class FeedForward {
 		numNodes[0] = numInputs;
 		numNodes[numLayers - 1] = numOutputs;
 		
-		if(nodeCount.length != layerCount) {
+		if(nodeCount.length == layerCount) {
 			for(int i = 0; i < nodeCount.length; i++) {
 				numNodes[i+1] = nodeCount[i];
 			}
@@ -56,9 +56,10 @@ public class FeedForward {
 		
 		int correct = 0;
 		for(int i = 0; i < inTestData.length; i++) {
-			float results[] = getResults(inTestData[i]);
+			float activations[] = getActivations(inTestData[i]);
+			float results[] = getResults(activations);
 			
-			int bigIndex = -1;
+			int bigIndex = 0;
 			float bigEstimate = 0;
 			for(int j = 0; j < results.length; j++) {
 				if(results[j] > bigEstimate) {
@@ -72,15 +73,27 @@ public class FeedForward {
 			}
 		}
 		
-		System.out.println(correct / inTestData.length);
+		System.out.println((float)correct / inTestData.length);
 	}
 	
 	public void runRegress() {
 		forwardPass();
 		
+		System.out.println("Initial Weight Matrix:");
+		for(int i = 0; i < weightMatrix.length; i++) {
+			for(int j = 0; j < weightMatrix[i].length; j++) {
+				System.out.print("[");
+				for(int k = 0; k < weightMatrix[i][j].length; k++) {
+					System.out.print(weightMatrix[i][j][k] + ", ");
+				}
+				System.out.println("]");
+			}
+			System.out.println("\n");
+		}
+		
 		setRegressKey();
 		
-		for(int i = 0; i < inPracticeData.length; i++) {
+		for(int i = 0; i < 3; i++) {
 			float activations[] = getActivations(inPracticeData[i]);
 			
 			float results[] = getResults(activations);
@@ -88,8 +101,31 @@ public class FeedForward {
 			updateWeightsRegress(results, inPracticeData[i][classLocation]);
 		}
 		
-		int correct = 0;
+		float meanErr = 0;
 		
+		for(int i = 0; i < 1; i++) {
+			float activations[] = getActivations(inTestData[i]);
+			float results[] = getResults(activations);
+			
+			int bigIndex = 0;
+			float bigEstimate = 0;
+			for(int j = 0; j < results.length; j++) {
+				if(results[j] > bigEstimate) {
+					bigEstimate = results[j];
+					bigIndex = j;
+				}
+			}
+			
+			float result = results[bigIndex];
+			
+			float err = (float) Math.exp(inTestData[i][classLocation] - result);
+			
+			meanErr += err;
+		}
+		
+		meanErr = meanErr / inTestData.length;
+		
+		System.out.println("Mean Squared Error of Regression Test: " + meanErr);
 	}
 	
 	private void setClassKey() {
@@ -159,6 +195,14 @@ public class FeedForward {
 			}
 		}
 		
+		/*
+		System.out.print("Activations: [");
+		for(int i = 0; i < activations.length; i++) {
+			System.out.print(activations[i] + ", ");
+		}
+		System.out.println("]");
+		*/
+		
 		return activations;
 	}
 	
@@ -167,28 +211,72 @@ public class FeedForward {
 		
 		float currentActivations[] = inExample;
 		
+		System.out.print("Initial Activations: [");
+		for(int k = 0; k < currentActivations.length; k++) {
+			System.out.print(currentActivations[k] + ", ");
+		}
+		System.out.println("]");
+		
+		System.out.println("Weight Matrix:");
+		for(int i = 0; i < weightMatrix.length; i++) {
+			for(int j = 0; j < weightMatrix[i].length; j++) {
+				System.out.print("[");
+				for(int k = 0; k < weightMatrix[i][j].length; k++) {
+					System.out.print(weightMatrix[i][j][k] + ", ");
+				}
+				System.out.println("]");
+			}
+			System.out.println("\n");
+		}
+		
 		for(int i = 0; i < weightMatrix.length; i++) {
 			float newActivations[] = new float[weightMatrix[i][0].length];
 			
+			System.out.print("pre-Activations: [");
+			for(int x = 0; x < currentActivations.length; x++) {
+				System.out.print(currentActivations[x] + ", ");
+			}
+			System.out.println("]");
+			
+			
+			
 			for(int j = 0; j < newActivations.length; j++) {
 				for(int k = 0; k < currentActivations.length; k++) {
+					System.out.println("Multiplier: " + weightMatrix[i][k][j] + " * " + currentActivations[k]);
 					newActivations[j] += currentActivations[k] * weightMatrix[i][k][j];
 				}
 				
-				newActivations[j] = calcSig(newActivations[j]);
+				System.out.println("-----");
+				
+				if(i != weightMatrix.length - 1) {
+					newActivations[j] = calcSig(newActivations[j]);
+				}
 			}
+			
+			System.out.print("post-Activations: [");
+			for(int x = 0; x < newActivations.length; x++) {
+				System.out.print(newActivations[x] + ", ");
+			}
+			System.out.println("]");
 			
 			currentActivations = newActivations;
 		}
 		
 		results = currentActivations;
+		/*
+		System.out.print("Results: [");
+		for(int i = 0; i < results.length; i++) {
+			System.out.print(results[i] + ", ");
+		}
+		System.out.println("]");
+		*/
 		
 		return results;
 	}
 	
 	private void updateWeightsClass(float results[], float example) {
-		int bigIndex = -1;
-		float bigEstimate = 0;
+		int bigIndex = 0;
+		float bigEstimate = -1;
 		for(int i = 0; i < results.length; i++) {
 			if(results[i] > bigEstimate) {
 				bigEstimate = results[i];
@@ -202,11 +290,17 @@ public class FeedForward {
 			correct = 1.0f;
 		}
 		
-		float err = N * (correct / bigEstimate);
+		System.out.print("Results: [");
+		for(int x = 0; x < results.length; x++) {
+			System.out.print(results[x] + ", ");
+		}
+		System.out.println("]");
+		float err = N * (correct / (1.0001f - bigEstimate));
+		System.out.println("Estimate: " + bigEstimate);
 		
 		for(int i = 0; i < weightMatrix.length; i++) {
 			for(int j = 0; j < weightMatrix[i].length; j++) {
-				for(int k = 0; k < weightMatrix[i][j].length; j++) {
+				for(int k = 0; k < weightMatrix[i][j].length; k++) {
 					weightMatrix[i][j][k] = weightMatrix[i][j][k] + err;
 				}
 			}
@@ -214,8 +308,8 @@ public class FeedForward {
 	}
 	
 	private void updateWeightsRegress(float results[], float example) {
-		int bigIndex = -1;
-		float bigEstimate = 0;
+		int bigIndex = 0;
+		float bigEstimate = -1;
 		for(int i = 0; i < results.length; i++) {
 			if(results[i] > bigEstimate) {
 				bigEstimate = results[i];
@@ -225,11 +319,13 @@ public class FeedForward {
 		
 		float correct = classKey[bigIndex];
 		
-		float err = N * (((example - correct) * (example - correct)) / bigEstimate);
+		//System.out.println("Strength of estimate: " + bigEstimate);
+		float err = N * (((example - correct) * (example - correct)) / (1.001f - bigEstimate));
+		System.out.println("Error: " + err);
 		
 		for(int i = 0; i < weightMatrix.length; i++) {
 			for(int j = 0; j < weightMatrix[i].length; j++) {
-				for(int k = 0; k < weightMatrix[i][j].length; j++) {
+				for(int k = 0; k < weightMatrix[i][j].length; k++) {
 					weightMatrix[i][j][k] = weightMatrix[i][j][k] + err;
 				}
 			}
@@ -242,7 +338,7 @@ public class FeedForward {
 		
 		for(int i = 0; i < weightMatrix.length; i++) {
 			for(int j = 0; j < weightMatrix[i].length; j++) {
-				for(int k = 0; k < weightMatrix[i][j].length; j++) {
+				for(int k = 0; k < weightMatrix[i][j].length; k++) {
 					weightMatrix[i][j][k] = r.nextFloat() * IM;
 				}
 			}
@@ -269,6 +365,13 @@ public class FeedForward {
 	}
 	
 	public void setScales(float scales[]) {
+		
+		System.out.print("scale: [");
+		for(int i = 0; i < scales.length; i++) {
+			System.out.print(scales[i] + ", ");
+		}
+		System.out.println("]");
+		
 		inScales = scales;
 	}
 }

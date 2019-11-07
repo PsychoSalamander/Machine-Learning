@@ -83,6 +83,11 @@ public class Main {
 	KMeansNearestNeighbor KMNN = new KMeansNearestNeighbor();
 	PAMNearestNeighbor PAMNN = new PAMNearestNeighbor();
 	
+	int nodes[] = {10, 7};
+	
+	//dr.runFeedForward(carData, 10, nodes, 10, true);
+	dr.runFeedForward(machineData, 10, nodes, 10, false);
+	
 	/*
 	// Run KNN Algorithm
 	System.out.println("Running KNN Algorithm:");
