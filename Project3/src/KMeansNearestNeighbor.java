@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Random;
 
 public class KMeansNearestNeighbor extends NearestNeighbor {
@@ -133,11 +134,17 @@ public class KMeansNearestNeighbor extends NearestNeighbor {
 				}
 			}
 			
+			
+			printArray(clusterCount);
 			// Divide by number of examples to get means
 			for(int i = 0; i < newMeans.length; i++) {
 				for(int j = 0; j < newMeans[0].length; j++) {
 					if(j != classLocation) {
-						newMeans[i][j] = newMeans[i][j] / clusterCount[i];
+						if(clusterCount[i] != 0) {
+							newMeans[i][j] = newMeans[i][j] / clusterCount[i];
+						} else {
+							newMeans[i][j] = means[i][j];
+						}
 					}
 				}
 			}
@@ -186,4 +193,12 @@ public class KMeansNearestNeighbor extends NearestNeighbor {
 		
 		return classes;
 	}
+	
+    public void printArray(int[] array) {
+		System.out.println("Array Visualized:");
+		
+		for (int row = 0; row < array.length; row++) {
+			System.out.println(Arrays.toString(array)); 
+		}
+    }
 }
