@@ -402,6 +402,7 @@ public class FeedForward {
 			}
 		}
 		
+		// Iterate through every step of weights to update them
 		for(int x = weightMatrix.length - 1; x > 0; x--) {
 			// Get the squared error at each node
 			float[] error = new float[desired.length];
@@ -409,21 +410,27 @@ public class FeedForward {
 				error[i] = (float) Math.pow((double) (results[x + 1][i] - desired[i]), 2);
 			}
 			
+			// Initialize new desired and new weights arrays
 			float[] newDesired = results[x];
 			float[][] newWeights = weightMatrix[x];
 			
+			// Find new weights
 			for(int i = 0; i < weightMatrix[x].length; i++) {
 				for(int j = 0; j < weightMatrix[x][0].length; j++) {
+					// Apply learning modifier and error in proportion to the level of new desired outputs
 					newWeights[i][j] += -N * newDesired[i] * error[j];
 				}
 			}
 			
+			// Find new desired values
 			for(int i = 0; i < weightMatrix[x].length; i++) {
 				for(int j = 0; j < weightMatrix[x][0].length; j++) {
+					// Set new desired values with respect to weights and error
 					newDesired[i] += weightMatrix[x][i][j] * error[j];
 				}
 			}
 			
+			// Set desired and weights to their new values
 			weightMatrix[x] = newWeights;
 			desired = newDesired;
 		}
@@ -443,21 +450,27 @@ public class FeedForward {
 				error[i] = (float) Math.pow((double) ((results[x + 1][i] - example) - desired[i]), 2);
 			}
 			
+			// Initialize new desired and new weights arrays
 			float[] newDesired = results[x];
 			float[][] newWeights = weightMatrix[x];
 			
+			// Find new weights
 			for(int i = 0; i < weightMatrix[x].length; i++) {
 				for(int j = 0; j < weightMatrix[x][0].length; j++) {
+					// Apply learning modifier and error in proportion to the level of new desired outputs
 					newWeights[i][j] += -N * newDesired[i] * error[j];
 				}
 			}
 			
+			// Find new desired values
 			for(int i = 0; i < weightMatrix[x].length; i++) {
 				for(int j = 0; j < weightMatrix[x][0].length; j++) {
+					// Set new desired values with respect to weights and error
 					newDesired[i] += weightMatrix[x][i][j] * error[j];
 				}
 			}
 			
+			// Set desired and weights to their new values
 			weightMatrix[x] = newWeights;
 			desired = newDesired;
 		}
