@@ -4,12 +4,13 @@ import datapkg.*;
 
 public class RadialBasis {
 
-    float[][] InputtedData;
     int NumberOfClasses;
     int ClassColumnPosition;
+    
+    ArraySet DataArraySet;
 
     RadialBasis(ProcessedData ImportedData) {
-	InputtedData = ImportedData.getDataArrayShuffled();
+	DataArraySet = splitArray(ImportedData.getDataArrayShuffled());
 	NumberOfClasses = ImportedData.getNumberOfClasses();
 	ClassColumnPosition = ImportedData.getClassColumnPosition();
 
@@ -24,8 +25,6 @@ public class RadialBasis {
 	System.out.println("KMeans");
 	Network networkKMeans = runNet(datapointsKMeans);
 	
-	
-	
 
 	System.out.println("Medoids");
 	Network networkMedoids = runNet(datapointsMedoids);
@@ -34,16 +33,18 @@ public class RadialBasis {
 	System.out.println("Data set training 100% completed.");
     }
 
-    private Network runNet(float[][] data) {
-	float[][] inputData = decoupledInputs(data);
-	System.out.println("Decoupled Inputs:");
-	print2DArray(inputData);
-	
-	float[] outputData = giveOutput(data);
-	System.out.println("Calculated Outputs: ");
-	print1DArray(outputData);
+    private Network runNet(float[][] calculatedClusterPoints) {
 
-	Network network = new Network(inputData, outputData);
+	
+	float[][] trainingInputData = decoupledInputs(DataArraySet.trainingData);
+	System.out.println("Decoupled Training Inputs:");
+	print2DArray(trainingInputData);
+	
+	float[] trainingOutputData = giveOutput(DataArraySet.trainingData);
+	System.out.println("Calculated TrainingOutputs: ");
+	print1DArray(trainingOutputData);
+
+	Network network = new Network(trainingInputData, trainingOutputData, calculatedClusterPoints);
 
 	/*
 	 * for (int i = 0; i < 100; i++) {
@@ -54,6 +55,22 @@ public class RadialBasis {
 	 */
 	
 	return network;
+    }
+    
+    private ArraySet splitArray(float[][] array){
+	
+	int length = array.length;
+	
+	int clusterDataSplitPos = (int) (length * 0.6);
+	int trainingDataSplitPos = (int) (length * 0.8);
+
+	float[][] clusterData = Arrays.copyOfRange(array, 0, clusterDataSplitPos);
+	float[][] trainingData = Arrays.copyOfRange(array, clusterDataSplitPos, trainingDataSplitPos);
+	float[][] testingData = Arrays.copyOfRange(array, trainingDataSplitPos, length - 1);
+	
+	ArraySet arraySet = new ArraySet(clusterData, trainingData, testingData);
+	
+	return arraySet;
     }
 
     // returns an array of the input points, decoupled from the class
@@ -107,17 +124,17 @@ public class RadialBasis {
 	    int minIndex = 0;
 
 	    // Check each of the data points in the practice set
-	    for (int j = 0; j < InputtedData.length; j++) {
+	    for (int j = 0; j < DataArraySet.clusterData.length; j++) {
 
 		// Check to find the closest point that has not already been used
-		if ((getDistance(meanData[classIndex], InputtedData[j]) < minDist)) {
-		    minDist = getDistance(meanData[classIndex], InputtedData[j]);
+		if ((getDistance(meanData[classIndex], DataArraySet.clusterData[j]) < minDist)) {
+		    minDist = getDistance(meanData[classIndex], DataArraySet.clusterData[j]);
 		    minIndex = j;
 		}
 	    }
 
 	    // Set class for mean equal to the closest practice point
-	    decoupledArray[classIndex] = InputtedData[minIndex][ClassColumnPosition];
+	    decoupledArray[classIndex] = DataArraySet.clusterData[minIndex][ClassColumnPosition];
 	}
 
 	return decoupledArray;
@@ -170,46 +187,69 @@ public class RadialBasis {
     private float[][] getKmeans() {
 	KMeansNearestNeighbor KMeans = new KMeansNearestNeighbor();
 	KMeans.setClassLocation(ClassColumnPosition);
-	return KMeans.getMeans(InputtedData, NumberOfClasses).clone();
+	return KMeans.getMeans(DataArraySet.clusterData, NumberOfClasses).clone();
     }
 
     private float[][] getMedoids() {
 	PAMNearestNeighbor Medoids = new PAMNearestNeighbor();
 	Medoids.setClassLocation(ClassColumnPosition);
-	int[] indiciesMedoids = Medoids.getMedoids(InputtedData, NumberOfClasses);
-	float[][] datapointsMedoids = new float[indiciesMedoids.length][InputtedData[0].length];
+	int[] indiciesMedoids = Medoids.getMedoids(DataArraySet.clusterData, NumberOfClasses);
+	float[][] datapointsMedoids = new float[indiciesMedoids.length][DataArraySet.clusterData[0].length];
 
 	for (int i = 0; i < indiciesMedoids.length; i++) {
-	    datapointsMedoids[i] = InputtedData[indiciesMedoids[i]];
+	    datapointsMedoids[i] = DataArraySet.clusterData[indiciesMedoids[i]];
 	}
 
 	return datapointsMedoids;
     }
 }
 
+class ArraySet {
+    float[][] clusterData, trainingData, testingData;
+    
+    ArraySet(float[][] clusterData, float[][] trainingData, float[][] testingData){
+	this.clusterData = clusterData;
+	this.trainingData = trainingData;
+	this.testingData = testingData;
+    }
+    
+    public float[][] getClusterData(){
+	return clusterData;
+    }
+    
+    public float[][] getTrainingData(){
+	return trainingData;
+    }
+    
+    public float[][] getTestingData(){
+	return testingData;
+    }
+    
+}
+
 class Network {
-    float[][] inputData;
+    float[][] trainData;
     float[] outputData;
 
-    NetworkData[] networkData;
+    ClusterData[] clusterData;
 
-    Network(float[][] inputData, float[] outputData) {
-	this.inputData = inputData;
+    Network(float[][] trainData, float[] outputData, float[][] givenClusters) {
+	this.trainData = trainData;
 	this.outputData = outputData;
 
 	// create a two layer network
-	networkData = new NetworkData[inputData.length];
+	clusterData = new ClusterData[givenClusters.length];
 
 	// initialize the layers of the network
-	for (int i = 0; i < networkData.length; i++) {
-	    networkData[i] = new NetworkData(inputData[i].clone());
+	for (int i = 0; i < clusterData.length; i++) {
+	    clusterData[i] = new ClusterData(givenClusters[i].clone());
 	}
     }
 
     public void trainNetwork() {
 
 	// for every point in the inputData
-	for (int row = 0; row < inputData.length; row++) {
+	for (int row = 0; row < trainData.length; row++) {
 
 	    // get the output class for the given point
 	    float outputClass = outputData[row];
@@ -218,19 +258,19 @@ class Network {
 	    float predictedClass = 0;
 
 	    //for every layer in the network
-	    for (int layer = 0; layer < networkData.length; layer++) {
-		float phi = networkData[layer].phi(inputData[row]);
-		float weight = networkData[layer].weightCoeff;
+	    for (int layer = 0; layer < clusterData.length; layer++) {
+		float phi = clusterData[layer].phi(trainData[row]);
+		float weight = clusterData[layer].weightCoeff;
 
 		// modify the predictedoutput based on the phi of the node times the weight coefficient
 		predictedClass += phi * weight;
 	    }
 
 	    //for every layer in the network
-	    for (int layer = 0; layer < networkData.length; layer++) {
+	    for (int layer = 0; layer < clusterData.length; layer++) {
 
 		// update the network
-		networkData[layer].update(inputData[row], outputClass, predictedClass);
+		clusterData[layer].update(trainData[row], outputClass, predictedClass);
 	    }
 	}
     }
@@ -238,8 +278,8 @@ class Network {
     public float testPoint(float[] input) {
 	float outputPrediction = 0;
 	
-	for (int i = 0; i < networkData.length; i++) {
-	    outputPrediction += networkData[i].phi(input) * networkData[i].weightCoeff;
+	for (int i = 0; i < clusterData.length; i++) {
+	    outputPrediction += clusterData[i].phi(input) * clusterData[i].weightCoeff;
 	}
 	
 	return outputPrediction;
@@ -247,14 +287,13 @@ class Network {
 
 }
 
-class NetworkData {
+class ClusterData {
     float weightCoeff;
     float clusterCenter[];
     float sigmaCoeff;
-    float n1 = 0.1f;
-    float n2 = 0.1f;
+    float coefficient = 0.1f;
 
-    NetworkData(float[] clusterCenter) {
+    ClusterData(float[] clusterCenter) {
 
 	this.clusterCenter = clusterCenter;
 
@@ -268,12 +307,15 @@ class NetworkData {
 	float phi = phi(input);
 	float diffOutput = desired - output;
 
-	for (int i = 0; i < clusterCenter.length; i++) {
-	    clusterCenter[i] = clusterCenter[i]
-		    + (n1 * diffOutput * weightCoeff * phi * (input[i] - clusterCenter[i]) / (sigmaCoeff * sigmaCoeff));
-	}
+	/*
+	 * for (int i = 0; i < clusterCenter.length; i++) {
+	 * clusterCenter[i] = clusterCenter[i]
+	 * + (n1 * diffOutput * weightCoeff * phi * (input[i] - clusterCenter[i]) /
+	 * (sigmaCoeff * sigmaCoeff));
+	 * }
+	 */
 	
-	weightCoeff = weightCoeff + (n2 * diffOutput * phi);
+	weightCoeff = weightCoeff + (coefficient * diffOutput * phi);
     }
 
     // returns the phi coefficient based on 
