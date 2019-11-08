@@ -110,6 +110,7 @@ public class DataProcessor {
 	}
 
 	shuffleArray(); // shuffle the array and set the shuffled array in the DataOutput
+	countClasses(); // counts the classes given in a data set and stores it into the DataOutput
     }
 
     // instantiates the arrays neccessary, after the size of them is known
@@ -321,5 +322,32 @@ public class DataProcessor {
 	}
 
 	DataOutput.setDataArrayShuffled(shuffledArray.clone()); // set the DataOutput's shuffled array to a clone of the shuffledArray
+    }
+    
+    // calculates the number of classes given in a data set
+    private void countClasses() {
+	
+	// create a list to store the classes found
+	ArrayList<Float> hasItBeenSeen = new ArrayList<Float>();  
+	
+	// for every row in the raw data column
+	for (int position = 0; position < height; position++) {
+	    
+	    // grab the element at the position
+	    float element = RawData[position][DataOutput.getClassColumnPosition()];
+	    
+	    // check if the key is contained in the hashtable already
+	    if (!hasItBeenSeen.contains(element)) {
+		
+		// if it is not in the list, put the element into the list
+		hasItBeenSeen.add(element);
+	    }
+	}
+	
+	// set the number of classes equal to the size of the list
+	int numberOfClasses = hasItBeenSeen.size();
+	
+	// store this data into the DataOutput
+	DataOutput.setNumberOfClasses(numberOfClasses);
     }
 }

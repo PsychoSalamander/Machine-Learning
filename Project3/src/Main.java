@@ -75,6 +75,14 @@ public class Main {
 	DataProcessor winequalityWhiteProcessor = new DataProcessor(winequalityWhitePath, winequalityWhiteData, true,
 		winequalityWhiteRoundings);
 	
+	System.out.println("abaloneData Number of Classes: " + abaloneData.getNumberOfClasses());
+	System.out.println("carData Number of Classes: " + carData.getNumberOfClasses());
+	System.out.println("forestfiresData Number of Classes: " + forestfiresData.getNumberOfClasses());
+	System.out.println("machineData Number of Classes: " + machineData.getNumberOfClasses());
+	System.out.println("segmentationData Number of Classes: " + segmentationData.getNumberOfClasses());
+	System.out.println("winequalityRedData Number of Classes: " + winequalityRedData.getNumberOfClasses());
+	System.out.println("winequalityWhiteData Number of Classes: " + winequalityWhiteData.getNumberOfClasses());
+	
 	DataRunner dr = new DataRunner();
 
 	KNearestNeighbor KNN = new KNearestNeighbor();
@@ -87,6 +95,8 @@ public class Main {
 	
 	// dr.runFeedForward(carData, 10, nodes, 10, true, "car");
 	dr.runFeedForward(machineData, 10, nodes, 10, false, "machine");
+	
+	
 	
 	/*
 	// Run KNN Algorithm
