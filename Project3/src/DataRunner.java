@@ -1,4 +1,6 @@
 import datapkg.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class DataRunner {
 	
@@ -107,7 +109,7 @@ public class DataRunner {
 		}	
 	}
 	
-	public void runFeedForward(ProcessedData inData, int runK, int[] nodeCount, int regressionOutputCount, boolean testClassification, String name) {
+	public float[] runFeedForward(ProcessedData inData, int runK, int[] nodeCount, int regressionOutputCount, boolean testClassification, String name, String folder) {
 		
 		float data[][] = inData.getDataArrayShuffled();
 		int classLoc = inData.getClassColumnPosition();
@@ -154,6 +156,8 @@ public class DataRunner {
 			System.err.println("NOT ENOUGH DATA TO SPLIT INTO 10!");
 			System.exit(-1);
 		}
+		
+		float results[] = new float[runK];
 		
 		// Run the training and test runK times		
 		for(int t = 0; t < runK; t++)
@@ -219,14 +223,20 @@ public class DataRunner {
 			// Set Scales for activation calculation
 			algorithm.setScales(scales);
 			
-			// Set file output name
-			algorithm.setFileName("classification_" + name + "_" + t);
 			
+			
+			// Set file output name and run algorithm
 			if(testClassification) {
-				algorithm.runClass();
+				Path PrintPath = Paths.get(folder + "/classification_" + name + "_" + t + ".txt");
+				algorithm.setFileName(PrintPath);
+				results[t] = algorithm.runClass();
 			} else {
-				algorithm.runRegress();
+				Path PrintPath = Paths.get(folder + "/regression_" + name + "_" + t + ".txt");
+				algorithm.setFileName(PrintPath);
+				results[t] = algorithm.runRegress();
 			}
-		}	
+		}
+		
+		return results;
 	}
 }
