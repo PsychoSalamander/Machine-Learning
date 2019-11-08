@@ -22,24 +22,38 @@ public class RadialBasis {
 	float[][] datapointsMedoids = getMedoids();
 
 	System.out.println("KMeans");
-	runNet(datapointsKMeans);
+	Network networkKMeans = runNet(datapointsKMeans);
+	
+	
+	
 
 	System.out.println("Medoids");
-	runNet(datapointsMedoids);
+	Network networkMedoids = runNet(datapointsMedoids);
+	
 
+	System.out.println("Data set training 100% completed.");
     }
 
-    private void runNet(float[][] data) {
+    private Network runNet(float[][] data) {
 	float[][] inputData = decoupledInputs(data);
+	System.out.println("Decoupled Inputs:");
+	print2DArray(inputData);
+	
 	float[] outputData = giveOutput(data);
+	System.out.println("Calculated Outputs: ");
+	print1DArray(outputData);
 
 	Network network = new Network(inputData, outputData);
 
-	for (int i = 0; i < 100; i++) {
-	    network.trainNetwork();
-	}
-
-	System.out.println("Network Trained.");
+	/*
+	 * for (int i = 0; i < 100; i++) {
+	 * network.trainNetwork();
+	 * }
+	 * 
+	 * System.out.println("Network Trained.");
+	 */
+	
+	return network;
     }
 
     // returns an array of the input points, decoupled from the class
@@ -184,17 +198,11 @@ class Network {
 	this.outputData = outputData;
 
 	// create a two layer network
-	networkData = new NetworkData[2];
-
-	// initialize an initial center to all variables being 0
-	float[] initialCluster = new float[inputData[0].length];
-	for (int index = 0; index < initialCluster.length; index++) {
-	    initialCluster[index] = 1.0f;
-	}
+	networkData = new NetworkData[inputData.length];
 
 	// initialize the layers of the network
 	for (int i = 0; i < networkData.length; i++) {
-	    networkData[i] = new NetworkData(initialCluster.clone());
+	    networkData[i] = new NetworkData(inputData[i].clone());
 	}
     }
 
@@ -225,6 +233,16 @@ class Network {
 		networkData[layer].update(inputData[row], outputClass, predictedClass);
 	    }
 	}
+    }
+    
+    public float testPoint(float[] input) {
+	float outputPrediction = 0;
+	
+	for (int i = 0; i < networkData.length; i++) {
+	    outputPrediction += networkData[i].phi(input) * networkData[i].weightCoeff;
+	}
+	
+	return outputPrediction;
     }
 
 }
