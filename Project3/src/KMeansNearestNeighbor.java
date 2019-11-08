@@ -134,8 +134,6 @@ public class KMeansNearestNeighbor extends NearestNeighbor {
 				}
 			}
 			
-			
-			printArray(clusterCount);
 			// Divide by number of examples to get means
 			for(int i = 0; i < newMeans.length; i++) {
 				for(int j = 0; j < newMeans[0].length; j++) {
@@ -193,12 +191,4 @@ public class KMeansNearestNeighbor extends NearestNeighbor {
 		
 		return classes;
 	}
-	
-    public void printArray(int[] array) {
-		System.out.println("Array Visualized:");
-		
-		for (int row = 0; row < array.length; row++) {
-			System.out.println(Arrays.toString(array)); 
-		}
-    }
 }
