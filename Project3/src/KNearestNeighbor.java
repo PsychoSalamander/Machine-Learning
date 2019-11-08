@@ -67,7 +67,7 @@ public class KNearestNeighbor extends NearestNeighbor {
     	}
     	
     	// Get percent correctness and print it to console
-    	System.out.println("Percent correctness: " + (correct/(incorrect+correct))*100);
+    	//System.out.println("Percent correctness: " + (correct/(incorrect+correct))*100);
     }
 
     // Run regression based on K nearest neighbors
@@ -117,7 +117,7 @@ public class KNearestNeighbor extends NearestNeighbor {
     	}
     	
     	// Take average of differences, and print it
-    	System.out.println("Estimate was off by an average of: " + (accuracy / inTestData.length));
+    	//System.out.println("Estimate was off by an average of: " + (accuracy / inTestData.length));
     }
     
     // See if given element is in given array
