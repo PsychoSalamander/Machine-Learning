@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Random;
 
 public class KMeansNearestNeighbor extends NearestNeighbor {
@@ -137,7 +138,11 @@ public class KMeansNearestNeighbor extends NearestNeighbor {
 			for(int i = 0; i < newMeans.length; i++) {
 				for(int j = 0; j < newMeans[0].length; j++) {
 					if(j != classLocation) {
-						newMeans[i][j] = newMeans[i][j] / clusterCount[i];
+						if(clusterCount[i] != 0) {
+							newMeans[i][j] = newMeans[i][j] / clusterCount[i];
+						} else {
+							newMeans[i][j] = means[i][j];
+						}
 					}
 				}
 			}
