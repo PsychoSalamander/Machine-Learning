@@ -76,25 +76,48 @@ public class Main {
 		winequalityWhiteRoundings);
 	
 	System.out.println("abaloneData Number of Classes: " + abaloneData.getNumberOfClasses());
+	RadialBasis abaloneRadialBasis = new RadialBasis(abaloneData);
+	System.out.println();
+	
 	System.out.println("carData Number of Classes: " + carData.getNumberOfClasses());
+	RadialBasis carRadialBasis = new RadialBasis(carData);
+	System.out.println();
+	
 	System.out.println("forestfiresData Number of Classes: " + forestfiresData.getNumberOfClasses());
+	RadialBasis forestfiresRadialBasis = new RadialBasis(forestfiresData);
+	System.out.println();
+	
 	System.out.println("machineData Number of Classes: " + machineData.getNumberOfClasses());
+	RadialBasis machineRadialBasis = new RadialBasis(machineData);
+	System.out.println();
+	
 	System.out.println("segmentationData Number of Classes: " + segmentationData.getNumberOfClasses());
+	RadialBasis segentationRadialBasis = new RadialBasis(segmentationData);
+	System.out.println();
+	
 	System.out.println("winequalityRedData Number of Classes: " + winequalityRedData.getNumberOfClasses());
+	RadialBasis winequalityRedRadialBasis = new RadialBasis(winequalityRedData);
+	System.out.println();
+	
 	System.out.println("winequalityWhiteData Number of Classes: " + winequalityWhiteData.getNumberOfClasses());
+	RadialBasis winequalityWhiteRadialBasis = new RadialBasis(winequalityWhiteData);
+	System.out.println();
 	
-	DataRunner dr = new DataRunner();
+	/*
+	 * DataRunner dr = new DataRunner();
+	 * 
+	 * KNearestNeighbor KNN = new KNearestNeighbor();
+	 * ENearestNeighbor ENN = new ENearestNeighbor();
+	 * CNearestNeighbor CNN = new CNearestNeighbor();
+	 * KMeansNearestNeighbor KMNN = new KMeansNearestNeighbor();
+	 * PAMNearestNeighbor PAMNN = new PAMNearestNeighbor();
+	 * 
+	 * int nodes[] = {10, 7};
+	 * 
+	 * // dr.runFeedForward(carData, 10, nodes, 10, true, "car");
+	 * dr.runFeedForward(machineData, 10, nodes, 10, false, "machine");
+	 */
 
-	KNearestNeighbor KNN = new KNearestNeighbor();
-	ENearestNeighbor ENN = new ENearestNeighbor();
-	CNearestNeighbor CNN = new CNearestNeighbor();
-	KMeansNearestNeighbor KMNN = new KMeansNearestNeighbor();
-	PAMNearestNeighbor PAMNN = new PAMNearestNeighbor();
-	
-	int nodes[] = {10, 7};
-	
-	// dr.runFeedForward(carData, 10, nodes, 10, true, "car");
-	dr.runFeedForward(machineData, 10, nodes, 10, false, "machine");
 	
 	
 	
