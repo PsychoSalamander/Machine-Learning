@@ -1,4 +1,3 @@
-// Spencer Raymond
 
 public class ENearestNeighbor extends NearestNeighbor {
 
