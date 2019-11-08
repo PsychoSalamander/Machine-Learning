@@ -59,7 +59,7 @@ public class RadialBasis {
 		//System.out.printf("\tNew best percentage, %f\n", bestPercentage);
 	    } else {
 		betterThanLast = false;
-		System.out.printf("\tWas %f percent correct after training %d times\n", bestPercentage,
+		System.out.printf("\tWas %.2f percent correct after training %d times\n", bestPercentage * 100,
 			numberOfTrainings++);
 	    }
 
