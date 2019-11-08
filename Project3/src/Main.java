@@ -8,9 +8,9 @@ import datapkg.*;
 
 public class Main {
     @SuppressWarnings("unused") //supresses the warnings for the DataProcessor instances below, as the constructor runs the code.
-    
+
     public static void main(String[] args) throws IOException {
-	
+
 	// path of each data set import file
 	Path abalonePath = Paths.get("dataSets/abalone/abalone.data");
 	Path carPath = Paths.get("dataSets/car/car.data");
@@ -43,17 +43,17 @@ public class Main {
 	Hashtable<Integer, Integer> carSpecialRoundings = null;
 	Hashtable<Integer, Integer> forestSpecialRoundings = new Hashtable<Integer, Integer>();
 	forestSpecialRoundings.put(4, 1); // Round FFMC to the nearest whole number.
-	
+
 	Hashtable<Integer, Integer> machineSpecialRoundings = new Hashtable<Integer, Integer>();
 	machineSpecialRoundings.put(9, -9); // Round ERP to 0.
-	
+
 	Hashtable<Integer, Integer> segmentationSpecialRoundings = new Hashtable<Integer, Integer>();
 	segmentationSpecialRoundings.put(17, 1); // Round saturatoin-mean to the tenths place.
 	segmentationSpecialRoundings.put(18, 1); // Round hue-mean to the tenths place.
-	
+
 	Hashtable<Integer, Integer> winequalityRedRoundings = new Hashtable<Integer, Integer>();
 	winequalityRedRoundings.put(7, 3); // Round density to the thousandths place.
-	
+
 	Hashtable<Integer, Integer> winequalityWhiteRoundings = new Hashtable<Integer, Integer>();
 	winequalityWhiteRoundings.put(7, 3); // Round density to the thousandths place.
 
@@ -75,37 +75,36 @@ public class Main {
 		winequalityRedRoundings);
 	DataProcessor winequalityWhiteProcessor = new DataProcessor(winequalityWhitePath, winequalityWhiteData, true,
 		winequalityWhiteRoundings);
-	
-	/*
+
 	System.out.println("abaloneData Number of Classes: " + abaloneData.getNumberOfClasses());
 	RadialBasis abaloneRadialBasis = new RadialBasis(abaloneData);
 	System.out.println();
-	
+
 	System.out.println("carData Number of Classes: " + carData.getNumberOfClasses());
 	RadialBasis carRadialBasis = new RadialBasis(carData);
 	System.out.println();
-	
+
 	System.out.println("forestfiresData Number of Classes: " + forestfiresData.getNumberOfClasses());
 	RadialBasis forestfiresRadialBasis = new RadialBasis(forestfiresData);
 	System.out.println();
-	
+
 	System.out.println("machineData Number of Classes: " + machineData.getNumberOfClasses());
 	RadialBasis machineRadialBasis = new RadialBasis(machineData);
 	System.out.println();
-	
+
 	System.out.println("segmentationData Number of Classes: " + segmentationData.getNumberOfClasses());
 	RadialBasis segentationRadialBasis = new RadialBasis(segmentationData);
 	System.out.println();
-	
+
 	System.out.println("winequalityRedData Number of Classes: " + winequalityRedData.getNumberOfClasses());
 	RadialBasis winequalityRedRadialBasis = new RadialBasis(winequalityRedData);
 	System.out.println();
-	
+
 	System.out.println("winequalityWhiteData Number of Classes: " + winequalityWhiteData.getNumberOfClasses());
 	RadialBasis winequalityWhiteRadialBasis = new RadialBasis(winequalityWhiteData);
 	System.out.println();
-	*/
-	
+
+	/* 
 	// Run tests for 0 hidden layers and output results
 	DataRunner dr = new DataRunner();
 	int nodes[] = {};
@@ -130,7 +129,7 @@ public class Main {
 	F0.close();
 	
 	// Run tests for 1 hidden layer and output results
-	int nodes1[] = {8};
+	int nodes1[] = { 8 };
 	Path p1 = Paths.get("1/Overall_1.csv");
 	FileWriter F1 = new FileWriter(p1.toString());
 	temp = dr.runFeedForward(abaloneData, 10, nodes1, 10, true, "abalone1", "1");
@@ -149,9 +148,9 @@ public class Main {
 	appendArray(F1, temp);
 	F1.flush();
 	F1.close();
-	
+
 	// Run tests for 2 hidden layers and output results
-	int nodes2[] = {10, 7};
+	int nodes2[] = { 10, 7 };
 	Path p2 = Paths.get("2/Overall_2.csv");
 	FileWriter F2 = new FileWriter(p2.toString());
 	temp = dr.runFeedForward(abaloneData, 10, nodes2, 10, true, "abalone2", "2");
@@ -174,20 +173,20 @@ public class Main {
     
     // Function to output array to a filewriter's stream
     static void appendArray(FileWriter fw, float[] a) {
-    	for(int i = 0; i < a.length; i++) {
-    		if(i != a.length-1) {
-    			try {
-					fw.append(a[i] + ",");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-    		} else {
-    			try {
-					fw.append(a[i] + "\n");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-    		}
-    	}
+	for (int i = 0; i < a.length; i++) {
+	    if (i != a.length - 1) {
+		try {
+		    fw.append(a[i] + ",");
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+	    } else {
+		try {
+		    fw.append(a[i] + "\n");
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+	    }
+	} */
     }
 }
