@@ -6,7 +6,7 @@ public class RadialBasis {
 
     int NumberOfClasses;
     int ClassColumnPosition;
-    
+
     ArraySet DataArraySet;
 
     RadialBasis(ProcessedData ImportedData) {
@@ -22,58 +22,68 @@ public class RadialBasis {
 	float[][] datapointsKMeans = getKmeans();
 	float[][] datapointsMedoids = getMedoids();
 
-	System.out.println("KMeans");
-	Network networkKMeans = runNet(datapointsKMeans);
-	
+	System.out.print("KMeans: ");
+	runNet(datapointsKMeans);
 
-	System.out.println("Medoids");
-	Network networkMedoids = runNet(datapointsMedoids);
-	
+	System.out.print("Medoids: ");
+	runNet(datapointsMedoids);
 
-	System.out.println("Data set training 100% completed.");
+	System.out.println("Data set training completed.");
     }
 
-    private Network runNet(float[][] calculatedClusterPoints) {
+    private void runNet(float[][] calculatedClusterPoints) {
 
-	
-	float[][] trainingInputData = decoupledInputs(DataArraySet.trainingData);
-	System.out.println("Decoupled Training Inputs:");
-	print2DArray(trainingInputData);
-	
-	float[] trainingOutputData = giveOutput(DataArraySet.trainingData);
-	System.out.println("Calculated TrainingOutputs: ");
-	print1DArray(trainingOutputData);
+	float[][] trainingInputData = decoupledInputs(DataArraySet.trainingData.clone());
+	float[] trainingOutputData = decoupledOutputs(DataArraySet.trainingData.clone());
 
-	Network network = new Network(trainingInputData, trainingOutputData, calculatedClusterPoints);
+	float[][] givenClustersInput = decoupledInputs(calculatedClusterPoints.clone());
+	float[] givenClustersOutput = calculateClustersOutput(calculatedClusterPoints.clone());
 
-	/*
-	 * for (int i = 0; i < 100; i++) {
-	 * network.trainNetwork();
-	 * }
-	 * 
-	 * System.out.println("Network Trained.");
-	 */
-	
-	return network;
+	float[][] testingInputData = decoupledInputs(DataArraySet.testingData.clone());
+	float[] testingOutputData = decoupledOutputs(DataArraySet.testingData.clone());
+
+	Network network = new Network(trainingInputData, trainingOutputData, givenClustersInput, givenClustersOutput);
+
+	boolean betterThanLast = true;
+	float bestPercentage = 0.0f;
+	int numberOfTrainings = 0;
+
+	while (betterThanLast) {
+	    numberOfTrainings++;
+	    network.trainNetwork();
+
+	    float testPercentage = network.testNetwork(testingInputData, testingOutputData);
+
+	    if (testPercentage > bestPercentage) {
+		bestPercentage = testPercentage;
+		//System.out.printf("\tNew best percentage, %f\n", bestPercentage);
+	    } else {
+		betterThanLast = false;
+		System.out.printf("\tWas %f percent correct after training %d times\n", bestPercentage,
+			numberOfTrainings++);
+	    }
+
+	}
     }
-    
-    private ArraySet splitArray(float[][] array){
-	
+
+    // splits the shuffled data set into a set to be clustered, a set to train the data, and a set to test the data
+    private ArraySet splitArray(float[][] array) {
+
 	int length = array.length;
-	
+
 	int clusterDataSplitPos = (int) (length * 0.6);
 	int trainingDataSplitPos = (int) (length * 0.8);
 
 	float[][] clusterData = Arrays.copyOfRange(array, 0, clusterDataSplitPos);
 	float[][] trainingData = Arrays.copyOfRange(array, clusterDataSplitPos, trainingDataSplitPos);
 	float[][] testingData = Arrays.copyOfRange(array, trainingDataSplitPos, length - 1);
-	
+
 	ArraySet arraySet = new ArraySet(clusterData, trainingData, testingData);
-	
+
 	return arraySet;
     }
 
-    // returns an array of the input points, decoupled from the class
+    // returns an array of the input points, decoupled from the classes
     private float[][] decoupledInputs(float[][] data) {
 
 	// get the expected size of the new array
@@ -110,8 +120,20 @@ public class RadialBasis {
 	return decoupledArray;
     }
 
+    // returns an array of the class outputs, decoupled from the attributes
+    private float[] decoupledOutputs(float[][] data) {
+
+	float[] decoupledArray = new float[data.length];
+
+	for (int row = 0; row < data.length; row++) {
+	    decoupledArray[row] = data[row][ClassColumnPosition];
+	}
+
+	return decoupledArray;
+    }
+
     // calculates the class given the data point
-    private float[] giveOutput(float[][] meanData) {
+    private float[] calculateClustersOutput(float[][] meanData) {
 
 	// get the expected size of the new array
 	int dcRowLength = meanData.length;
@@ -206,25 +228,25 @@ public class RadialBasis {
 
 class ArraySet {
     float[][] clusterData, trainingData, testingData;
-    
-    ArraySet(float[][] clusterData, float[][] trainingData, float[][] testingData){
+
+    ArraySet(float[][] clusterData, float[][] trainingData, float[][] testingData) {
 	this.clusterData = clusterData;
 	this.trainingData = trainingData;
 	this.testingData = testingData;
     }
-    
-    public float[][] getClusterData(){
+
+    public float[][] getClusterData() {
 	return clusterData;
     }
-    
-    public float[][] getTrainingData(){
+
+    public float[][] getTrainingData() {
 	return trainingData;
     }
-    
-    public float[][] getTestingData(){
+
+    public float[][] getTestingData() {
 	return testingData;
     }
-    
+
 }
 
 class Network {
@@ -233,89 +255,148 @@ class Network {
 
     ClusterData[] clusterData;
 
-    Network(float[][] trainData, float[] outputData, float[][] givenClusters) {
-	this.trainData = trainData;
-	this.outputData = outputData;
+    Network(float[][] trainDataInput, float[] trainDataOutput, float[][] givenClustersInput,
+	    float[] givenClustersOutput) {
+
+	this.trainData = trainDataInput;
+	this.outputData = trainDataOutput;
 
 	// create a two layer network
-	clusterData = new ClusterData[givenClusters.length];
+	clusterData = new ClusterData[givenClustersInput.length];
 
 	// initialize the layers of the network
 	for (int i = 0; i < clusterData.length; i++) {
-	    clusterData[i] = new ClusterData(givenClusters[i].clone());
+	    clusterData[i] = new ClusterData(givenClustersInput[i].clone(), givenClustersOutput[i]);
 	}
     }
 
     public void trainNetwork() {
 
-	// for every point in the inputData
+	// for every point in the training set
 	for (int row = 0; row < trainData.length; row++) {
 
 	    // get the output class for the given point
 	    float outputClass = outputData[row];
 
-	    // initialize the predicted class
-	    float predictedClass = 0;
+	    //initialize the strongest position and number
+	    int strongestClusterPosition = 0;
+	    float strongestNumber = -1000;
 
-	    //for every layer in the network
-	    for (int layer = 0; layer < clusterData.length; layer++) {
-		float phi = clusterData[layer].phi(trainData[row]);
-		float weight = clusterData[layer].weightCoeff;
+	    //for every cluster, find the cluster that strongest agrees with the point
+	    for (int clusterPosition = 0; clusterPosition < clusterData.length; clusterPosition++) {
 
-		// modify the predictedoutput based on the phi of the node times the weight coefficient
-		predictedClass += phi * weight;
+		// calculate the phi of the point given the cluster
+		float phi = clusterData[clusterPosition].phi(trainData[row]);
+
+		// grab the weight of the cluster
+		float weight = clusterData[clusterPosition].weightCoeff;
+
+		// multiply them together
+		float number = phi * weight;
+
+		// if this number is larger than the current largest, update the strongest position and number
+		if (number > strongestNumber) {
+		    strongestNumber = number;
+		    strongestClusterPosition = clusterPosition;
+		}
 	    }
 
-	    //for every layer in the network
-	    for (int layer = 0; layer < clusterData.length; layer++) {
+	    // check if the class of the training point was equal to the class of the cluster
+	    boolean wasExpected = outputClass != clusterData[strongestClusterPosition].clusterCenterClass;
 
-		// update the network
-		clusterData[layer].update(trainData[row], outputClass, predictedClass);
+	    // update the cluster based on the assertion
+	    clusterData[strongestClusterPosition].updateWeight(trainData[row], wasExpected);
+	}
+    }
+
+    public float testNetwork(float[][] testDataInput, float[] testDataOutput) {
+	boolean[] correctTests = new boolean[testDataInput.length];
+
+	//for every test data point
+	for (int row = 0; row < testDataInput.length; row++) {
+
+	    // get the output class for the given point
+	    float outputClass = testDataOutput[row];
+
+	    //initialize the strongest position and number
+	    int strongestClusterPosition = 0;
+	    float strongestNumber = -1000;
+
+	    //for every cluster, find the cluster that strongest agrees with the point
+	    for (int clusterPosition = 0; clusterPosition < clusterData.length; clusterPosition++) {
+
+		// calculate the phi of the point given the cluster
+		float phi = clusterData[clusterPosition].phi(testDataInput[row]);
+
+		// grab the weight of the cluster
+		float weight = clusterData[clusterPosition].weightCoeff;
+
+		// multiply them together
+		float number = phi * weight;
+
+		// if this number is larger than the current largest, update the strongest position and number
+		if (number > strongestNumber) {
+		    strongestNumber = number;
+		    strongestClusterPosition = clusterPosition;
+		}
+	    }
+
+	    // check if the class of the training point was equal to the class of the cluster
+	    boolean wasExpected = outputClass != clusterData[strongestClusterPosition].clusterCenterClass;
+
+	    correctTests[row] = wasExpected;
+	}
+
+	return calcPercentTrue(correctTests);
+    }
+
+    public float calcPercentTrue(boolean[] input) {
+	int totalNumOfResults = input.length;
+
+	int numberCorrect = 0;
+
+	for (int i = 0; i < totalNumOfResults; i++) {
+	    if (input[i]) {
+		numberCorrect++;
 	    }
 	}
-    }
-    
-    public float testPoint(float[] input) {
-	float outputPrediction = 0;
-	
-	for (int i = 0; i < clusterData.length; i++) {
-	    outputPrediction += clusterData[i].phi(input) * clusterData[i].weightCoeff;
-	}
-	
-	return outputPrediction;
-    }
 
+	float correctAmount = (float) numberCorrect / (float) totalNumOfResults;
+
+	return correctAmount;
+    }
 }
 
 class ClusterData {
     float weightCoeff;
-    float clusterCenter[];
+    float clusterCenterPoint[];
+    float clusterCenterClass;
     float sigmaCoeff;
     float coefficient = 0.1f;
 
-    ClusterData(float[] clusterCenter) {
+    ClusterData(float[] clusterCenterPoint, float clusterCenterClass) {
 
-	this.clusterCenter = clusterCenter;
+	this.clusterCenterPoint = clusterCenterPoint;
+	this.clusterCenterClass = clusterCenterClass;
 
 	// set the initial sigma and weight coefficients to 0.5
 	sigmaCoeff = 0.5f;
 	weightCoeff = 0.5f;
     }
 
-    // 
-    void update(float[] input, float desired, float output) {
+    // updates the weight of the cluster given the phi and whether it was the desired class
+    void updateWeight(float[] input, boolean desiredClass) {
 	float phi = phi(input);
-	float diffOutput = desired - output;
 
-	/*
-	 * for (int i = 0; i < clusterCenter.length; i++) {
-	 * clusterCenter[i] = clusterCenter[i]
-	 * + (n1 * diffOutput * weightCoeff * phi * (input[i] - clusterCenter[i]) /
-	 * (sigmaCoeff * sigmaCoeff));
-	 * }
-	 */
-	
-	weightCoeff = weightCoeff + (coefficient * diffOutput * phi);
+	float reinforcement;
+
+	if (desiredClass) {
+	    reinforcement = coefficient;
+	} else {
+	    reinforcement = -coefficient;
+	}
+
+	weightCoeff += (reinforcement * phi);
     }
 
     // returns the phi coefficient based on 
@@ -325,10 +406,10 @@ class ClusterData {
 	double distanceSquared = 0;
 
 	// for every value in the point
-	for (int i = 0; i < clusterCenter.length; i++) {
+	for (int i = 0; i < clusterCenterPoint.length; i++) {
 
 	    // add the squared distance from the input value to the center value
-	    distanceSquared += Math.pow(input[i] - clusterCenter[i], 2);
+	    distanceSquared += Math.pow(input[i] - clusterCenterPoint[i], 2);
 	}
 
 	double distance = Math.sqrt(distanceSquared);
@@ -339,5 +420,4 @@ class ClusterData {
 
 	return (float) phi;
     }
-
 }
