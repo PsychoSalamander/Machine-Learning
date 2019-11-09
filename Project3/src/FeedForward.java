@@ -1,4 +1,3 @@
-import java.io.File;
 import java.util.Random;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,7 +24,7 @@ public class FeedForward {
 	private float classKey[];
 	private int classLocation;
 	
-	private String FileName;
+	private Path FileName;
 	
 	// Constructor
 	public FeedForward(int layerCount, int numInputs, int numOutputs, int nodeCount[]) {
@@ -35,7 +34,7 @@ public class FeedForward {
 		numNodes = new int[numLayers];
 		numNodes[0] = numInputs;
 		numNodes[numLayers - 1] = numOutputs;
-		FileName = "default";
+		FileName = Paths.get("default");
 		
 		// Check that there are number of nodes assigned to each layer
 		if(nodeCount.length == layerCount) {
@@ -55,7 +54,7 @@ public class FeedForward {
 	}
 	
 	// Function to run classification
-	public void runClass() {
+	public float runClass() {
 		// Run the forwardpass
 		forwardPass();
 		
@@ -68,16 +67,16 @@ public class FeedForward {
 			float activations[] = getActivations(inPracticeData[i]);
 			
 			// Get the results from the NN
-			float results[] = getResults(activations);
-			
-			// Updat the weights in the weight matrix
-			updateWeightsClass(results, inPracticeData[i][classLocation]);
+			float results[][] = getResults(activations);
+			// Update the weights in the weight matrix
+			backpropClass(results, inPracticeData[i][classLocation]);
+
 		}
 		
 		// Create file for writing
 		FileWriter fw = null;		
 		try {
-			fw = new FileWriter(FileName + ".txt");
+			fw = new FileWriter(FileName.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -87,20 +86,23 @@ public class FeedForward {
 		for(int i = 0; i < inTestData.length; i++) {
 			// Get inital activations and results
 			float activations[] = getActivations(inTestData[i]);
-			float results[] = getResults(activations);
+			float results[][] = getResults(activations);
 			
 			// Get estimate from results
 			int bigIndex = 0;
 			float bigEstimate = 0;
-			for(int j = 0; j < results.length; j++) {
-				if(results[j] > bigEstimate) {
-					bigEstimate = results[j];
+			for(int j = 0; j < results[results.length-1].length; j++) {
+				if(results[results.length - 1][j] > bigEstimate) {
+					bigEstimate = results[results.length - 1][j];
 					bigIndex = j;
 				}
 			}
 			
 			// Check correctness
-			if(classKey[bigIndex] == inPracticeData[i][classLocation]) {
+			System.out.println(bigIndex);
+			System.out.println(classKey.length);
+			System.out.println(" ");
+			if(classKey[bigIndex] == inTestData[i][classLocation]) {
 				correct++;
 			}
 		}
@@ -134,10 +136,11 @@ public class FeedForward {
 		
 		// Print accuracy to console
 		System.out.println(accuracy + "%");
+		return accuracy;
 	}
 	
 	// Function to run regression tests
-	public void runRegress() {
+	public float runRegress() {
 		// Run forward pass
 		forwardPass();
 		
@@ -160,7 +163,7 @@ public class FeedForward {
 		// Create file to write to
 		FileWriter fw = null;		
 		try {
-			fw = new FileWriter(FileName + ".txt");
+			fw = new FileWriter(FileName.toString());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -171,10 +174,10 @@ public class FeedForward {
 			float activations[] = getActivations(inPracticeData[i]);
 			
 			// Get results
-			float results[] = getResults(activations);
-			
+			float results[][] = getResults(activations);
 			// Update weights based on the results
-			updateWeightsRegress(results, inPracticeData[i][classLocation]);
+			backpropRegress(results, inPracticeData[i][classLocation]);
+			
 		}
 		
 		// Run test set through NN
@@ -182,18 +185,18 @@ public class FeedForward {
 		for(int i = 0; i < 1; i++) {
 			// Get activations and results
 			float activations[] = getActivations(inTestData[i]);
-			float results[] = getResults(activations);
+			float results[][] = getResults(activations);
 			
 			// Get estimate from results
 			int bigIndex = 0;
 			float bigEstimate = 0;
 			for(int j = 0; j < results.length; j++) {
-				if(results[j] > bigEstimate) {
-					bigEstimate = results[j];
+				if(results[results.length - 1][j] > bigEstimate) {
+					bigEstimate = results[results.length - 1][j];
 					bigIndex = j;
 				}
 			}
-			float result = results[bigIndex];
+			float result = results[results.length - 1][bigIndex];
 			
 			// Calculate error of result
 			float err = (float) Math.abs(inTestData[i][classLocation] - result);
@@ -230,6 +233,7 @@ public class FeedForward {
 		
 		// Print error to console
 		System.out.println("Error of Regression Test: " + meanErr);
+		return meanErr;
 	}
 	
 	// Function to assign classes to output nodes of the neural network
@@ -260,7 +264,7 @@ public class FeedForward {
 		}
 		
 		// Fill out classKey based on keys found above
-		float classKey[] = new float[numNodes[numNodes.length - 1]];
+		classKey = new float[numNodes[numNodes.length - 1]];
 		int iter = 0;
 		for(int i = 0; i < foundKeys.length; i++) {
 			if(foundKeys[i] != -1) {
@@ -318,10 +322,10 @@ public class FeedForward {
 	}
 	
 	// Function to run the activations through the neural network
-	private float[] getResults(float inExample[]) {
+	private float[][] getResults(float inExample[]) {
 		// Initialize result array
-		float results[] = new float[numNodes[numLayers - 1]];
-		
+		float results[][] = new float[weightMatrix.length + 1][numNodes[numLayers - 1]];
+		results[0] = inExample;
 		// Get initial activations from the example
 		float currentActivations[] = inExample;
 		
@@ -378,88 +382,97 @@ public class FeedForward {
 			System.out.println("]");
 			
 			// Set the new activations to be the ones sent through the multiplication process
+			results[i+1] = newActivations;
 			currentActivations = newActivations;
 		}
 		
 		// Set the results equal to the final results of the multiplications
-		results = currentActivations;
 		
 		return results;
 	}
 	
-	// Update weights based on the classification error
-	private void updateWeightsClass(float results[], float example) {
-		// Find the index that has the highest estimate strength
-		int bigIndex = 0;
-		float bigEstimate = -1;
-		for(int i = 0; i < results.length; i++) {
-			if(results[i] > bigEstimate) {
-				bigEstimate = results[i];
-				bigIndex = i;
+	private void backpropClass(float results[][], float example) {
+		// Get the desired value of each node
+		float[] desired = new float[classKey.length];
+		for(int i = 0; i < classKey.length; i++) {
+			if(classKey[i] == example) {
+				desired[i] = 1.0f;
+			} else {
+				desired[i] = 0.0f;
 			}
 		}
 		
-		// Find the class that is being estimated
-		int result = (int) classKey[bigIndex];
-		
-		// If class is incorrect, set to negative application of error
-		float correct = -1.0f;
-		if(result == example) {
-			// If correct, set to positive application
-			correct = 1.0f;
-		}
-		
-		// Print results
-		System.out.print("Results: [");
-		for(int x = 0; x < results.length; x++) {
-			System.out.print(results[x] + ", ");
-		}
-		System.out.println("]");
-		System.out.println("Estimate: " + bigEstimate);
-		
-		// Apply correction to each spot in the weight matrix
-		for(int i = 0; i < weightMatrix.length; i++) {
-			for(int j = 0; j < weightMatrix[i].length; j++) {
-				for(int k = 0; k < weightMatrix[i][j].length; k++) {
-					// Calculate error of guess
-					float err = (correct / (1.0001f - bigEstimate));
-					
-					// Add the error divided by the current value of the weight matrix
-					if(weightMatrix[i][j][k] != 0) {
-						weightMatrix[i][j][k] += N * (err / weightMatrix[i][j][k]);
-					} else {
-						weightMatrix[i][j][k] += N * (err / .0001f);
-					}
+		// Iterate through every step of weights to update them
+		for(int x = weightMatrix.length - 1; x > 0; x--) {
+			// Get the squared error at each node
+			float[] error = new float[desired.length];
+			for(int i = 0; i < error.length; i++) {
+				error[i] = (float) Math.pow((double) (results[x + 1][i] - desired[i]), 2);
+			}
+			
+			// Initialize new desired and new weights arrays
+			float[] newDesired = results[x];
+			float[][] newWeights = weightMatrix[x];
+			
+			// Find new weights
+			for(int i = 0; i < weightMatrix[x].length; i++) {
+				for(int j = 0; j < weightMatrix[x][0].length; j++) {
+					// Apply learning modifier and error in proportion to the level of new desired outputs
+					newWeights[i][j] += -N * newDesired[i] * error[j];
 				}
 			}
+			
+			// Find new desired values
+			for(int i = 0; i < weightMatrix[x].length; i++) {
+				for(int j = 0; j < weightMatrix[x][0].length; j++) {
+					// Set new desired values with respect to weights and error
+					newDesired[i] += weightMatrix[x][i][j] * error[j];
+				}
+			}
+			
+			// Set desired and weights to their new values
+			weightMatrix[x] = newWeights;
+			desired = newDesired;
 		}
 	}
 	
-	// Function to update the weight matrix based on the regression error
-	private void updateWeightsRegress(float results[], float example) {
-		// Find index of guess with strongest index
-		int bigIndex = 0;
-		float bigEstimate = -1;
-		for(int i = 0; i < results.length; i++) {
-			if(results[i] > bigEstimate) {
-				bigEstimate = results[i];
-				bigIndex = i;
-			}
+	private void backpropRegress(float results[][], float example) {
+		// Get the desired value of each node
+		float[] desired = new float[classKey.length];
+		for(int i = 0; i < classKey.length; i++) {
+			desired[i] = classKey[i] - example;
 		}
 		
-		// Get estimate based on index
-		float correct = classKey[bigIndex];
-		
-		// Apply weight correction based on error of estimate
-		for(int i = 0; i < weightMatrix.length; i++) {
-			for(int j = 0; j < weightMatrix[i].length; j++) {
-				for(int k = 0; k < weightMatrix[i][j].length; k++) {
-					// Calculate error and strength of error
-					float err = (example - correct) / (1.001f - bigEstimate);
-					// Apply error correction to weight matrix
-					weightMatrix[i][j][k] += N * (err / weightMatrix[i][j][k]);
+		for(int x = weightMatrix.length - 1; x > 0; x--) {
+			// Get the squared error at each node
+			float[] error = new float[desired.length];
+			for(int i = 0; i < error.length; i++) {
+				error[i] = (float) Math.pow((double) ((results[x + 1][i] - example) - desired[i]), 2);
+			}
+			
+			// Initialize new desired and new weights arrays
+			float[] newDesired = results[x];
+			float[][] newWeights = weightMatrix[x];
+			
+			// Find new weights
+			for(int i = 0; i < weightMatrix[x].length; i++) {
+				for(int j = 0; j < weightMatrix[x][0].length; j++) {
+					// Apply learning modifier and error in proportion to the level of new desired outputs
+					newWeights[i][j] += -N * newDesired[i] * error[j];
 				}
 			}
+			
+			// Find new desired values
+			for(int i = 0; i < weightMatrix[x].length; i++) {
+				for(int j = 0; j < weightMatrix[x][0].length; j++) {
+					// Set new desired values with respect to weights and error
+					newDesired[i] += weightMatrix[x][i][j] * error[j];
+				}
+			}
+			
+			// Set desired and weights to their new values
+			weightMatrix[x] = newWeights;
+			desired = newDesired;
 		}
 	}
 	
@@ -517,7 +530,7 @@ public class FeedForward {
 	}
 	
 	// Function to set the output file name for the nueral network
-	public void setFileName(String fn) {
+	public void setFileName(Path fn) {
 		this.FileName = fn;
 	}
 }
