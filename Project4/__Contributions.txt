@@ -1,0 +1,20 @@
+Axel Ward:
+ - PAMNearestNeighbor.java
+ - KMeansNearestNeighbor.java
+ - NearestNeighbor.java
+ - FeedForward.java :: Classification
+
+Franki Taylor:
+ - KNearestNeighbor.java
+ - DataRunner.java
+ - FeedForward.java :: Regression
+ 
+Spencer Raymond:
+ - ENearestNeighbor.java
+ - CNearestNeighbor.java
+ - RadialBasis.java :: Classification
+ 
+Blake Mitchell:
+ - DataProcessor.java
+ - ProcessedData.java
+ - RadialBasis.java :: Regression
