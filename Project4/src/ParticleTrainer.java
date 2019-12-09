@@ -3,9 +3,9 @@ import java.util.Random;
 public class ParticleTrainer {
 	
 	final static int populationSize = 50;
-	final static int numGenerations = 5;
-	final static float IM = 5.0f;
-	final static float U = 5.0f;
+	final static int numGenerations = 10;
+	final static float IM = 10.0f;
+	final static float U = 2.0f;
 	
 	Gene population[];
 	Gene currentBest;
@@ -35,6 +35,7 @@ public class ParticleTrainer {
 		}
 	}
 	
+	// Function to train the classification (identical to Genetic Trainer)
 	public Gene runClass() {
 		initializePopulation();
 		initializeVelocities();
@@ -53,6 +54,7 @@ public class ParticleTrainer {
 		return currentBest;
 	}
 	
+	// Function to train regression (identical to GeneticTrainer)
 	public Gene runRegress() {
 		initializePopulation();
 		initializeVelocities();
@@ -71,6 +73,7 @@ public class ParticleTrainer {
 		return currentBest;
 	}
 	
+	// Function to initialize the population (identical to GeneticTrainer)
 	void initializePopulation() {
 		population = new Gene[populationSize];
 		
@@ -95,12 +98,14 @@ public class ParticleTrainer {
 			}
 			
 			population[x].weightMatrix = tempWeightMatrix;
+			// set best known position to be the initial position
 			population[x].bestKnown = tempWeightMatrix;
 		}
 		
 		getClassFitnesses();
 	}
 	
+	// Function to initialize velocities
 	void initializeVelocities() {
 		Random r = new Random();
 		
@@ -240,6 +245,9 @@ public class ParticleTrainer {
 			if(population[x].fitness > currentBest.fitness) {
 				currentBest = population[x];
 			}
+			
+			System.out.println("Individual Fitness " + population[x].fitness);
+			System.out.println("Current Best Fitness " + currentBest.fitness);
 		}
 	}
 	
@@ -295,6 +303,9 @@ public class ParticleTrainer {
 			if(population[x].fitness > currentBest.fitness) {
 				currentBest = population[x];
 			}
+			
+			System.out.println("Individual Fitness " + population[x].fitness);
+			System.out.println("Current Best Fitness " + currentBest.fitness);
 		}
 	}
 }

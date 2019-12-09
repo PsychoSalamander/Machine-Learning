@@ -1,4 +1,3 @@
-import java.util.Random;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.FileWriter;
@@ -56,41 +55,53 @@ public class FeedForward {
 			e.printStackTrace();
 		}
 		
+		// Create different algorithm trainers
 		BackpropTrainer BT = new BackpropTrainer(numLayers, numNodes[0], numNodes[numLayers - 1], numNodes);
 		GeneticTrainer GT = new GeneticTrainer(numLayers, numNodes[0], numNodes[numLayers - 1], numNodes);
 		DifferentialTrainer DT = new DifferentialTrainer(numLayers, numNodes[0], numNodes[numLayers - 1], numNodes);
 		ParticleTrainer PT = new ParticleTrainer(numLayers, numNodes[0], numNodes[numLayers - 1], numNodes);
 
+		// Create the class key
 		setClassKey();
+		
+		// Convert data to values between 0 and 1
 		convertPracticeData();
 		
+		// Set class location in all the algorithms
 		BT.classLocation = classLocation;
 		GT.classLocation = classLocation;
 		DT.classLocation = classLocation;
 		PT.classLocation = classLocation;
 		
+		// Set possible outputs in algorithms
 		BT.classKey = classKey;
 		GT.resultArray = classKey;
 		DT.resultArray = classKey;
 		PT.resultArray = classKey;
 		
+		// Pass practice data to algorithms
 		BT.inPracticeData = inPracticeData;
 		GT.inPracticeData = inPracticeData;
 		DT.inPracticeData = inPracticeData;
 		PT.inPracticeData = inPracticeData;
 		
-		System.out.println("Training BT c");
+		// Train the algorithms
+		System.out.println("Training Backprop Classification");
 		Gene BTBest = BT.runClass();
-		System.out.println("Training GT c");
+		System.out.println("Training Genetic Classification");
 		Gene GTBest = GT.runClass();
-		System.out.println("Training DT c");
+		System.out.println("Training Differential Classification");
 		Gene DTBest = DT.runClass();
-		System.out.println("Training PT c");
+		System.out.println("Training Particle Classification");
 		Gene PTBest = PT.runClass();
 		
+		// convert test data to values between 0 and 1
 		convertTestData();
+		
+		// Check accuracy of all the algorithms
 		float BTCorrect = 0, GTCorrect = 0, DTCorrect = 0, PTCorrect = 0;
 		for(int i = 0; i < inTestData.length; i++) {
+			// Get the activations for the current example
 			float[] activations = new float[inPracticeData[0].length-1];
 			int iter = 0;
 			for(int k = 0; k < inTestData[0].length; k++) {
@@ -99,11 +110,13 @@ public class FeedForward {
 				}
 			}
 			
+			// Pass activations to gene
 			BTBest.activations = activations;
 			GTBest.activations = activations;
 			DTBest.activations = activations;
 			PTBest.activations = activations;
 			
+			// Check result agains actual
 			if(BT.getResult(BTBest.getResults()) == inTestData[i][classLocation]) {
 				BTCorrect++;
 			}
@@ -118,10 +131,21 @@ public class FeedForward {
 			}
 		}
 		
+		// Print accuracy to console and file
 		System.out.println("BT accuracy: " + BTCorrect/inTestData.length);
 		System.out.println("GT accuracy: " + GTCorrect/inTestData.length);
 		System.out.println("DT accuracy: " + DTCorrect/inTestData.length);
 		System.out.println("PT accuracy: " + PTCorrect/inTestData.length);
+		
+		try {
+			fw.append(BTCorrect/inTestData.length + "\n");
+			fw.append(GTCorrect/inTestData.length + "\n");
+			fw.append(DTCorrect/inTestData.length + "\n");
+			fw.append(PTCorrect/inTestData.length + "\n");
+			fw.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		return 0;
 	}
@@ -136,39 +160,50 @@ public class FeedForward {
 					e.printStackTrace();
 				}
 				
+				// Create different algorithm trainers
 				BackpropTrainer BT = new BackpropTrainer(numLayers, numNodes[0], numNodes[numLayers - 1], numNodes);
 				GeneticTrainer GT = new GeneticTrainer(numLayers, numNodes[0], numNodes[numLayers - 1], numNodes);
 				DifferentialTrainer DT = new DifferentialTrainer(numLayers, numNodes[0], numNodes[numLayers - 1], numNodes);
 				ParticleTrainer PT = new ParticleTrainer(numLayers, numNodes[0], numNodes[numLayers - 1], numNodes);
 
-				setClassKey();
+				// Create the class key
+				setRegressKey();
+				
+				// Convert data to values between 0 and 1
 				convertPracticeData();
 				
+				// Set class location in all the algorithms
 				BT.classLocation = classLocation;
 				GT.classLocation = classLocation;
 				DT.classLocation = classLocation;
 				PT.classLocation = classLocation;
 				
+				// Set possible outputs in algorithms
 				BT.classKey = classKey;
 				GT.resultArray = classKey;
 				DT.resultArray = classKey;
 				PT.resultArray = classKey;
 				
+				// Pass practice data to algorithms
 				BT.inPracticeData = inPracticeData;
 				GT.inPracticeData = inPracticeData;
 				DT.inPracticeData = inPracticeData;
 				PT.inPracticeData = inPracticeData;
 				
-				System.out.println("Training BT r");
+				// Train the genes
+				System.out.println("Training Backprop Regression");
 				Gene BTBest = BT.runClass();
-				System.out.println("Training GT r");
+				System.out.println("Training Genetic Regression");
 				Gene GTBest = GT.runClass();
-				System.out.println("Training DT r");
+				System.out.println("Training Differential Regression");
 				Gene DTBest = DT.runClass();
-				System.out.println("Training PT r");
+				System.out.println("Training Particle Regression");
 				Gene PTBest = PT.runClass();
 				
+				// Convert test data to values between 0 and 1
 				convertTestData();
+				
+				// Get error of estimates
 				float BTError = 0, GTError = 0, DTError = 0, PTError = 0;
 				for(int i = 0; i < inTestData.length; i++) {
 					float[] activations = new float[inPracticeData[0].length-1];
@@ -179,11 +214,13 @@ public class FeedForward {
 						}
 					}
 					
+					// Pass activations to genes
 					BTBest.activations = activations;
 					GTBest.activations = activations;
 					DTBest.activations = activations;
 					PTBest.activations = activations;
 					
+					// Get results from genes
 					float e = BT.getResult(BTBest.getResults()) - inTestData[i][classLocation];
 					BTError += e*e;
 					
@@ -197,14 +234,27 @@ public class FeedForward {
 					PTError += e*e;
 				}
 				
+				// Print error to console and files
 				System.out.println("BT error: " + BTError/inTestData.length);
 				System.out.println("GT error: " + GTError/inTestData.length);
 				System.out.println("DT error: " + DTError/inTestData.length);
 				System.out.println("PT error: " + PTError/inTestData.length);
 				
+				try {
+					fw.append(BTError/inTestData.length + "\n");
+					fw.append(GTError/inTestData.length + "\n");
+					fw.append(DTError/inTestData.length + "\n");
+					fw.append(PTError/inTestData.length + "\n");
+					fw.flush();
+					fw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
 				return 0;
 	}
 
+	// Convert practice data to values between 0 and 1 for activations
 	void convertPracticeData() {
 		for(int i = 0; i < inPracticeData.length; i++) {
 			int iter = 0;
@@ -217,6 +267,7 @@ public class FeedForward {
 		}
 	}
 	
+	// Convert test data to values between 0 and 1 for activations
 	void convertTestData() {
 		for(int i = 0; i < inTestData.length; i++) {
 			int iter = 0;

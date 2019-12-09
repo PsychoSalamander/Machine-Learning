@@ -3,8 +3,8 @@ import java.util.Random;
 public class DifferentialTrainer {
 
 	final static int populationSize = 50;
-	final static int numGenerations = 5;
-	final static float IM = 5.0f;
+	final static int numGenerations = 10;
+	final static float IM = 10.0f;
 	final static float B = 1.0f;
 	final static float swapThreshold = 0.5f;
 	
@@ -35,6 +35,7 @@ public class DifferentialTrainer {
 		}
 	}
 	
+	// Function to train classification
 	public Gene runClass() {		
 		initializePopulation();
 		
@@ -54,6 +55,7 @@ public class DifferentialTrainer {
 		return currentBest;
 	}
 	
+	// Function to train regression
 	public Gene runRegress() {		
 		initializePopulation();
 		
@@ -73,6 +75,7 @@ public class DifferentialTrainer {
 		return currentBest;
 	}
 	
+	// Function to initialize population (identical to GeneticTrainer)
 	void initializePopulation() {
 		population = new Gene[populationSize];
 		
@@ -100,6 +103,7 @@ public class DifferentialTrainer {
 		}
 	}
 	
+	// Function to get population fitnesses (identical to GeneticTrainer)
 	void getClassFitnesses() {
 		for(int i = 0; i < populationSize; i++) {
 
@@ -128,6 +132,7 @@ public class DifferentialTrainer {
 		}
 	}
 	
+	// Function to get population fitnesses (identical to GeneticTrainer)
 	void getRegressFitnesses() {
 		for(int i = 0; i < populationSize; i++) {
 
@@ -159,6 +164,7 @@ public class DifferentialTrainer {
 		}
 	}
 	
+	// Function to get results (identical to GeneticTrainer)
 	float getResult(float results[]) {
 		int bigIndex = 0;
 		float bigEstimate = 0;
@@ -173,16 +179,20 @@ public class DifferentialTrainer {
 		return(resultArray[bigIndex]);
 	}
 	
+	// Function to train the differential algorithm
 	void runClassDifferential() {
 		Random r = new Random();
 		
+		// For each member of the population
 		for(int x = 0; x < populationSize; x++) {
+			// Select 3 random matrices
 			int x1 = r.nextInt(populationSize);
 			int x2 = r.nextInt(populationSize);
 			int x3 = r.nextInt(populationSize);
 			
 			Gene v = new Gene();
 			
+			// Create replacement matrix from 3 selected matrices
 			float replacementMatrix[][][] = population[x1].weightMatrix;
 			
 			for(int i = 0; i < replacementMatrix.length; i++) {
@@ -198,9 +208,10 @@ public class DifferentialTrainer {
 			
 			v.weightMatrix = replacementMatrix;
 			
+			// swap values of replacement and original matrices
 			for(int i = 0; i < v.weightMatrix.length; i++) {
-				for(int j = 0; j < v.weightMatrix.length; j++) {
-					for(int k = 0; k < v.weightMatrix.length; k++) {
+				for(int j = 0; j < v.weightMatrix[i].length; j++) {
+					for(int k = 0; k < v.weightMatrix[i][j].length; k++) {
 						if(r.nextFloat() > swapThreshold) {
 							v.weightMatrix[i][j][k] = population[x].weightMatrix[i][j][k];
 						}
@@ -208,6 +219,7 @@ public class DifferentialTrainer {
 				}
 			}
 			
+			// Check to see if newly created matrix is better than original
 			int correct = 0;
 			for(int j = 0; j < inPracticeData.length; j++) {
 				
@@ -229,12 +241,18 @@ public class DifferentialTrainer {
 			
 			v.fitness = ((float) correct) / ((float) inPracticeData.length);
 			
+			System.out.println("Selected Vectors: " + x1 + ", " + x2 + ", " + x3);
+			System.out.println("Original Fitness " + population[x].fitness);
+			System.out.println("New Fitness " + v.fitness);
+			
+			// If fitness is better than original, replace the fitness
 			if(v.fitness > population[x].fitness) {
 				population[x] = v;
 			}
 		}
 	}
 	
+	// Function to train the differential algorithm (similar to above, just for regression)
 	void runRegressDifferential() {
 		Random r = new Random();
 		
@@ -295,6 +313,10 @@ public class DifferentialTrainer {
 			float fitness = 1 / error;
 			
 			v.fitness = fitness;
+			
+			System.out.println("Selected Vectors: " + x1 + ", " + x2 + ", " + x3);
+			System.out.println("Original Fitness " + population[x].fitness);
+			System.out.println("New Fitness " + v.fitness);
 			
 			if(v.fitness > population[x].fitness) {
 				population[x] = v;
