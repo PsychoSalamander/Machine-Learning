@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.io.FileWriter;
 import java.util.Hashtable;
 
 import datapkg.*;
@@ -76,17 +75,18 @@ public class Main {
 	DataProcessor winequalityWhiteProcessor = new DataProcessor(winequalityWhitePath, winequalityWhiteData, true,
 		winequalityWhiteRoundings);
 
-	// Run tests for 0 hidden layers and output results
 	DataRunner dr = new DataRunner();
-	int nodes[] = {};
 	float temp[] = null;
-	temp = dr.runFeedForward(winequalityWhiteData, 10, nodes, 10, false, "white0", "0");
-	temp = dr.runFeedForward(abaloneData, 10, nodes, 10, true, "abalone0", "0");
-	temp = dr.runFeedForward(carData, 10, nodes, 10, true, "car0", "0");
-	temp = dr.runFeedForward(segmentationData, 10, nodes, 10, true, "segmentation0", "0");
-	temp = dr.runFeedForward(machineData, 10, nodes, 10, false, "machine0", "0");
-	temp = dr.runFeedForward(forestfiresData, 10, nodes, 10, false, "forest0", "0");
-	temp = dr.runFeedForward(winequalityRedData, 10, nodes, 10, false, "red0", "0");
+
+	// Run tests for 0 hidden layers and output results
+	int nodes0[] = {};
+	temp = dr.runFeedForward(abaloneData, 10, nodes0, 10, true, "abalone0", "0");
+	temp = dr.runFeedForward(carData, 10, nodes0, 10, true, "car0", "0");
+	temp = dr.runFeedForward(segmentationData, 10, nodes0, 10, true, "segmentation0", "0");
+	temp = dr.runFeedForward(machineData, 10, nodes0, 10, false, "machine0", "0");
+	temp = dr.runFeedForward(forestfiresData, 10, nodes0, 10, false, "forest0", "0");
+	temp = dr.runFeedForward(winequalityRedData, 10, nodes0, 10, false, "red0", "0");
+	temp = dr.runFeedForward(winequalityWhiteData, 10, nodes0, 10, false, "white0", "0");
 	
 	// Run tests for 1 hidden layer and output results
 	int nodes1[] = { 8 };
@@ -97,7 +97,7 @@ public class Main {
 	temp = dr.runFeedForward(forestfiresData, 10, nodes1, 10, false, "forest1", "1");
 	temp = dr.runFeedForward(winequalityRedData, 10, nodes1, 10, false, "red1", "1");
 	temp = dr.runFeedForward(winequalityWhiteData, 10, nodes1, 10, false, "white1", "1");
-
+	
 	// Run tests for 2 hidden layers and output results
 	int nodes2[] = { 10, 7 };
 	temp = dr.runFeedForward(abaloneData, 10, nodes2, 10, true, "abalone2", "2");
@@ -107,24 +107,5 @@ public class Main {
 	temp = dr.runFeedForward(forestfiresData, 10, nodes2, 10, false, "forest2", "2");
 	temp = dr.runFeedForward(winequalityRedData, 10, nodes2, 10, false, "red2", "2");
 	temp = dr.runFeedForward(winequalityWhiteData, 10, nodes2, 10, false, "white2", "2");
-    }
-    
-    // Function to output array to a filewriter's stream
-    static void appendArray(FileWriter fw, float[] a) {
-	for (int i = 0; i < a.length; i++) {
-	    if (i != a.length - 1) {
-		try {
-		    fw.append(a[i] + ",");
-		} catch (IOException e) {
-		    e.printStackTrace();
-		}
-	    } else {
-		try {
-		    fw.append(a[i] + "\n");
-		} catch (IOException e) {
-		    e.printStackTrace();
-		}
-	    }
-	}
     }
 }

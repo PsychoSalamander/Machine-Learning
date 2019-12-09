@@ -7,6 +7,8 @@ public class Gene {
 	public float bestKnownFitness;
 	public float fitness;
 	
+	// Class to hold data for individuals of populations
+	
 	public Gene() {
 		
 	}
@@ -41,6 +43,7 @@ public class Gene {
 		return results;
 	}
 	
+	// Function to get sigmoid
 	float calcSig(float x) {
 		float e = (float) Math.exp((double) x);
 		float sig = (1/(1+e));

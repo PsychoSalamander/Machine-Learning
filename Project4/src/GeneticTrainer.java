@@ -3,9 +3,9 @@ import java.util.Random;
 public class GeneticTrainer {
 	
 	final static int populationSize = 50;
-	final static int numGenerations = 5;
+	final static int numGenerations = 10;
 	final static float swapThreshold = 0.5f;
-	final static float IM = 5.0f;
+	final static float IM = 10.0f;
 	
 	Gene population[];
 	float populationFitness;
@@ -35,14 +35,18 @@ public class GeneticTrainer {
 		}
 	}
 	
+	// Function to train classification
 	public Gene runClass() {
+		// Initialize the population randomly
 		initializePopulation();
 		
+		// Run the trainer for the prespecified number of generations
 		for(int i = 0; i < numGenerations; i++) {
 			getClassFitnesses();
 			replacePopulation();
 		}
 		
+		// Find the best gene in the population
 		getClassFitnesses();
 		Gene currentBest = population[0];
 		for(int i = 1; i < populationSize; i++) {
@@ -54,14 +58,18 @@ public class GeneticTrainer {
 		return currentBest;
 	}
 	
+	// Function to train regression
 	public Gene runRegress() {
+		// Initialize the population randomly
 		initializePopulation();
 		
+		// Run the trainer for the prespecified number of generations
 		for(int i = 0; i < numGenerations; i++) {
 			getRegressFitnesses();
 			replacePopulation();
 		}
 		
+		// Find the best gene in the population
 		getRegressFitnesses();
 		Gene currentBest = population[0];
 		for(int i = 1; i < populationSize; i++) {
@@ -73,9 +81,11 @@ public class GeneticTrainer {
 		return currentBest;
 	}
 	
+	// Function to randomly initialize weight matrices
 	void initializePopulation() {
 		population = new Gene[populationSize];
 		
+		// create temporary weight matrix
 		float tempWeightMatrix[][][] = new float[numLayers - 1][][];
 		for(int i = 0; i < numLayers - 1; i++) {
 			tempWeightMatrix[i] = new float[numNodes[i]][numNodes[i + 1]];
@@ -83,6 +93,7 @@ public class GeneticTrainer {
 		
 		Random r = new Random();
 		
+		// Iterate through population and create matrix for each individual
 		for(int x = 0; x < populationSize; x++) {
 			population[x] = new Gene();
 			// Iterate through weight matrix
@@ -100,13 +111,17 @@ public class GeneticTrainer {
 		}
 	}	
 	
+	// Function to get the fitnesses for each member of the population
 	void getClassFitnesses() {
 		populationFitness = 0;
+		// for each individual in the population
 		for(int i = 0; i < populationSize; i++) {
-
+			
+			// iterate through practice data
 			int correct = 0;
 			for(int j = 0; j < inPracticeData.length; j++) {
 				
+				// Get activations to get results from
 				float[] activations = new float[inPracticeData[0].length-1];
 				int iter = 0;
 				for(int k = 0; k < inPracticeData[0].length; k++) {
@@ -115,14 +130,17 @@ public class GeneticTrainer {
 					}
 				}
 				
+				// get result from weight matrix
 				population[i].activations = activations;
 				float result = getResult(population[i].getResults());
 				
+				// check correctness of result
 				if(result == inPracticeData[j][classLocation]) {
 					correct++;
 				}
 			}
 			
+			// set gene fitness
 			float fitness = ((float) correct) / ((float) inPracticeData.length) + .01f;
 			
 			populationFitness += fitness;
@@ -130,13 +148,17 @@ public class GeneticTrainer {
 		}
 	}
 	
+	// Function to get the fitnesses for each member of the population
 	void getRegressFitnesses() {
 		populationFitness = 0;
+		// for each individual in the population
 		for(int i = 0; i < populationSize; i++) {
 
+			// iterate through practice data
 			float error = 0;
 			for(int j = 0; j < inPracticeData.length; j++) {
 				
+				// Get activations to get results from
 				float[] activations = new float[inPracticeData[0].length-1];
 				int iter = 0;
 				for(int k = 0; k < inPracticeData[0].length; k++) {
@@ -145,17 +167,21 @@ public class GeneticTrainer {
 					}
 				}
 				
+				// get result from weight matrix
 				population[i].activations = activations;
 				float result = getResult(population[i].getResults());
 				
+				// check error of result
 				float e = result - inPracticeData[j][classLocation];
 				e = e * e;
 				
 				error += e;
 			}
 			
+			// average error
 			error = error / inPracticeData.length;
 			
+			// set gene fitness
 			float fitness = 1 / error;
 			
 			populationFitness += fitness;
@@ -163,10 +189,12 @@ public class GeneticTrainer {
 		}
 	}
 	
+	// Function to get results from result array
 	float getResult(float results[]) {
 		int bigIndex = 0;
 		float bigEstimate = 0;
 		
+		// iterate through result and check which value is largest
 		for(int j = 0; j < results.length; j++) {
 			if(results[j] > bigEstimate) {
 				bigEstimate = results[j];
@@ -174,20 +202,23 @@ public class GeneticTrainer {
 			}
 		}
 		
+		// Send result back
 		return(resultArray[bigIndex]);
 	}
 	
+	// Genetic algorithm function
 	void replacePopulation() {
-		System.out.println("Replacing Population");
 		Random r = new Random();
 		
+		// array to indicate which parents have already been selected
 		boolean selected[] = new boolean[populationSize];
 		
 		// Weighted Roulette Selection
 		for(int x = 0; x < populationSize / 2; x++) {
-			System.out.println(x + "/" + populationSize / 2);
 			int available = 0;
 			float totalFitness = 0;
+			
+			// cound available parents
 			for(int i = 0; i < populationSize; i++) {
 				if(!selected[i]) {
 					available++;
@@ -195,10 +226,11 @@ public class GeneticTrainer {
 				}
 			}
 			
+			// probability and availability arrays
 			float cumulativeFitnesses[] = new float[available];
 			int availableParents[] = new int[available];
 			
-			// Set Weights
+			// Set probabilities
 			float currentValue = 0;
 			int iter = 0;
 			for(int i = 0; i < populationSize; i++) {
@@ -213,6 +245,7 @@ public class GeneticTrainer {
 			int parent1 = 0;
 			int parent2 = 0;
 			
+			// Select parents
 			for(int p = 0; p < 2; p++) {
 				boolean foundParent = false;
 				while(!foundParent) {
@@ -241,9 +274,14 @@ public class GeneticTrainer {
 				}
 			}
 			
+			// create child weight matrices
 			float weightMatrix1[][][] = population[parent1].weightMatrix;
 			float weightMatrix2[][][] = population[parent2].weightMatrix;
 			
+			System.out.println("Selected Parents: " + parent1 + " & " + parent2);
+			System.out.println("Parents fitness: " + population[parent1].fitness + " & " + population[parent2].fitness);
+			
+			// swap values
 			for(int i = 0; i < weightMatrix1.length; i++) {
 				for(int j = 0; j < weightMatrix1[i].length; j++) {
 					for(int k = 0; k < weightMatrix1[i][j].length; k++) {
@@ -256,10 +294,9 @@ public class GeneticTrainer {
 				}
 			}
 			
+			// replace parents
 			population[parent1].weightMatrix = weightMatrix1;
 			population[parent2].weightMatrix = weightMatrix2;
 		}
-		
-		System.out.println("Finished replacement");
 	}
 }

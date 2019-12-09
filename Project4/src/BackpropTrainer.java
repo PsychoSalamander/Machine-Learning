@@ -133,6 +133,7 @@ public class BackpropTrainer {
 		return results;
 	}
 	
+	// Get result from the result array
 	float getResult(float results[]) {
 		int bigIndex = 0;
 		float bigEstimate = 0;
