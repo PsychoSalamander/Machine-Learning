@@ -35,9 +35,7 @@ public class DifferentialTrainer {
 		}
 	}
 	
-	public Gene runClass() {
-		float results = 0;
-		
+	public Gene runClass() {		
 		initializePopulation();
 		
 		for(int i = 0; i < numGenerations; i++) {
@@ -56,16 +54,30 @@ public class DifferentialTrainer {
 		return currentBest;
 	}
 	
-	public float runRegress() {
-		float results = 0;
+	public Gene runRegress() {		
+		initializePopulation();
 		
-		return results;
+		for(int i = 0; i < numGenerations; i++) {
+			getRegressFitnesses();
+			runRegressDifferential();
+		}
+		
+		getRegressFitnesses();
+		Gene currentBest = population[0];
+		for(int i = 1; i < populationSize; i++) {
+			if(population[i].fitness > currentBest.fitness) {
+				currentBest = population[i];
+			}
+		}
+		
+		return currentBest;
 	}
 	
 	void initializePopulation() {
 		population = new Gene[populationSize];
 		
 		for(int x = 0; x < populationSize; x++) {
+			population[x] = new Gene();
 			Random r = new Random();
 			
 			float tempWeightMatrix[][][] = new float[numLayers - 1][][];
@@ -93,7 +105,16 @@ public class DifferentialTrainer {
 
 			int correct = 0;
 			for(int j = 0; j < inPracticeData.length; j++) {
-				population[i].activations = inPracticeData[j];
+				
+				float[] activations = new float[inPracticeData[0].length-1];
+				int iter = 0;
+				for(int k = 0; k < inPracticeData[0].length; k++) {
+					if(k != classLocation) {
+						activations[iter] = inPracticeData[j][k];
+					}
+				}
+				
+				population[i].activations = activations;
 				float result = getResult(population[i].getResults());
 				
 				if(result == inPracticeData[j][classLocation]) {
@@ -102,6 +123,37 @@ public class DifferentialTrainer {
 			}
 			
 			float fitness = ((float) correct) / ((float) inPracticeData.length);
+			
+			population[i].fitness = fitness;
+		}
+	}
+	
+	void getRegressFitnesses() {
+		for(int i = 0; i < populationSize; i++) {
+
+			float error = 0;
+			for(int j = 0; j < inPracticeData.length; j++) {
+				
+				float[] activations = new float[inPracticeData[0].length-1];
+				int iter = 0;
+				for(int k = 0; k < inPracticeData[0].length; k++) {
+					if(k != classLocation) {
+						activations[iter] = inPracticeData[j][k];
+					}
+				}
+				
+				population[i].activations = activations;
+				float result = getResult(population[i].getResults());
+				
+				float e = result - inPracticeData[j][classLocation];
+				e = e * e;
+				
+				error += e;
+			}
+			
+			error = error / inPracticeData.length;
+			
+			float fitness = 1 / error;
 			
 			population[i].fitness = fitness;
 		}
@@ -158,7 +210,16 @@ public class DifferentialTrainer {
 			
 			int correct = 0;
 			for(int j = 0; j < inPracticeData.length; j++) {
-				v.activations = inPracticeData[j];
+				
+				float[] activations = new float[inPracticeData[0].length-1];
+				int iter = 0;
+				for(int k = 0; k < inPracticeData[0].length; k++) {
+					if(k != classLocation) {
+						activations[iter] = inPracticeData[j][k];
+					}
+				}
+				
+				v.activations = activations;
 				float result = getResult(v.getResults());
 				
 				if(result == inPracticeData[j][classLocation]) {
@@ -167,6 +228,73 @@ public class DifferentialTrainer {
 			}
 			
 			v.fitness = ((float) correct) / ((float) inPracticeData.length);
+			
+			if(v.fitness > population[x].fitness) {
+				population[x] = v;
+			}
+		}
+	}
+	
+	void runRegressDifferential() {
+		Random r = new Random();
+		
+		for(int x = 0; x < populationSize; x++) {
+			int x1 = r.nextInt(populationSize);
+			int x2 = r.nextInt(populationSize);
+			int x3 = r.nextInt(populationSize);
+			
+			Gene v = new Gene();
+			
+			float replacementMatrix[][][] = population[x1].weightMatrix;
+			
+			for(int i = 0; i < replacementMatrix.length; i++) {
+				for(int j = 0; j < replacementMatrix[i].length; j++) {
+					for(int k = 0; k < replacementMatrix[i][j].length; k++) {
+						if(r.nextFloat() > swapThreshold) {
+							float tempValue = B * (population[x2].weightMatrix[i][j][k] - population[x3].weightMatrix[i][j][k]);
+							replacementMatrix[i][j][k] += tempValue;
+						}
+					}
+				}
+			}
+			
+			v.weightMatrix = replacementMatrix;
+			
+			for(int i = 0; i < v.weightMatrix.length; i++) {
+				for(int j = 0; j < v.weightMatrix.length; j++) {
+					for(int k = 0; k < v.weightMatrix.length; k++) {
+						if(r.nextFloat() > swapThreshold) {
+							v.weightMatrix[i][j][k] = population[x].weightMatrix[i][j][k];
+						}
+					}
+				}
+			}
+			
+			float error = 0;
+			for(int j = 0; j < inPracticeData.length; j++) {
+				
+				float[] activations = new float[inPracticeData[0].length-1];
+				int iter = 0;
+				for(int k = 0; k < inPracticeData[0].length; k++) {
+					if(k != classLocation) {
+						activations[iter] = inPracticeData[j][k];
+					}
+				}
+				
+				v.activations = activations;
+				float result = getResult(v.getResults());
+				
+				float e = result - inPracticeData[j][classLocation];
+				e = e * e;
+				
+				error += e;
+			}
+			
+			error = error / inPracticeData.length;
+			
+			float fitness = 1 / error;
+			
+			v.fitness = fitness;
 			
 			if(v.fitness > population[x].fitness) {
 				population[x] = v;

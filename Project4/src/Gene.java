@@ -2,11 +2,17 @@
 public class Gene {
 	public float weightMatrix[][][];
 	public float velocityMatrix[][][];
+	public float bestKnown[][][];
 	public float activations[];
+	public float bestKnownFitness;
 	public float fitness;
 	
+	public Gene() {
+		
+	}
+	
 	public float[] getResults() {
-		int resultLength = weightMatrix[0][weightMatrix[0].length].length;
+		int resultLength = weightMatrix[0][weightMatrix[0].length - 1].length;
 		float results[] = new float[resultLength];
 		// Get initial activations from the example
 		float currentActivations[] = activations;
