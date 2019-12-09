@@ -126,12 +126,8 @@ public class DataRunner {
 			
 			// Set file output name and run algorithm
 			if(testClassification) {
-				Path PrintPath = Paths.get(folder + "/classification_" + name + "_" + t + ".txt");
-				algorithm.setFileName(PrintPath);
 				results[t] = algorithm.runClass();
 			} else {
-				Path PrintPath = Paths.get(folder + "/regression_" + name + "_" + t + ".txt");
-				algorithm.setFileName(PrintPath);
 				results[t] = algorithm.runRegress();
 			}
 		}

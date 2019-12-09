@@ -8,32 +8,52 @@ public class BackpropTrainer {
 	// Learning Multiplier
 	final static float N = .1f;
 	
-	float inPracticeData[][];
+	public float inPracticeData[][];
 	
 	private int numLayers;
 	private int numNodes[];
 	float weightMatrix[][][];
 	
 	int classLocation;
-	private float inScales[];
-	private float classKey[];
+	public float classKey[];
 	
-	public BackpropTrainer() {
+	BackpropTrainer(int layerCount, int numInputs, int numOutputs, int nodeCount[]) {
 		
+		numLayers = layerCount + 2;
+		numNodes = new int[numLayers];
+		numNodes[0] = numInputs;
+		numNodes[numLayers - 1] = numOutputs;
+		
+		if(nodeCount.length == layerCount) {
+			for(int i = 0; i < nodeCount.length; i++) {
+				numNodes[i+1] = nodeCount[i];
+			}
+		} else {
+			System.out.println("Unequal Node/Layer Count!");
+			System.exit(-1);
+		}
+		
+		weightMatrix = new float[numLayers - 1][][];
+		for(int i = 0; i < numLayers - 1; i++) {
+			weightMatrix[i] = new float[numNodes[i]][numNodes[i + 1]];
+		}
 	}
 	
-	public float[][][] trainBackprop() {
+	public Gene runClass() {
 		
 		// Run the forwardpass
 		forwardPass();
 		
-		// Match each output node to a class
-		setClassKey();
-		
 		// Train the Neural Network
 		for(int i = 0; i < inPracticeData.length; i++) {
 			// Get the inital activations
-			float activations[] = getActivations(inPracticeData[i]);
+			float[] activations = new float[inPracticeData[0].length-1];
+			int iter = 0;
+			for(int k = 0; k < inPracticeData[0].length; k++) {
+				if(k != classLocation) {
+					activations[iter] = inPracticeData[i][k];
+				}
+			}
 			
 			// Get the results from the NN
 			float results[][] = getResults(activations);
@@ -42,33 +62,20 @@ public class BackpropTrainer {
 
 		}
 		
-		return weightMatrix;
+		Gene g = new Gene();
+		g.weightMatrix = weightMatrix;
+		
+		return g;
 	}
 	
-	public float[][][] trainBackpropRegress() {
+	public Gene runRegress() {
 		// Run forward pass
 		forwardPass();
-		
-		// Print the initial weight matrix to console
-		System.out.println("Initial Weight Matrix:");
-		for(int i = 0; i < weightMatrix.length; i++) {
-			for(int j = 0; j < weightMatrix[i].length; j++) {
-				System.out.print("[");
-				for(int k = 0; k < weightMatrix[i][j].length; k++) {
-					System.out.print(weightMatrix[i][j][k] + ", ");
-				}
-				System.out.println("]");
-			}
-			System.out.println("\n");
-		}
-		
-		// Assign regression guesses to each output node
-		setRegressKey();
 		
 		// Train neural network
 		for(int i = 0; i < 3; i++) {
 			// Get initial activations
-			float activations[] = getActivations(inPracticeData[i]);
+			float activations[] = inPracticeData[i];
 			
 			// Get results
 			float results[][] = getResults(activations);
@@ -76,7 +83,10 @@ public class BackpropTrainer {
 			backpropRegress(results, inPracticeData[i][classLocation]);
 		}
 		
-		return weightMatrix;
+		Gene g = new Gene();
+		g.weightMatrix = weightMatrix;
+		
+		return g;
 	}
 	
 	// Function to set the practice data for the nueral network
@@ -89,19 +99,6 @@ public class BackpropTrainer {
 		classLocation = loc;
 	}
 	
-	// Function to set the scales for the nueral network
-	public void setScales(float scales[]) {
-		
-		// Print scales to console
-		System.out.print("scale: [");
-		for(int i = 0; i < scales.length; i++) {
-			System.out.print(scales[i] + ", ");
-		}
-		System.out.println("]");
-		
-		inScales = scales;
-	}
-	
 	// Function to run the activations through the neural network
 	private float[][] getResults(float inExample[]) {
 		// Initialize result array
@@ -110,57 +107,21 @@ public class BackpropTrainer {
 		// Get initial activations from the example
 		float currentActivations[] = inExample;
 		
-		// Print initail activations to console
-		System.out.print("Initial Activations: [");
-		for(int k = 0; k < currentActivations.length; k++) {
-			System.out.print(currentActivations[k] + ", ");
-		}
-		System.out.println("]");
-		
-		// Print weight matrix to console
-		System.out.println("Weight Matrix:");
-		for(int i = 0; i < weightMatrix.length; i++) {
-			for(int j = 0; j < weightMatrix[i].length; j++) {
-				System.out.print("[");
-				for(int k = 0; k < weightMatrix[i][j].length; k++) {
-					System.out.print(weightMatrix[i][j][k] + ", ");
-				}
-				System.out.println("]");
-			}
-			System.out.println("\n");
-		}
-		
 		// Apply the weight matrix through the whole neural network
 		for(int i = 0; i < weightMatrix.length; i++) {
 			// Initialize the array that will hold multiplication results
-			float newActivations[] = new float[weightMatrix[i][0].length];
-			
-			// Print the activations being multiplied
-			System.out.print("pre-Activations: [");
-			for(int x = 0; x < currentActivations.length; x++) {
-				System.out.print(currentActivations[x] + ", ");
-			}
-			System.out.println("]");			
+			float newActivations[] = new float[weightMatrix[i][0].length];		
 			
 			// Iterate through the weight matrix, performing the matrix multiplication
 			for(int j = 0; j < newActivations.length; j++) {
 				for(int k = 0; k < currentActivations.length; k++) {
 					// Print the multiplication being performed
-					System.out.println("Multiplier: " + weightMatrix[i][k][j] + " * " + currentActivations[k]);
 					newActivations[j] += currentActivations[k] * weightMatrix[i][k][j];
 				}
-				System.out.println("-----");
 				
 				// Apply sigmoid function to results
 				newActivations[j] = calcSig(newActivations[j]);
 			}
-			
-			// Print out the post activations
-			System.out.print("post-Activations: [");
-			for(int x = 0; x < newActivations.length; x++) {
-				System.out.print(newActivations[x] + ", ");
-			}
-			System.out.println("]");
 			
 			// Set the new activations to be the ones sent through the multiplication process
 			results[i+1] = newActivations;
@@ -170,6 +131,20 @@ public class BackpropTrainer {
 		// Set the results equal to the final results of the multiplications
 		
 		return results;
+	}
+	
+	float getResult(float results[]) {
+		int bigIndex = 0;
+		float bigEstimate = 0;
+		
+		for(int j = 0; j < results.length; j++) {
+			if(results[j] > bigEstimate) {
+				bigEstimate = results[j];
+				bigIndex = j; 
+			}
+		}
+		
+		return(classKey[bigIndex]);
 	}
 	
 	private void backpropClass(float results[][], float example) {
@@ -255,91 +230,6 @@ public class BackpropTrainer {
 			weightMatrix[x] = newWeights;
 			desired = newDesired;
 		}
-	}
-
-	// Function to assign classes to output nodes of the neural network
-	private void setClassKey() {
-		// Initalize key matrix
-		int foundKeys[] = new int[inPracticeData.length];
-		for(int i = 0; i < foundKeys.length; i++) {
-			foundKeys[i] = -1;
-		}
-		
-		// Find keys in practice data
-		for(int i = 0; i < inPracticeData.length; i++) {
-			int currentResult = (int) inPracticeData[i][classLocation];
-			
-			// Check to see if current key has already been seen
-			boolean found = false;
-			for(int j = 0; j < foundKeys.length; j++) {
-				if(currentResult == foundKeys[j]) {
-					found = true;
-					break;
-				}
-			}
-			
-			// Add key to keys if new
-			if(!found) {
-				foundKeys[i] = currentResult;
-			}
-		}
-		
-		// Fill out classKey based on keys found above
-		classKey = new float[numNodes[numNodes.length - 1]];
-		int iter = 0;
-		for(int i = 0; i < foundKeys.length; i++) {
-			if(foundKeys[i] != -1) {
-				if(iter != classKey.length) {
-					classKey[iter] = foundKeys[i];
-					iter++;
-				}
-			}
-		}
-	}	
-	
-	// Function to assign regression estimates to output nodes of the neural network
-	private void setRegressKey() {
-		// Search for largest value in the results of the practice set
-		float largestKey = 0;
-		for(int i = 0; i < inPracticeData.length; i++) {
-			if(inPracticeData[i][classLocation] > largestKey) {
-				largestKey = inPracticeData[i][classLocation];
-			}
-		}
-		
-		// get the number of outputs
-		int outputs = numNodes[numNodes.length - 1];
-		
-		// Get how large each estimate bucket should be
-		float bucketSize = largestKey / outputs;
-		
-		// Assign each output node an estimate in the middle of the bucket size
-		classKey = new float[outputs];
-		float start = bucketSize / 2;
-		for(int i = 0; i < outputs; i++) {
-			classKey[i] = start;
-			start += bucketSize;
-		}
-	}	
-	
-	// Function to get inital activations that will be sent into the NN
-	private float[] getActivations(float[] inData) {
-		// Initialize the activation matrix
-		float activations[] = new float[inData.length - 1];
-		
-		// Get the activations
-		int iter = 0;
-		for(int i = 0; i < inData.length; i++) {
-			// Check to make sure the value being checked isn't the result
-			if(i != classLocation) {
-				// Divide the current value by the highest value possible
-				// to get a value between 0 and 1
-				activations[iter] = inData[i]/inScales[iter];
-				iter++;
-			}
-		}
-		
-		return activations;
 	}
 		
 	// Function to initialize weight matrix

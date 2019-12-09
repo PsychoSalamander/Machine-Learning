@@ -54,10 +54,23 @@ public class GeneticTrainer {
 		return currentBest;
 	}
 	
-	public float runRegress() {
-		float results = 0;
+	public Gene runRegress() {
+		initializePopulation();
 		
-		return results;
+		for(int i = 0; i < numGenerations; i++) {
+			getRegressFitnesses();
+			replacePopulation();
+		}
+		
+		getRegressFitnesses();
+		Gene currentBest = population[0];
+		for(int i = 1; i < populationSize; i++) {
+			if(population[i].fitness > currentBest.fitness) {
+				currentBest = population[i];
+			}
+		}
+		
+		return currentBest;
 	}
 	
 	void initializePopulation() {
@@ -71,7 +84,7 @@ public class GeneticTrainer {
 		Random r = new Random();
 		
 		for(int x = 0; x < populationSize; x++) {
-			
+			population[x] = new Gene();
 			// Iterate through weight matrix
 			for(int i = 0; i < tempWeightMatrix.length; i++) {
 				for(int j = 0; j < tempWeightMatrix[i].length; j++) {
@@ -85,8 +98,7 @@ public class GeneticTrainer {
 			
 			population[x].weightMatrix = tempWeightMatrix;
 		}
-	}
-	
+	}	
 	
 	void getClassFitnesses() {
 		populationFitness = 0;
@@ -94,7 +106,16 @@ public class GeneticTrainer {
 
 			int correct = 0;
 			for(int j = 0; j < inPracticeData.length; j++) {
-				population[i].activations = inPracticeData[j];
+				
+				float[] activations = new float[inPracticeData[0].length-1];
+				int iter = 0;
+				for(int k = 0; k < inPracticeData[0].length; k++) {
+					if(k != classLocation) {
+						activations[iter] = inPracticeData[j][k];
+					}
+				}
+				
+				population[i].activations = activations;
 				float result = getResult(population[i].getResults());
 				
 				if(result == inPracticeData[j][classLocation]) {
@@ -102,7 +123,40 @@ public class GeneticTrainer {
 				}
 			}
 			
-			float fitness = ((float) correct) / ((float) inPracticeData.length);
+			float fitness = ((float) correct) / ((float) inPracticeData.length) + .01f;
+			
+			populationFitness += fitness;
+			population[i].fitness = fitness;
+		}
+	}
+	
+	void getRegressFitnesses() {
+		populationFitness = 0;
+		for(int i = 0; i < populationSize; i++) {
+
+			float error = 0;
+			for(int j = 0; j < inPracticeData.length; j++) {
+				
+				float[] activations = new float[inPracticeData[0].length-1];
+				int iter = 0;
+				for(int k = 0; k < inPracticeData[0].length; k++) {
+					if(k != classLocation) {
+						activations[iter] = inPracticeData[j][k];
+					}
+				}
+				
+				population[i].activations = activations;
+				float result = getResult(population[i].getResults());
+				
+				float e = result - inPracticeData[j][classLocation];
+				e = e * e;
+				
+				error += e;
+			}
+			
+			error = error / inPracticeData.length;
+			
+			float fitness = 1 / error;
 			
 			populationFitness += fitness;
 			population[i].fitness = fitness;
@@ -124,21 +178,38 @@ public class GeneticTrainer {
 	}
 	
 	void replacePopulation() {
-		
+		System.out.println("Replacing Population");
 		Random r = new Random();
 		
 		boolean selected[] = new boolean[populationSize];
-		float cumulativeFitnesses[] = new float[populationSize];
-		
-		// Set Weights
-		float currentValue = 0;
-		for(int i = 0; i < populationSize; i++) {
-			cumulativeFitnesses[i] = currentValue + (population[i].fitness / populationFitness);
-			currentValue += cumulativeFitnesses[i];
-		}
 		
 		// Weighted Roulette Selection
 		for(int x = 0; x < populationSize / 2; x++) {
+			System.out.println(x + "/" + populationSize / 2);
+			int available = 0;
+			float totalFitness = 0;
+			for(int i = 0; i < populationSize; i++) {
+				if(!selected[i]) {
+					available++;
+					totalFitness += population[i].fitness;
+				}
+			}
+			
+			float cumulativeFitnesses[] = new float[available];
+			int availableParents[] = new int[available];
+			
+			// Set Weights
+			float currentValue = 0;
+			int iter = 0;
+			for(int i = 0; i < populationSize; i++) {
+				if(!selected[i]) {
+					cumulativeFitnesses[iter] = currentValue + (population[i].fitness / totalFitness);
+					currentValue += (population[i].fitness / totalFitness);
+					availableParents[iter] = i;
+					iter++;
+				}
+			}
+			
 			int parent1 = 0;
 			int parent2 = 0;
 			
@@ -152,20 +223,20 @@ public class GeneticTrainer {
 					while(!select) {
 						if(selection < cumulativeFitnesses[tryIndex]) {
 							select = true;
+						} else {
+							tryIndex++;
 						}
-						
-						tryIndex++;
 					}
 					
-					if(!selected[tryIndex]) {
-						foundParent = true;
-						selected[tryIndex] = true;
+					tryIndex = availableParents[tryIndex];
+					
+					foundParent = true;
+					selected[tryIndex] = true;
 						
-						if(p == 0) {
-							parent1 = tryIndex;
-						} else {
-							parent2 = tryIndex;
-						}
+					if(p == 0) {
+						parent1 = tryIndex;
+					} else {
+						parent2 = tryIndex;
 					}
 				}
 			}
@@ -188,5 +259,7 @@ public class GeneticTrainer {
 			population[parent1].weightMatrix = weightMatrix1;
 			population[parent2].weightMatrix = weightMatrix2;
 		}
+		
+		System.out.println("Finished replacement");
 	}
 }
