@@ -3,9 +3,12 @@ import java.util.Random;
 public class ParticleTrainer {
 	
 	final static int populationSize = 50;
-	final static float IM = 5.0f;
+	final static int numGenerations = 10;
+	final static float IM = 10.0f;
+	final static float U = 2.0f;
 	
 	Gene population[];
+	Gene currentBest;
 	
 	private int numLayers;
 	private int numNodes[];
@@ -32,24 +35,50 @@ public class ParticleTrainer {
 		}
 	}
 	
-	public float runClass() {
-		float results = 0;
+	// Function to train the classification (identical to Genetic Trainer)
+	public Gene runClass() {
+		initializePopulation();
+		initializeVelocities();
 		
+		currentBest = population[0];
+		for(int i = 1; i < populationSize; i++) {
+			if(population[i].fitness > currentBest.fitness) {
+				currentBest = population[i];
+			}
+		}
 		
+		for(int i = 0; i < numGenerations; i++) {
+			runClassParticles();
+		}
 		
-		return results;
+		return currentBest;
 	}
 	
-	public float runRegress() {
-		float results = 0;
+	// Function to train regression (identical to GeneticTrainer)
+	public Gene runRegress() {
+		initializePopulation();
+		initializeVelocities();
 		
-		return results;
+		currentBest = population[0];
+		for(int i = 1; i < populationSize; i++) {
+			if(population[i].fitness > currentBest.fitness) {
+				currentBest = population[i];
+			}
+		}
+		
+		for(int i = 0; i < numGenerations; i++) {
+			runRegressParticles();
+		}
+		
+		return currentBest;
 	}
 	
+	// Function to initialize the population (identical to GeneticTrainer)
 	void initializePopulation() {
 		population = new Gene[populationSize];
 		
 		for(int x = 0; x < populationSize; x++) {
+			population[x] = new Gene();
 			Random r = new Random();
 			
 			float tempWeightMatrix[][][] = new float[numLayers - 1][][];
@@ -69,6 +98,27 @@ public class ParticleTrainer {
 			}
 			
 			population[x].weightMatrix = tempWeightMatrix;
+			// set best known position to be the initial position
+			population[x].bestKnown = tempWeightMatrix;
+		}
+		
+		getClassFitnesses();
+	}
+	
+	// Function to initialize velocities
+	void initializeVelocities() {
+		Random r = new Random();
+		
+		for(int x = 0; x < populationSize; x++) {
+			population[x].velocityMatrix = population[x].weightMatrix;
+			
+			for(int i = 0; i < population[x].velocityMatrix.length; i++) {
+				for(int j = 0; j < population[x].velocityMatrix[i].length; j++) {
+					for(int k = 0; k < population[x].velocityMatrix[i][j].length; k++) {
+						population[x].velocityMatrix[i][j][k] = (r.nextFloat() - 0.5f) * U;
+					}
+				}
+			}
 		}
 	}
 	
@@ -77,7 +127,16 @@ public class ParticleTrainer {
 
 			int correct = 0;
 			for(int j = 0; j < inPracticeData.length; j++) {
-				population[i].activations = inPracticeData[j];
+				
+				float[] activations = new float[inPracticeData[0].length-1];
+				int iter = 0;
+				for(int k = 0; k < inPracticeData[0].length; k++) {
+					if(k != classLocation) {
+						activations[iter] = inPracticeData[j][k];
+					}
+				}
+				
+				population[i].activations = activations;
 				float result = getResult(population[i].getResults());
 				
 				if(result == inPracticeData[j][classLocation]) {
@@ -88,6 +147,39 @@ public class ParticleTrainer {
 			float fitness = ((float) correct) / ((float) inPracticeData.length);
 			
 			population[i].fitness = fitness;
+			population[i].bestKnownFitness = fitness;
+		}
+	}
+	
+	void getRegressFitnesses() {
+		for(int i = 0; i < populationSize; i++) {
+
+			float error = 0;
+			for(int j = 0; j < inPracticeData.length; j++) {
+				
+				float[] activations = new float[inPracticeData[0].length-1];
+				int iter = 0;
+				for(int k = 0; k < inPracticeData[0].length; k++) {
+					if(k != classLocation) {
+						activations[iter] = inPracticeData[j][k];
+					}
+				}
+				
+				population[i].activations = activations;
+				float result = getResult(population[i].getResults());
+				
+				float e = result - inPracticeData[j][classLocation];
+				e = e * e;
+				
+				error += e;
+			}
+			
+			error = error / inPracticeData.length;
+			
+			float fitness = 1 / error;
+			
+			population[i].fitness = fitness;
+			population[i].bestKnownFitness = fitness;
 		}
 	}
 	
@@ -98,7 +190,7 @@ public class ParticleTrainer {
 		for(int j = 0; j < results.length; j++) {
 			if(results[j] > bigEstimate) {
 				bigEstimate = results[j];
-				bigIndex = j; 
+				bigIndex = j;
 			}
 		}
 		
@@ -106,6 +198,114 @@ public class ParticleTrainer {
 	}
 	
 	void runClassParticles() {
+		Random r = new Random();
 		
+		for(int x = 0; x < populationSize; x++) {
+			for(int i = 0; i < population[x].velocityMatrix.length; i++) {
+				for(int j = 0; j < population[x].velocityMatrix[i].length; j++) {
+					for(int k = 0; k < population[x].velocityMatrix[i][j].length; k++) {
+						float Rp = r.nextFloat() * U;
+						float Rg = r.nextFloat() * U;
+						
+						float newVelocity = population[x].velocityMatrix[i][j][k] + Rp*(population[x].bestKnown[i][j][k] - population[x].weightMatrix[i][j][k]) + Rg*(currentBest.weightMatrix[i][j][k] - population[x].weightMatrix[i][j][k]);
+						population[x].velocityMatrix[i][j][k] = newVelocity;
+						
+						population[x].weightMatrix[i][j][k] += population[x].velocityMatrix[i][j][k];
+					}
+				}
+			}
+			
+			int correct = 0;
+			for(int j = 0; j < inPracticeData.length; j++) {
+				
+				float[] activations = new float[inPracticeData[0].length-1];
+				int iter = 0;
+				for(int k = 0; k < inPracticeData[0].length; k++) {
+					if(k != classLocation) {
+						activations[iter] = inPracticeData[j][k];
+					}
+				}
+				
+				population[x].activations = activations;
+				float result = getResult(population[x].getResults());
+				
+				if(result == inPracticeData[j][classLocation]) {
+					correct++;
+				}
+			}
+			
+			float fitness = ((float) correct) / ((float) inPracticeData.length);
+			population[x].fitness = fitness;
+			
+			if(population[x].fitness > population[x].bestKnownFitness) {
+				population[x].bestKnown = population[x].weightMatrix;
+				population[x].bestKnownFitness = fitness;
+			}
+			
+			if(population[x].fitness > currentBest.fitness) {
+				currentBest = population[x];
+			}
+			
+			System.out.println("Individual Fitness " + population[x].fitness);
+			System.out.println("Current Best Fitness " + currentBest.fitness);
+		}
+	}
+	
+	void runRegressParticles() {
+		Random r = new Random();
+		
+		for(int x = 0; x < populationSize; x++) {
+			for(int i = 0; i < population[x].velocityMatrix.length; i++) {
+				for(int j = 0; j < population[x].velocityMatrix[i].length; j++) {
+					for(int k = 0; k < population[x].velocityMatrix[i][j].length; k++) {
+						float Rp = r.nextFloat() * U;
+						float Rg = r.nextFloat() * U;
+						
+						float newVelocity = population[x].velocityMatrix[i][j][k] + Rp*(population[x].bestKnown[i][j][k] - population[x].weightMatrix[i][j][k]) + Rg*(currentBest.weightMatrix[i][j][k] - population[x].weightMatrix[i][j][k]);
+						population[x].velocityMatrix[i][j][k] = newVelocity;
+						
+						population[x].weightMatrix[i][j][k] += population[x].velocityMatrix[i][j][k];
+					}
+				}
+			}
+			
+			float error = 0;
+			for(int j = 0; j < inPracticeData.length; j++) {
+				
+				float[] activations = new float[inPracticeData[0].length-1];
+				int iter = 0;
+				for(int k = 0; k < inPracticeData[0].length; k++) {
+					if(k != classLocation) {
+						activations[iter] = inPracticeData[j][k];
+					}
+				}
+				
+				population[x].activations = activations;
+				float result = getResult(population[x].getResults());
+				
+				float e = result - inPracticeData[j][classLocation];
+				e = e * e;
+				
+				error += e;
+			}
+			
+			error = error / inPracticeData.length;
+			
+			float fitness = 1 / error;
+			
+			population[x].fitness = fitness;
+			
+			if(population[x].fitness > population[x].bestKnownFitness) {
+				population[x].bestKnown = population[x].weightMatrix;
+				population[x].bestKnownFitness = fitness;
+			}
+			
+			if(population[x].fitness > currentBest.fitness) {
+				currentBest = population[x];
+			}
+			
+			System.out.println("Individual Fitness " + population[x].fitness);
+			System.out.println("Current Best Fitness " + currentBest.fitness);
+		}
 	}
 }

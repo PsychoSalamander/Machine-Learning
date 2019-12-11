@@ -3,8 +3,8 @@ import java.util.Random;
 public class DifferentialTrainer {
 
 	final static int populationSize = 50;
-	final static int numGenerations = 5;
-	final static float IM = 5.0f;
+	final static int numGenerations = 10;
+	final static float IM = 10.0f;
 	final static float B = 1.0f;
 	final static float swapThreshold = 0.5f;
 	
@@ -35,9 +35,8 @@ public class DifferentialTrainer {
 		}
 	}
 	
-	public Gene runClass() {
-		float results = 0;
-		
+	// Function to train classification
+	public Gene runClass() {		
 		initializePopulation();
 		
 		for(int i = 0; i < numGenerations; i++) {
@@ -56,16 +55,32 @@ public class DifferentialTrainer {
 		return currentBest;
 	}
 	
-	public float runRegress() {
-		float results = 0;
+	// Function to train regression
+	public Gene runRegress() {		
+		initializePopulation();
 		
-		return results;
+		for(int i = 0; i < numGenerations; i++) {
+			getRegressFitnesses();
+			runRegressDifferential();
+		}
+		
+		getRegressFitnesses();
+		Gene currentBest = population[0];
+		for(int i = 1; i < populationSize; i++) {
+			if(population[i].fitness > currentBest.fitness) {
+				currentBest = population[i];
+			}
+		}
+		
+		return currentBest;
 	}
 	
+	// Function to initialize population (identical to GeneticTrainer)
 	void initializePopulation() {
 		population = new Gene[populationSize];
 		
 		for(int x = 0; x < populationSize; x++) {
+			population[x] = new Gene();
 			Random r = new Random();
 			
 			float tempWeightMatrix[][][] = new float[numLayers - 1][][];
@@ -88,12 +103,22 @@ public class DifferentialTrainer {
 		}
 	}
 	
+	// Function to get population fitnesses (identical to GeneticTrainer)
 	void getClassFitnesses() {
 		for(int i = 0; i < populationSize; i++) {
 
 			int correct = 0;
 			for(int j = 0; j < inPracticeData.length; j++) {
-				population[i].activations = inPracticeData[j];
+				
+				float[] activations = new float[inPracticeData[0].length-1];
+				int iter = 0;
+				for(int k = 0; k < inPracticeData[0].length; k++) {
+					if(k != classLocation) {
+						activations[iter] = inPracticeData[j][k];
+					}
+				}
+				
+				population[i].activations = activations;
 				float result = getResult(population[i].getResults());
 				
 				if(result == inPracticeData[j][classLocation]) {
@@ -107,6 +132,39 @@ public class DifferentialTrainer {
 		}
 	}
 	
+	// Function to get population fitnesses (identical to GeneticTrainer)
+	void getRegressFitnesses() {
+		for(int i = 0; i < populationSize; i++) {
+
+			float error = 0;
+			for(int j = 0; j < inPracticeData.length; j++) {
+				
+				float[] activations = new float[inPracticeData[0].length-1];
+				int iter = 0;
+				for(int k = 0; k < inPracticeData[0].length; k++) {
+					if(k != classLocation) {
+						activations[iter] = inPracticeData[j][k];
+					}
+				}
+				
+				population[i].activations = activations;
+				float result = getResult(population[i].getResults());
+				
+				float e = result - inPracticeData[j][classLocation];
+				e = e * e;
+				
+				error += e;
+			}
+			
+			error = error / inPracticeData.length;
+			
+			float fitness = 1 / error;
+			
+			population[i].fitness = fitness;
+		}
+	}
+	
+	// Function to get results (identical to GeneticTrainer)
 	float getResult(float results[]) {
 		int bigIndex = 0;
 		float bigEstimate = 0;
@@ -121,7 +179,81 @@ public class DifferentialTrainer {
 		return(resultArray[bigIndex]);
 	}
 	
+	// Function to train the differential algorithm
 	void runClassDifferential() {
+		Random r = new Random();
+		
+		// For each member of the population
+		for(int x = 0; x < populationSize; x++) {
+			// Select 3 random matrices
+			int x1 = r.nextInt(populationSize);
+			int x2 = r.nextInt(populationSize);
+			int x3 = r.nextInt(populationSize);
+			
+			Gene v = new Gene();
+			
+			// Create replacement matrix from 3 selected matrices
+			float replacementMatrix[][][] = population[x1].weightMatrix;
+			
+			for(int i = 0; i < replacementMatrix.length; i++) {
+				for(int j = 0; j < replacementMatrix[i].length; j++) {
+					for(int k = 0; k < replacementMatrix[i][j].length; k++) {
+						if(r.nextFloat() > swapThreshold) {
+							float tempValue = B * (population[x2].weightMatrix[i][j][k] - population[x3].weightMatrix[i][j][k]);
+							replacementMatrix[i][j][k] += tempValue;
+						}
+					}
+				}
+			}
+			
+			v.weightMatrix = replacementMatrix;
+			
+			// swap values of replacement and original matrices
+			for(int i = 0; i < v.weightMatrix.length; i++) {
+				for(int j = 0; j < v.weightMatrix[i].length; j++) {
+					for(int k = 0; k < v.weightMatrix[i][j].length; k++) {
+						if(r.nextFloat() > swapThreshold) {
+							v.weightMatrix[i][j][k] = population[x].weightMatrix[i][j][k];
+						}
+					}
+				}
+			}
+			
+			// Check to see if newly created matrix is better than original
+			int correct = 0;
+			for(int j = 0; j < inPracticeData.length; j++) {
+				
+				float[] activations = new float[inPracticeData[0].length-1];
+				int iter = 0;
+				for(int k = 0; k < inPracticeData[0].length; k++) {
+					if(k != classLocation) {
+						activations[iter] = inPracticeData[j][k];
+					}
+				}
+				
+				v.activations = activations;
+				float result = getResult(v.getResults());
+				
+				if(result == inPracticeData[j][classLocation]) {
+					correct++;
+				}
+			}
+			
+			v.fitness = ((float) correct) / ((float) inPracticeData.length);
+			
+			System.out.println("Selected Vectors: " + x1 + ", " + x2 + ", " + x3);
+			System.out.println("Original Fitness " + population[x].fitness);
+			System.out.println("New Fitness " + v.fitness);
+			
+			// If fitness is better than original, replace the fitness
+			if(v.fitness > population[x].fitness) {
+				population[x] = v;
+			}
+		}
+	}
+	
+	// Function to train the differential algorithm (similar to above, just for regression)
+	void runRegressDifferential() {
 		Random r = new Random();
 		
 		for(int x = 0; x < populationSize; x++) {
@@ -156,17 +288,35 @@ public class DifferentialTrainer {
 				}
 			}
 			
-			int correct = 0;
+			float error = 0;
 			for(int j = 0; j < inPracticeData.length; j++) {
-				v.activations = inPracticeData[j];
+				
+				float[] activations = new float[inPracticeData[0].length-1];
+				int iter = 0;
+				for(int k = 0; k < inPracticeData[0].length; k++) {
+					if(k != classLocation) {
+						activations[iter] = inPracticeData[j][k];
+					}
+				}
+				
+				v.activations = activations;
 				float result = getResult(v.getResults());
 				
-				if(result == inPracticeData[j][classLocation]) {
-					correct++;
-				}
+				float e = result - inPracticeData[j][classLocation];
+				e = e * e;
+				
+				error += e;
 			}
 			
-			v.fitness = ((float) correct) / ((float) inPracticeData.length);
+			error = error / inPracticeData.length;
+			
+			float fitness = 1 / error;
+			
+			v.fitness = fitness;
+			
+			System.out.println("Selected Vectors: " + x1 + ", " + x2 + ", " + x3);
+			System.out.println("Original Fitness " + population[x].fitness);
+			System.out.println("New Fitness " + v.fitness);
 			
 			if(v.fitness > population[x].fitness) {
 				population[x] = v;

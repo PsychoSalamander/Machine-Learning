@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.io.FileWriter;
 import java.util.Hashtable;
 
 import datapkg.*;
@@ -76,88 +75,37 @@ public class Main {
 	DataProcessor winequalityWhiteProcessor = new DataProcessor(winequalityWhitePath, winequalityWhiteData, true,
 		winequalityWhiteRoundings);
 
-	// Run tests for 0 hidden layers and output results
 	DataRunner dr = new DataRunner();
-	int nodes[] = {};
-	Path p0 = Paths.get("0/Overall_0.csv");
-	FileWriter F0 = new FileWriter(p0.toString());
 	float temp[] = null;
-	temp = dr.runFeedForward(abaloneData, 10, nodes, 10, true, "abalone0", "0");
-	appendArray(F0, temp);
-	temp = dr.runFeedForward(carData, 10, nodes, 10, true, "car0", "0");
-	appendArray(F0, temp);
-	temp = dr.runFeedForward(segmentationData, 10, nodes, 10, true, "segmentation0", "0");
-	appendArray(F0, temp);
-	temp = dr.runFeedForward(machineData, 10, nodes, 10, false, "machine0", "0");
-	appendArray(F0, temp);
-	temp = dr.runFeedForward(forestfiresData, 10, nodes, 10, false, "forest0", "0");
-	appendArray(F0, temp);
-	temp = dr.runFeedForward(winequalityRedData, 10, nodes, 10, false, "red0", "0");
-	appendArray(F0, temp);
-	temp = dr.runFeedForward(winequalityWhiteData, 10, nodes, 10, false, "white0", "0");
-	appendArray(F0, temp);
-	F0.flush();
-	F0.close();
+
+	// Run tests for 0 hidden layers and output results
+	int nodes0[] = {};
+	temp = dr.runFeedForward(abaloneData, 10, nodes0, 10, true, "abalone0", "0");
+	temp = dr.runFeedForward(carData, 10, nodes0, 10, true, "car0", "0");
+	temp = dr.runFeedForward(segmentationData, 10, nodes0, 10, true, "segmentation0", "0");
+	temp = dr.runFeedForward(machineData, 10, nodes0, 10, false, "machine0", "0");
+	temp = dr.runFeedForward(forestfiresData, 10, nodes0, 10, false, "forest0", "0");
+	temp = dr.runFeedForward(winequalityRedData, 10, nodes0, 10, false, "red0", "0");
+	temp = dr.runFeedForward(winequalityWhiteData, 10, nodes0, 10, false, "white0", "0");
 	
 	// Run tests for 1 hidden layer and output results
 	int nodes1[] = { 8 };
-	Path p1 = Paths.get("1/Overall_1.csv");
-	FileWriter F1 = new FileWriter(p1.toString());
 	temp = dr.runFeedForward(abaloneData, 10, nodes1, 10, true, "abalone1", "1");
-	appendArray(F1, temp);
 	temp = dr.runFeedForward(carData, 10, nodes1, 10, true, "car1", "1");
-	appendArray(F1, temp);
 	temp = dr.runFeedForward(segmentationData, 10, nodes1, 10, true, "segmentation1", "1");
-	appendArray(F1, temp);
 	temp = dr.runFeedForward(machineData, 10, nodes1, 10, false, "machine1", "1");
-	appendArray(F1, temp);
 	temp = dr.runFeedForward(forestfiresData, 10, nodes1, 10, false, "forest1", "1");
-	appendArray(F1, temp);
 	temp = dr.runFeedForward(winequalityRedData, 10, nodes1, 10, false, "red1", "1");
-	appendArray(F1, temp);
 	temp = dr.runFeedForward(winequalityWhiteData, 10, nodes1, 10, false, "white1", "1");
-	appendArray(F1, temp);
-	F1.flush();
-	F1.close();
-
+	
 	// Run tests for 2 hidden layers and output results
 	int nodes2[] = { 10, 7 };
-	Path p2 = Paths.get("2/Overall_2.csv");
-	FileWriter F2 = new FileWriter(p2.toString());
 	temp = dr.runFeedForward(abaloneData, 10, nodes2, 10, true, "abalone2", "2");
-	appendArray(F2, temp);
 	temp = dr.runFeedForward(carData, 10, nodes2, 10, true, "car2", "2");
-	appendArray(F2, temp);
 	temp = dr.runFeedForward(segmentationData, 10, nodes2, 10, true, "segmentation2", "2");
-	appendArray(F2, temp);
 	temp = dr.runFeedForward(machineData, 10, nodes2, 10, false, "machine2", "2");
-	appendArray(F2, temp);
 	temp = dr.runFeedForward(forestfiresData, 10, nodes2, 10, false, "forest2", "2");
-	appendArray(F2, temp);
 	temp = dr.runFeedForward(winequalityRedData, 10, nodes2, 10, false, "red2", "2");
-	appendArray(F2, temp);
 	temp = dr.runFeedForward(winequalityWhiteData, 10, nodes2, 10, false, "white2", "2");
-	appendArray(F2, temp);
-	F2.flush();
-	F2.close();
-    }
-    
-    // Function to output array to a filewriter's stream
-    static void appendArray(FileWriter fw, float[] a) {
-	for (int i = 0; i < a.length; i++) {
-	    if (i != a.length - 1) {
-		try {
-		    fw.append(a[i] + ",");
-		} catch (IOException e) {
-		    e.printStackTrace();
-		}
-	    } else {
-		try {
-		    fw.append(a[i] + "\n");
-		} catch (IOException e) {
-		    e.printStackTrace();
-		}
-	    }
-	}
     }
 }

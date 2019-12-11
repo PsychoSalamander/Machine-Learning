@@ -1,20 +1,13 @@
 Axel Ward:
- - PAMNearestNeighbor.java
- - KMeansNearestNeighbor.java
- - NearestNeighbor.java
- - FeedForward.java :: Classification
+ - ParticleTrainer.java
+ - FeedForward.java
 
 Franki Taylor:
- - KNearestNeighbor.java
- - DataRunner.java
- - FeedForward.java :: Regression
+ - DifferentialTrainer.java
  
 Spencer Raymond:
- - ENearestNeighbor.java
- - CNearestNeighbor.java
- - RadialBasis.java :: Classification
+ - GeneticTrainer.java
  
 Blake Mitchell:
- - DataProcessor.java
- - ProcessedData.java
- - RadialBasis.java :: Regression
+ - Gene.java
+ - DataRunner.java

@@ -122,8 +122,6 @@ public class DataRunner {
 			// Set Scales for activation calculation
 			algorithm.setScales(scales);
 			
-			
-			
 			// Set file output name and run algorithm
 			if(testClassification) {
 				Path PrintPath = Paths.get(folder + "/classification_" + name + "_" + t + ".txt");

@@ -2,11 +2,19 @@
 public class Gene {
 	public float weightMatrix[][][];
 	public float velocityMatrix[][][];
+	public float bestKnown[][][];
 	public float activations[];
+	public float bestKnownFitness;
 	public float fitness;
 	
+	// Class to hold data for individuals of populations
+	
+	public Gene() {
+		
+	}
+	
 	public float[] getResults() {
-		int resultLength = weightMatrix[0][weightMatrix[0].length].length;
+		int resultLength = weightMatrix[0][weightMatrix[0].length - 1].length;
 		float results[] = new float[resultLength];
 		// Get initial activations from the example
 		float currentActivations[] = activations;
@@ -35,6 +43,7 @@ public class Gene {
 		return results;
 	}
 	
+	// Function to get sigmoid
 	float calcSig(float x) {
 		float e = (float) Math.exp((double) x);
 		float sig = (1/(1+e));
